@@ -8,13 +8,14 @@ jQuery(function($){
             let websites = csvObject(data),
                 $recentlyWorkedOnWebsites = $('#recentlyWorkedOnWebsites');
 
-            console.log(websites);
+            // console.log(websites);
 
             if (typeof websites === 'object' && websites !== null)
                 $recentlyWorkedOnWebsites.empty();
 
             for(websiteIdx in websites) {
-                console.log(websites[websiteIdx]['Link']);
+                // console.log(websites[websiteIdx]['Link']);
+                if(websites[websiteIdx]['Link'] === null) continue;
                 $recentlyWorkedOnWebsites.append('<div class="column">\n' +
                     '              <a href="' + websites[websiteIdx]['Link'] + '">\n' +
                     '                <img class="thumbnail" src="images/' + websites[websiteIdx]['Image'] + '">\n' +
