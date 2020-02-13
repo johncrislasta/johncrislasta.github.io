@@ -45,6 +45,8 @@ function csvObject(csv){
 
         var obj = {};
         var currentline=lines[i].split(",");
+
+        console.log(currentline);
         if(currentline.length === 0) continue;
 
         for(var j=0;j<headers.length;j++){
