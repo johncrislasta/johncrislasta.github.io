@@ -14,7 +14,7 @@ jQuery(function($){
                 $recentlyWorkedOnWebsites.empty();
 
             for(websiteIdx in websites) {
-                // console.log(websites[websiteIdx]['Link']);
+                // console.log(websites[websiteIdx]['Name']);
                 $recentlyWorkedOnWebsites.append('<div class="column">\n' +
                     '              <a href="' + websites[websiteIdx]['Link'] + '">\n' +
                     '                <img class="thumbnail" src="images/' + websites[websiteIdx]['Image'] + '">\n' +
@@ -46,11 +46,10 @@ function csvObject(csv){
         var obj = {};
         var currentline=lines[i].split(",");
 
-        console.log(currentline);
-        if(currentline.length === 0) continue;
+        if(currentline[0] === "") continue;
 
         for(var j=0;j<headers.length;j++){
-            obj[headers[j]] = currentline[j];
+            obj[headers[j].trim()] = currentline[j].trim();
         }
 
         result.push(obj);
