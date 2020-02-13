@@ -5,10 +5,11 @@ jQuery(function($){
         url: "js/data/recently-worked-on-websites.csv",
         dataType: "text",
         success: function(data) {
-            let websites = csvJSON(data),
+            let websites = csvJSON(data, false),
                 $recentlyWorkedOnWebsites = $('#recentlyWorkedOnWebsites');
             console.log(websites);
-            for(website in websites) {
+            for(websiteIdx in websites) {
+                console.log(websites[websiteIdx]['Link']);
                 $recentlyWorkedOnWebsites.append('');
             }
         }
@@ -104,7 +105,9 @@ function CSVToArray( strData, strDelimiter ){
 }
 
 //var csv is the CSV file with headers
-function csvJSON(csv){
+function csvJSON(csv, toString){
+
+    strDelimiter = (strDelimiter || true);
 
     var lines=csv.split("\n");
 
@@ -130,5 +133,8 @@ function csvJSON(csv){
     }
 
     //return result; //JavaScript object
-    return JSON.stringify(result); //JSON
+    if(toString)
+        return JSON.stringify(result); //JSON
+
+    return result;
 }
