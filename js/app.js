@@ -1,12 +1,19 @@
 jQuery(function($){
-    $.getJSON('data/recently-worked-on-websites.csv', function(data) {
-        let websites = CSVToArray(data),
-            $recentlyWorkedOnWebsites = $('#recentlyWorkedOnWebsites');
-        console.log(websites);
-        for(website in websites) {
-            $recentlyWorkedOnWebsites.append('');
+
+    $.ajax({
+        type: "GET",
+        url: "js/data/recently-worked-on-websites.csv",
+        dataType: "text",
+        success: function(data) {
+            let websites = CSVToArray(data),
+                $recentlyWorkedOnWebsites = $('#recentlyWorkedOnWebsites');
+            console.log(websites);
+            for(website in websites) {
+                $recentlyWorkedOnWebsites.append('');
+            }
         }
     });
+
 });
 
 // ref: http://stackoverflow.com/a/1293163/2343
