@@ -107,7 +107,7 @@ function CSVToArray( strData, strDelimiter ){
 //var csv is the CSV file with headers
 function csvJSON(csv, toString){
 
-    strDelimiter = (strDelimiter || true);
+    toString = (toString || true);
 
     var lines=csv.split("\n");
 
