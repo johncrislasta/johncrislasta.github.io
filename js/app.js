@@ -25,17 +25,19 @@ jQuery(function($){
         }
     });
 
-    var $form = $("form.send-message");
-    var form_data = getFormData($form);
+    var $form = $("form.send-message"),
+        form_data = {};
 
     $form.submit(
         function(e){
+            form_data = getFormData($form);
             e.preventDefault();
-            $form.find('input, textarea').attr('disabled','disabled');
+            $form.find('input, textarea').attr('readonly','readonly');
             $form.find('input[type=submit]').val('Sending...');
+
             $.ajax({
-                xhrFields: {
-                    withCredentials: true
+                headers: {
+                    'Accept':'*/*',
                 },
                 method: 'POST',
                 url: 'https://www.enformed.io/efebhyfb/',
@@ -43,8 +45,7 @@ jQuery(function($){
                 accepts: 'application/json',
                 data: form_data,
                 success: function(data) {
-                    console.log(data);
-                    $('.form-container').text('<h5>Thank you for sending me a message. I\'ll get back to you as soon as possible.</h5>')
+                    $('.form-container').html('<h5>Thank you for sending me a message. I\'ll get back to you as soon as possible.</h5>');
                 },
                 error: (err) => console.log(err)
             });
@@ -53,15 +54,24 @@ jQuery(function($){
 
 });
 
-function getFormData($form){
-    var unindexed_array = $form.serializeArray();
+function getFormData(form){
+    var unindexed_array = form.serializeArray();
     var indexed_array = {};
 
+
     $.map(unindexed_array, function(n, i){
-        indexed_array[n['name']] = n['value'];
+        indexed_array[n['name']] = n['name'] === 'message' ? n['value'] : nl2br(n['value']);
     });
 
     return indexed_array;
+}
+
+function nl2br (str, is_xhtml) {
+    if (typeof str === 'undefined' || str === null) {
+        return '';
+    }
+    var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
+    return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 }
 
 //var csv is the CSV file with headers
