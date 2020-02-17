@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>John Cris Lasta | Portfolio</title>
     <link rel="stylesheet" href="css/foundation.min.css">
+    <link rel="stylesheet" href="css/styles.css">
   </head>
   <body>
 
@@ -178,19 +179,29 @@
                 <li><a href="https://www.onlinejobs.ph/jobseekers/info/96896">OnlineJobs.ph</a></li>
               </ul>
             </div>
-            <div class="medium-6 columns">
-              <form action="mailto:johncrislasta@outlook.com" method="post" enctype="text/plain" >
-                <label>Name
-                <input type="text" placeholder="Name">
-              </label>
-              <label>Email
-                <input type="text" placeholder="Email">
-              </label>
-              <label>
-                Message
-                <textarea placeholder="Shoot me a message!"></textarea>
-              </label>
-              <input type="submit" class="button expanded" value="Submit">
+            <div class="medium-6 columns form-container">
+              <form class="send-message" method="post">
+                <input type="hidden" name="*honeypot" />
+
+                <div class="row small-up-1 medium-up-2">
+                  <div class="column">
+                    <div class="form-group">
+                      <label for="name">First Name</label>
+                      <input type="text" required="required" class="form-input" name="name" id="name"/>
+                    </div>
+                  </div>
+                  <div class="column">
+                    <div class="form-group">
+                      <label for="email">Email Address</label>
+                      <input type="email" required="required" class="form-input" name="email" id="email" />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="message">Your message</label>
+                  <textarea name="message" required="required" type="text" class="form-control" id="message"></textarea>
+                </div>
+                <input type="submit" class="button" value="Send message" />
               </form>
             </div>
           </div>

@@ -25,7 +25,41 @@ jQuery(function($){
         }
     });
 
+    var $form = $("form.send-message");
+    var form_data = getFormData($form);
+
+    $form.submit(
+        function(e){
+            e.preventDefault();
+            $form.find('input, textarea').attr('disabled','disabled');
+            $form.find('input[type=submit]').val('Sending...');
+            $.ajax({
+                method: 'POST',
+                url: 'https://www.enformed.io/efebhyfb/',
+                dataType: 'json',
+                accepts: 'application/json',
+                data: form_data,
+                success: function(data) {
+                    console.log(data);
+                    $('.form-container').text('<h5>Thank you for sending me a message. I\'ll get back to you as soon as possible.</h5>')
+                },
+                error: (err) => console.log(err)
+            });
+        }
+    );
+
 });
+
+function getFormData($form){
+    var unindexed_array = $form.serializeArray();
+    var indexed_array = {};
+
+    $.map(unindexed_array, function(n, i){
+        indexed_array[n['name']] = n['value'];
+    });
+
+    return indexed_array;
+}
 
 //var csv is the CSV file with headers
 function csvObject(csv){
