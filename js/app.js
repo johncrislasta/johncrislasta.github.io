@@ -17,7 +17,7 @@ jQuery(function($){
                 // console.log(websites[websiteIdx]['Name']);
                 $recentlyWorkedOnWebsites.append('<div class="column">\n' +
                     '              <a href="' + websites[websiteIdx]['Link'] + '">\n' +
-                    '                <img class="thumbnail" src="images/' + websites[websiteIdx]['Image'] + '">\n' +
+                    '                <img class="thumbnail" src="images/tinified/' + websites[websiteIdx]['Image'] + '">\n' +
                     '                <h5>' + websites[websiteIdx]['Name'] + '</h5>\n' +
                     '              </a>\n' +
                     '            </div>');
