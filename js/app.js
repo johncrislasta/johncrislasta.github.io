@@ -34,6 +34,9 @@ jQuery(function($){
             $form.find('input, textarea').attr('disabled','disabled');
             $form.find('input[type=submit]').val('Sending...');
             $.ajax({
+                xhrFields: {
+                    withCredentials: true
+                },
                 method: 'POST',
                 url: 'https://www.enformed.io/efebhyfb/',
                 dataType: 'json',
