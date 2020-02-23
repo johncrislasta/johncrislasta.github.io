@@ -1,0 +1,13 @@
+{
+  "require": {
+    "nategood/httpful": "*",
+    "leafo/scssphp": "0.7.1",
+    "twig/twig":"1.5",
+    "meyfa/php-svg": "^0.6.1",
+    "kint-php/kint": "^2.2",
+    "nesbot/carbon": "^1.25",
+    "yohang/calendr": "^1.1",
+    "sentry/sentry": "^1.9",
+    "phpoffice/phpspreadsheet": "^1.6"
+  }
+}
