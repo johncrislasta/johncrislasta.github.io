@@ -1,3 +1,6 @@
 bower_components/*
+!bower_components/jquery/dist/jquery.min.js
+!bower_components/foundation-sites/dist/js/foundation.min.js
+!bower_components/foundation-sites/dist/css/foundation.min.css
 vendor/*
 node_modules/*
