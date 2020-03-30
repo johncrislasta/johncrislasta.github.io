@@ -2,7 +2,7 @@ jQuery(function($){
 
     $.ajax({
         type: "GET",
-        url: "js/data/recently-worked-on-websites.csv",
+        url: "assets/js/data/recently-worked-on-websites.csv",
         dataType: "text",
         success: function(data) {
             let websites = csvObject(data),
