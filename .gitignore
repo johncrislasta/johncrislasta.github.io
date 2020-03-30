@@ -17,5 +17,7 @@ bower_components/foundation-sites/dist/js/*
 !bower_components/foundation-sites/dist/css
 bower_components/foundation-sites/dist/css/*
 !bower_components/foundation-sites/dist/css/foundation.min.css
+!bower_components/foundation-sites/dist/css/foundation-float.min.css
+
 vendor/*
 node_modules/*
