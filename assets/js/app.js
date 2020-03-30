@@ -15,7 +15,7 @@ jQuery(function($){
 
             for(websiteIdx in websites) {
                 // console.log(websites[websiteIdx]['Name']);
-                $recentlyWorkedOnWebsites.append('<div class="cell">\n' +
+                $recentlyWorkedOnWebsites.append('<div class="column column-block">\n' +
                     '              <a href="' + websites[websiteIdx]['Link'] + '">\n' +
                     '                <img class="thumbnail" src="assets/images/tinified/' + websites[websiteIdx]['Image'] + '">\n' +
                     '                <h5>' + websites[websiteIdx]['Name'] + '</h5>\n' +
