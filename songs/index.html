@@ -12,9 +12,10 @@
 <script>
     const password = window.prompt('Enter password: ');
     const container = document.getElementById('container');
-    if("e2f113885a13fc83e1c1d9acc7ad7078" === md5(password)) {
-        container.style.display = "block";
-    } else {
+
+    container.style.display = "block";
+
+    if("e2f113885a13fc83e1c1d9acc7ad7078" !== md5(password)) {
         container.innerHTML = "Access denied!";
     }
 </script>
