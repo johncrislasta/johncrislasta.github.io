@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Covers</title>
+    <script src="js/md5.min.js"></script>
+</head>
+<body>
+<div id="container" style="display: none;">
+    <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/q-ukhE6Xyiw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<script>
+    const password = window.prompt('Enter password: ');
+    const container = document.getElementById('container');
+    if("e2f113885a13fc83e1c1d9acc7ad7078" === md5(password)) {
+        container.style.display = "block";
+    } else {
+        container.innerHTML = "";
+    }
+</script>
+</body>
+</html>
