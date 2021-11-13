@@ -18,7 +18,7 @@
 
     container.style.display = "block";
 
-    if("e2f113885a13fc83e1c1d9acc7ad7078" !== md5(password)) {
+    if(!in_array(md5(password), ["e2f113885a13fc83e1c1d9acc7ad7078",'0f064e34f4c1703f93825f7dc4a61865'])) {
         container.innerHTML = "Access denied!";
     }
 </script>
