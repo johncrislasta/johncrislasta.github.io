@@ -26,6 +26,11 @@
 
             latText.innerText = lat;
             longText.innerText = long;
+
+            let map = document.getElementById("map");
+            map.parentElement.removeChild(map);
+
+            document.write(`<iframe id="map" src='https://www.google.com/maps/@${lat},${long},20z' style="width:100%;height:100vh;"></iframe>`);
         });
     });
 </script>
