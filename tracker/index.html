@@ -13,7 +13,6 @@
     Get My Location
 </button>
 <div id="map-container">
-
 </div>
 
 <script>
@@ -39,7 +38,7 @@
             iframe.id = "map";
             iframe.width = "100%";
             iframe.height = "600";
-            iframe.src = `https://maps.google.com/maps?width=100%25&height=600&hl=en&q=${lat},${long}&t=&z=20ie=UTF8&iwloc=B&output=embed`;
+            iframe.src = `https://maps.google.com/maps?width=100%25&height=600&hl=en&q=${lat},${long}&t=&z=20&ie=UTF8&iwloc=B&output=embed`;
             mapContainer.appendChild(iframe);
 
         });
