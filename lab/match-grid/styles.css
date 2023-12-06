@@ -1,0 +1,99 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+#match-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+@media (max-width: 1024px) {
+
+    #match-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* The flip card container - set the width and height to whatever you want. We have added the border property to demonstrate that the flip itself goes out of the box on hover (remove perspective if you don't want the 3D effect */
+.flip-card {
+    background-color: transparent;
+    max-width: 300px;
+    aspect-ratio: 1/1;
+    border: 1px solid #f1f1f1;
+    perspective: 1000px; /* Remove this if you don't want the 3D effect */
+}
+
+/* This container is needed to position the front and back side */
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+/* Do an peek when you move the mouse over the flip box container */
+.flip-card:hover .flip-card-inner {
+    transform: rotate3d(0.3, -1, 0, 30deg);
+}
+
+/* Do an horizontal flip when you move the mouse over the flip box container */
+.flip-card .flip-card-inner.opened {
+    transform: rotateY(180deg);
+}
+
+.flip-card .flip-card-inner.correct .flip-card-back {
+    background: #00c300;
+}
+
+/* Position the front and back side */
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+}
+
+/* Style the front side (fallback if image is missing) */
+.flip-card-front {
+    background-color: #bbb;
+    color: black;
+}
+
+/* Style the back side */
+.flip-card-back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: dodgerblue;
+    color: white;
+    transform: rotateY(180deg);
+}
+
+
+@keyframes tada {
+    0% {
+        transform: rotateY(-180deg);
+        opacity: 1;
+    }
+    15%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    40% {
+        transform: translateY(-30px);
+    }
+    60% {
+        transform: translateY(-15px);
+    }
+}
+
+.animate__tada {
+    -webkit-animation-name: tada;
+    animation-name: tada;
+    animation-duration: 1.1s;
+}
