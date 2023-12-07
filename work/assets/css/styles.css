@@ -1,3 +1,18 @@
+/*-----------------------------
+ * START - Reset
+ *--------------------------- */
+
+body {
+    margin: 0;
+}
+
+/*-----------------------------
+ * END - Reset
+ *--------------------------- */
+
+/*-----------------------------
+ * START - Match Two Styles
+ *--------------------------- */
 header {
     display: flex;
     justify-content: space-between;
@@ -7,10 +22,27 @@ header {
 #match-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 4px;
+    gap: 1px;
 }
 
-@media (max-width: 959px) {
+#match-grid.solved {
+    background: rgb(122,134,184);
+    background: linear-gradient(180deg,
+        rgba(122,134,184,1) 0%,
+        rgba(240,219,79,1) 20%,
+        rgba(227,76,38,1) 40%,
+        rgba(33,76,229,1) 60%,
+        rgba(52,52,52,1) 80%),
+        rgba(122,134,184,1) 100%;
+    animation: animatedBackground 1s infinite alternate;
+}
+
+@keyframes animatedBackground {
+    0% { background-position: 0 0; }
+    100% { background-position: 100vh 100vh; }
+}
+
+@media (max-width: 1024px) {
 
     #match-grid {
         grid-template-columns: repeat(4, 1fr);
@@ -21,9 +53,7 @@ header {
 .static-card,
 .flip-card {
     background-color: transparent;
-    max-width: 300px;
     aspect-ratio: 1/1;
-    border: 1px solid #f1f1f1;
     perspective: 1000px; /* Remove this if you don't want the 3D effect */
 }
 
@@ -31,6 +61,7 @@ header {
     display: flex;
     justify-content: center;
     align-content: center;
+    background: white;
 }
 
 .static-card span {
@@ -60,7 +91,8 @@ header {
 }
 
 .flip-card .flip-card-inner.correct .flip-card-back {
-    box-shadow: inset 0 0 10px 10px #00c300;
+    /*box-shadow: inset 0 0 10px 10px #00c300;*/
+    filter: grayscale(0%);
 }
 
 /* Position the front and back side */
@@ -92,39 +124,41 @@ header {
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
-    background-color: transparent;
+    background-color: white;
     color: transparent;
+    filter: grayscale(100%);
+    animation: filter 1s linear;
 }
 
 [data-back="PHP"] .flip-card-back {
-    background-image: url("../img/logos/new-php-logo.svg");
+    background-image: url("../img/logos/PHP.png");
 }
 [data-back="JavaScript"] .flip-card-back {
-    background-image: url("../img/logos/javascript-logo-big.png");
+    background-image: url("../img/logos/JavaScript.png");
 }
 [data-back="HTML"] .flip-card-back {
-    background-image: url("../img/logos/HTML5_Badge.svg");
+    background-image: url("../img/logos/HTML.png");
 }
 [data-back="CSS"] .flip-card-back {
-    background-image: url("../img/logos/CSS3_logo.svg");
+    background-image: url("../img/logos/CSS.png");
 }
 [data-back="WordPress"] .flip-card-back {
-    background-image: url("../img/logos/WordPress-logotype-wmark.png");
+    background-image: url("../img/logos/WordPress.png");
 }
 [data-back="ReactJS"] .flip-card-back {
-    background-image: url("../img/logos/React-icon.svg");
+    background-image: url("../img/logos/ReactJS.png");
 }
 [data-back="WPBakery"] .flip-card-back {
-    background-image: url("../img/logos/wp-bakery-logo.jpg");
+    background-image: url("../img/logos/WPBakery.png");
 }
 [data-back="Elementor"] .flip-card-back {
-    background-image: url("../img/logos/Elementor-Logo-Symbol-Red.svg");
+    background-image: url("../img/logos/Elementor.png");
 }
 [data-back="SEO"] .flip-card-back {
-    background-image: url("../img/logos/GTM.png");
+    background-image: url("../img/logos/SEO.png");
 }
 [data-back="MySQL"] .flip-card-back {
-    background-image: url("../img/logos/logo-mysql.png");
+    background-image: url("../img/logos/MySQL.png");
 }
 
 @keyframes tada {
@@ -146,6 +180,58 @@ header {
 
 .animate__tada {
     -webkit-animation-name: tada;
-    animation-name: tada;
-    animation-duration: 1.1s;
+    animation: tada 1.1s infinite;
 }
+
+/*-----------------------------
+ * END - Match Two Styles
+ *--------------------------- */
+
+/*-----------------------------
+ * START - Parallax
+ *--------------------------- */
+
+section:not(.parallax) {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.parallax {
+    position: relative;
+    z-index: 0;
+}
+
+#match-grid {
+    --parallax-speed: 0.75;
+}
+
+.parallax > * {
+    animation: parallax linear;
+    animation-timeline: scroll();
+}
+
+@keyframes parallax {
+    to {
+        transform: translateY( calc( var(--parallax-speed ) * 200px ) );
+    }
+}
+
+/*-----------------------------
+ * END - Parallax
+ *--------------------------- */
+
+/*-----------------------------
+ * START - Intro
+ *--------------------------- */
+
+#intro {
+    margin-top: 3vh;
+    height: 100vh;
+    background-color: #343434;
+    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.25);
+}
+
+/*-----------------------------
+ * END - Intro
+ *--------------------------- */

@@ -1,4 +1,5 @@
 let matchItems = ['PHP', 'JavaScript', 'HTML', 'CSS', 'WordPress', 'ReactJS', 'WPBakery', 'Elementor', 'SEO', 'MySQL'];
+// let matchItems = ['PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP'];
 let staticItems = ['J', 'C', 'Y', 'L'];
 let duplicateMatchItems = [].concat(matchItems, matchItems);
 
@@ -85,12 +86,16 @@ function openCard( card ) {
 
                 // Check if all cards are solved
                 if ( solvedCards.length === shuffledMatchItems.length ) {
-                    document.querySelectorAll(".flip-card-inner").forEach((el) => {
-                        el.classList.add('animate__tada');
-                    });
+                    grid.classList.add('solved');
+                    setTimeout(function(){
+                        document.querySelectorAll(".flip-card-inner").forEach((el) => {
+                            el.classList.add('animate__tada');
+                        });
+                        grid.classList.remove('solved');
+                    }, 5000)
 
                     // Clear match grid and reshuffle
-                    setTimeout( reshuffleMatchGrid, 1000 );
+                    setTimeout( reshuffleMatchGrid, 6000 );
                 }
             }, 300);
         } else {

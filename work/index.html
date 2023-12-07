@@ -6,13 +6,15 @@
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-    <section id="hero">
-        <header style="display: none">
-            <h2>Match Grid</h2>
-            <h1>Best: <span id="leastFlips"></span></h1>
-            <h3>Number of Flips: <span id="numOfFlips">0</span></h3>
-        </header>
-        <div id="match-grid">
+    <section id="hero" class="parallax">
+        <div id="match-grid" class="background">
+        </div>
+    </section>
+    <section id="intro">
+        <div id="matchGridFeedback" style="display: none;">
+            <h1 id="message">Match Grid</h1>
+            <h2>Number of Flips: <span id="numOfFlips">0</span></h2>
+            <h2>Best: <span id="leastFlips"></span></h2>
         </div>
     </section>
     <script src="assets/js/scripts.js"></script>

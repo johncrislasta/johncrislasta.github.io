@@ -63,7 +63,6 @@ function openCard( card ) {
     if( flippedCard.length === 2) {
         grid.classList.add('locked');
 
-        console.log([flippedCard[0].dataset.back === card.dataset.back , flippedCard[0].dataset.back, card.dataset.back ])
         // Check if they match
         if ( flippedCard[0].dataset.back === card.dataset.back ) {
             setTimeout(function(){
@@ -81,7 +80,7 @@ function openCard( card ) {
                     });
 
                     // Clear match grid and reshuffle
-                    setTimeout( reshuffleMatchGrid, 1000 );
+                    setTimeout( reshuffleMatchGrid, 2000 );
                 }
             }, 300);
         } else {
