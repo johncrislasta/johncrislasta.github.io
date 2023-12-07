@@ -10,7 +10,7 @@ header {
     gap: 4px;
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 959px) {
 
     #match-grid {
         grid-template-columns: repeat(4, 1fr);
