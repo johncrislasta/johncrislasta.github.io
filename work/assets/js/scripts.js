@@ -5,7 +5,7 @@ let duplicateMatchItems = [].concat(matchItems, matchItems);
 const matchFeedback = {
     'didNotBother': "Thanks for scrolling through! If you haven't tried the match-two game yet, give it a shot—it's a fun way to uncover the tech tools I love using.",
     'triedALittle': "Hey there! I noticed you gave the match-two game a go—awesome! Feel free to take another shot when you have a minute. It's a little sneak peek into my love for problem-solving.",
-    'solvedOnce': "High five! You cracked the match-two game! Your attention to detail is spot on. Dive into the rest of the portfolio for more insights into my technical journey.",
+    'solvedOnce': "High five! You solved the match-two game! Your attention to detail is spot on. Dive into the rest of the portfolio for more insights into my technical journey.",
     'solved2X': "Wow, double victory! You've mastered the match-two game. Your persistence is impressive. Explore further to uncover more about my coding adventures and projects.",
     'solvedManyXs': "Incredible! You've conquered the match-two game multiple times—talk about a true champion! Your enthusiasm is contagious. Check out more below to uncover the diverse projects and skills I'm passionate about.",
     'solvedFaster': "Whoa, speedy skills! You aced the match-two game in no time. Your agility is remarkable. Discover more about how this translates into my approach to development projects below.",
@@ -184,16 +184,20 @@ function getMatchGridFeedback() {
 
     }
     else if ( numberOfSolves == 1 ) {
+        matchGridNumOfFlips.style.display = "block";
         matchFeedbackKey = "solvedOnce";
     }
     else if ( numberOfSolves == 2 ) {
+        matchGridNumOfFlips.style.display = "block";
+        matchGridBest.style.display = "block";
+        matchGridNumOfSolves.style.display = "block";
         matchFeedbackKey = "solved2X";
     }
     else if ( numberOfSolves > 2 ) {
         matchFeedbackKey = "solvedManyXs";
     }
 
-    if ( numberOfFlips == shuffledMatchItems.length )
+    if ( numberOfFlips === shuffledMatchItems.length )
         matchFeedbackKey = "solvedPerfect";
 
     let message = matchFeedback[matchFeedbackKey];

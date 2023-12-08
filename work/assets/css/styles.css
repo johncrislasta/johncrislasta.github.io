@@ -168,6 +168,7 @@ header {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 1px;
+    overflow: hidden;
 }
 
 #match-grid.solved {
@@ -427,12 +428,6 @@ section#work > .work-card.active {
     cursor: initial;
 }
 
-@media ( max-width: 480px ) {
-    section#work > * {
-        flex: 1 0 100%;
-    }
-}
-
 .work-card:hover .work-card-front {
     filter: grayscale(0%);
 }
@@ -457,7 +452,8 @@ section#work > .work-card.active {
     background: rgba(255, 255, 255, 0.75);
     margin-top: auto;
     padding: 10px;
-    transition: all .3s linear
+    transition: all .3s linear;
+    box-sizing: border-box;
 }
 
 .work-card-front {
@@ -489,6 +485,7 @@ section#work > .work-card.active {
     margin: auto;
     width: 50%;
     backdrop-filter: blur(15px);
+    box-shadow: 0 0 10px 4px rgba(0 0 0 / 0.25);
 }
 
 .work-card-buttons {
@@ -502,6 +499,39 @@ section#work > .work-card.active {
 
 .work-card.active .button-close {
     display: inline-block;
+}
+
+
+@media ( max-width: 480px ) {
+    section#work > .work-card {
+        aspect-ratio: 1/1;
+        flex: 0 1 100%;
+    }
+    .work-card.active .work-card-front {
+        background-size: contain;
+        background-position: top center;
+    }
+
+    .work-card.active .work-card-front-label {
+        margin: auto 10px 10px;
+        width: calc( 100% - 20px);
+    }
+}
+
+@media screen and (orientation:landscape) {
+    .work-card.active .work-card-front-label {
+        margin: auto auto 0;
+        width: 100%;
+    }
+
+}
+
+@media ( min-width: 1200px ) {
+    .work-card.active .work-card-front-label {
+        margin: auto;
+        width: 50%;
+    }
+
 }
 
 /*-----------------------------
