@@ -21,3 +21,5 @@ bower_components/foundation-sites/dist/css/*
 
 vendor/*
 node_modules/*
+
+.idea
