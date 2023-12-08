@@ -11,6 +11,151 @@ body {
  *--------------------------- */
 
 /*-----------------------------
+ * START - Typography
+ *--------------------------- */
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-Regular.woff2);
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-Bold.woff2);
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-BoldItalic.woff2);
+    font-weight: 700;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-ExtraBold.woff2);
+    font-weight: 800;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-ExtraBoldItalic.woff2);
+    font-weight: 800;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-Italic.woff2);
+    font-style: italic;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-Light.woff2);
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-LightItalic.woff2);
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-Medium.woff2);
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-MediumItalic.woff2);
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-SemiBold.woff2);
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-SemiBoldItalic.woff2);
+    font-weight: 600;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-Thin.woff2);
+    font-weight: 100;
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url(../font/JetBrainsMono-ThinItalic.woff2);
+    font-weight: 100;
+    font-style: italic;
+}
+
+body {
+    font-family: "JetBrainsMono", Arial, serif;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    display: block;
+    margin-left: 0;
+    margin-right: 0;
+    font-weight: bold;
+}
+
+h1, .h1 {
+    font-size: 2em;
+    margin-top: 0.67em;
+    margin-bottom: 0.67em;
+}
+
+h2, .h2 {
+    font-size: 1.5em;
+    margin-top: 0.83em;
+    margin-bottom: 0.83em;
+}
+
+h3, .h3 {
+    font-size: 1.17em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+h4, .h4 {
+    font-size: 1em;
+    margin-top: 1.33em;
+    margin-bottom: 1.33em;
+}
+
+h5, .h5 {
+    font-size: .83em;
+    margin-top: 1.67em;
+    margin-bottom: 1.67em;
+}
+
+h6, .h6 {
+    font-size: .67em;
+    margin-top: 2.33em;
+    margin-bottom: 2.33em;
+}
+
+/*-----------------------------
+ * END - Typography
+ *--------------------------- */
+
+/*-----------------------------
  * START - Match Two Styles
  *--------------------------- */
 header {
@@ -28,12 +173,12 @@ header {
 #match-grid.solved {
     background: rgb(122,134,184);
     background: linear-gradient(180deg,
-        rgba(122,134,184,1) 0%,
-        rgba(240,219,79,1) 20%,
-        rgba(227,76,38,1) 40%,
-        rgba(33,76,229,1) 60%,
-        rgba(52,52,52,1) 80%),
-        rgba(122,134,184,1) 100%;
+    rgba(122,134,184,1) 0%,
+    rgba(240,219,79,1) 20%,
+    rgba(227,76,38,1) 40%,
+    rgba(33,76,229,1) 60%,
+    rgba(52,52,52,1) 80%),
+    rgba(122,134,184,1) 100%;
     animation: animatedBackground 1s infinite alternate;
 }
 
@@ -42,8 +187,7 @@ header {
     100% { background-position: 100vh 100vh; }
 }
 
-@media (max-width: 1024px) {
-
+@media screen and (orientation:portrait) {
     #match-grid {
         grid-template-columns: repeat(4, 1fr);
     }
@@ -160,6 +304,9 @@ header {
 [data-back="MySQL"] .flip-card-back {
     background-image: url("../img/logos/MySQL.png");
 }
+[data-back="jQuery"] .flip-card-back {
+    background-image: url("../img/logos/jQuery.png");
+}
 
 @keyframes tada {
     0% {
@@ -226,12 +373,177 @@ section:not(.parallax) {
  *--------------------------- */
 
 #intro {
-    margin-top: 3vh;
-    height: 100vh;
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
     background-color: #343434;
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.25);
+    color: white;
+    padding: 10px;
+}
+
+#intro > * {
+    max-width: 800px;
+    margin: auto;
+}
+
+/** Chrominum */
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
+    #intro {
+        margin-top: 3vh;
+    }
 }
 
 /*-----------------------------
  * END - Intro
+ *--------------------------- */
+
+
+/*-----------------------------
+ * START - Work
+ *--------------------------- */
+
+section#work {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+section#work > .work-card {
+    aspect-ratio: 1/1;
+    flex: 0 1 25%;
+    gap: 1px;
+    min-width: 0;
+    min-height: 0;
+    cursor: pointer;
+}
+
+section#work > .work-card.active {
+    width: 100vw;
+    height: 100vh;
+    flex-basis: 100%;
+    aspect-ratio: auto;
+    cursor: initial;
+}
+
+@media ( max-width: 480px ) {
+    section#work > * {
+        flex: 1 0 100%;
+    }
+}
+
+.work-card:hover .work-card-front {
+    filter: grayscale(0%);
+}
+
+.work-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.work-card .work-card-front {
+    background-size: cover;
+    filter: grayscale(100%);
+    display: flex;
+    flex-direction: column;
+}
+
+.work-card .work-card-front-label {
+    background: rgba(255, 255, 255, 0.75);
+    margin-top: auto;
+    padding: 10px;
+    transition: all .3s linear
+}
+
+.work-card-front {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+}
+
+.work-card-details {
+    text-align: left;
+    transition: max-height 0.3s linear;
+    max-height: 0;
+    overflow: hidden;
+}
+
+.work-card.active .work-card-front {
+    background-position: center center;
+    background-repeat: no-repeat;
+    filter: grayscale(0%);
+}
+
+.work-card.active .work-card-details {
+    max-height: 100vh;
+}
+
+.work-card.active .work-card-front-label {
+    margin: auto;
+    width: 50%;
+    backdrop-filter: blur(15px);
+}
+
+.work-card-buttons {
+    display: flex;
+}
+
+.work-card-buttons .button-close{
+    display: none;
+    margin-left: auto;
+}
+
+.work-card.active .button-close {
+    display: inline-block;
+}
+
+/*-----------------------------
+ * END - Work
+ *--------------------------- */
+
+
+/*-----------------------------
+ * START - Buttons
+ *--------------------------- */
+
+i.button {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background: white;
+    border: 1px solid #343434;
+    border-radius: 50%;
+    font-style: normal;
+    cursor: pointer;
+}
+
+i.button:before {
+    font-size: 32px;
+    line-height: 32px;
+    color: #343434;
+}
+
+i.button.button-close:before {
+    content: '\2715';
+}
+
+i.button.button-globe:before {
+    content: '\1F310';
+    font-size: 20px;
+}
+
+i.button.button-new-window:before {
+    content: '\1F680';
+    font-size: 20px;
+}
+
+/*-----------------------------
+ * END - Buttons
  *--------------------------- */
