@@ -531,7 +531,7 @@ section#work > .work-card.active {
     bottom: 1rem;
     right: 1rem;
     opacity: 0.4;
-    z-index: 2;
+    z-index: 4;
 }
 
 .work-card-gallery-dots:hover {
@@ -573,13 +573,6 @@ section#work > .work-card.active {
     border-left: 2rem solid #fff;
     border-top: 1rem solid transparent;
     border-bottom: 1rem solid transparent;
-}
-
-
-.play {
-}
-
-.pause {
 }
 
 .work-card-details {

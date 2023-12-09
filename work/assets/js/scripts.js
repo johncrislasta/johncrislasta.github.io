@@ -300,7 +300,9 @@ function openWorkCard( card ) {
         pauseWorkGallery(e.id);
     });
     card.classList.add('active');
-    card.scrollIntoView();
+    setTimeout(function(){
+        card.scrollIntoView();
+    }, 350);
     playWorkGallery(card.id);
 }
 function closeWorkCard( button ) {
