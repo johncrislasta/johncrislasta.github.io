@@ -233,13 +233,40 @@ async function renderWorkGrid() {
         let div = document.createElement("div");
         let skills = el.skills.join(' | ');
         let workDetails = '';
+        let workGalleryItems = '';
+        let workGalleryDots = '';
+        let workGalleryItemIndex = 2;
         el.work.forEach(function(w) {
             workDetails += `<li>${w}</li>`;
         })
+        el.gallery.forEach(function(g) {
+            workGalleryItems += `<div class="work-card-gallery-item" data-index="${workGalleryItemIndex}" style="background-image: url(assets/img/work/${g})"></div>`;
+            workGalleryDots += `<div class="work-card-gallery-dot" onclick="goToWorkGallerySlide(this)" data-index="${workGalleryItemIndex}"></div>`;
+            workGalleryItemIndex++;
+        });
+        let workGallery = '';
+        if ( el.gallery.length > 0 ) {
+            workGallery = `<div class="work-card-gallery">
+                            <div class="work-card-gallery-item active" data-index="1" style="background-image: url(assets/img/work/${el.featured_image})"></div>
+                            ${workGalleryItems}
+                        </div>
+                        <div class="work-card-gallery-dots">
+                            <div class="work-card-gallery-dot active" onclick="goToWorkGallerySlide(this)" data-index="1"></div>
+                            ${workGalleryDots}
+                            <div class="work-card-gallery-toggle playing" onclick="toggleWorkGallery(this)" data-index="1"></div>
+                        </div>`;
+        }
+
         div.id = "work-card-" + el.id;
         div.className = "work-card";
-        div.innerHTML = `<div class="work-card-inner" onclick="openWorkCard(this)">
+        div.setAttribute("onclick", "openWorkCard(this)");
+        div.innerHTML = `<div class="work-card-inner">
                     <div class="work-card-front" style="background-image: url(assets/img/work/${el.featured_image})">
+                        <div class="work-card-navigation">
+                            <div class="work-card-prev" onclick="showPrevWorkCard()"></div>
+                            <div class="work-card-next" onclick="showNextWorkCard()"></div>
+                        </div>
+                        ${workGallery}
                         <div class="work-card-front-label">
                             <div class="work-card-buttons">
                                 <a href="${el.url}" target="_blank" title="Visit Page">
@@ -247,7 +274,8 @@ async function renderWorkGrid() {
                                 </a>
                                 <i class="button button-close" onclick="event.stopPropagation(); closeWorkCard(this)"></i>
                             </div>
-                            <h4>${el.title}</h4>
+                            <h2>${el.title}</h2>
+                            <h4>${el.summary}</h4>
                             <h6>${skills}</h6>
                             <ul class="work-card-details">
                                 ${workDetails}
@@ -257,22 +285,150 @@ async function renderWorkGrid() {
                 </div>`;
         workSection.appendChild(div);
     });
+
+    initializeWorkGallerySliders();
+
 }
 
 renderWorkGrid();
 
 function openWorkCard( card ) {
-    if( card.parentElement.classList.contains('active') ) return;
+    if( card.classList.contains('active') ) return;
 
-    document.querySelector(`.work-card:not(#${card.parentElement.id})`).classList.remove('active');
-    card.parentElement.classList.add('active');
+    document.querySelectorAll(`.work-card:not(#${card.id})`).forEach(e => {
+        e.classList.remove('active');
+        pauseWorkGallery(e.id);
+    });
+    card.classList.add('active');
     card.scrollIntoView();
+    playWorkGallery(card.id);
 }
 function closeWorkCard( button ) {
-    console.log(button.closest('.work-card').classList.contains('active'))
-    button.closest('.work-card').classList.remove('active');
+    let card = button.closest('.work-card');
+    card.classList.remove('active');
+    pauseWorkGallery(card.id);
+}
+function showPrevWorkCard() {
+    console.log(document.querySelector( '.work-card.active' ).previousElementSibling);
+    document.querySelector( '.work-card.active' ).previousElementSibling.click();
+    event.stopPropagation();
+}
+function showNextWorkCard() {
+    console.log(document.querySelector( '.work-card.active' ).nextElementSibling);
+    document.querySelector('.work-card.active').nextElementSibling.click();
+    event.stopPropagation();
 }
 
+let workGallerySliders = [];
+
+function initializeWorkGallerySliders() {
+    let workCards = document.querySelectorAll('.work-card');
+
+    workCards.forEach(function( card ) {
+        let galleryItems = card.querySelectorAll('.work-card-gallery-item');
+        if ( galleryItems.length <= 1 ) return false;
+        workGallerySliders[card.id] = {
+            index: 1,
+            isPaused: true,
+            slideInterval: null
+        };
+    })
+
+}
+
+let sliderSpeed = 5000;
+
+function gotoWorkGallerySlide(sliderIndex, slideIndex) {
+    console.log('showWorkGallerySlides ' + sliderIndex + "; slide index: " + slideIndex);
+
+    const card = document.querySelector(`#${sliderIndex}`);
+    let galleryItems = card.querySelectorAll('.work-card-gallery-item');
+    if ( galleryItems.length === 1 ) return false;
+
+    console.log('gallery items is more than one');
+
+    let galleryDots = card.querySelectorAll('.work-card-gallery-dot');
+
+    if (slideIndex > galleryItems.length) {
+        slideIndex = 1;
+    }
+    galleryItems.forEach(e => e.classList.remove('active'));
+    galleryDots.forEach(e => e.classList.remove('active'));
+
+    galleryItems[slideIndex - 1].classList.add('active');
+    galleryDots[slideIndex - 1].classList.add('active');
+
+    return slideIndex;
+}
+
+function autoPlayWorkGallerySlides(sliderIndex) {
+
+    const slider = workGallerySliders[sliderIndex];
+    if (!slider.isPaused) {
+
+        console.log('gallery is not paused');
+
+        slider.index++;
+
+        slider.index = gotoWorkGallerySlide(sliderIndex, slider.index);
+
+        slider.slideInterval = setTimeout(() => autoPlayWorkGallerySlides(sliderIndex), sliderSpeed);
+    }
+}
+
+function pauseWorkGallery(sliderIndex) {
+    const slider = workGallerySliders[sliderIndex];
+    console.log(slider);
+    if ( slider === undefined ) return false;
+
+    if ( !slider.isPaused )
+        clearTimeout(slider.slideInterval);
+
+    slider.isPaused = true;
+    const toggle = document.querySelector('#' + sliderIndex ).querySelector('.work-card-gallery-toggle');
+
+    toggle.classList.add('paused');
+    toggle.classList.remove('playing');
+
+}
+
+function playWorkGallery(sliderIndex) {
+    const slider = workGallerySliders[sliderIndex];
+    if ( slider === undefined ) return false;
+
+    if ( slider.isPaused ) {
+        console.log('slider should now play');
+        setTimeout(() => autoPlayWorkGallerySlides(sliderIndex), sliderSpeed);
+    }
+
+    const toggle = document.querySelector('#' + sliderIndex ).querySelector('.work-card-gallery-toggle');
+
+    toggle.classList.add('playing');
+    toggle.classList.remove('paused');
+
+    slider.isPaused = false;
+}
+
+function goToWorkGallerySlide(dot) {
+    let n = dot.dataset.index;
+    let sliderIndex = dot.closest('.work-card').id;
+
+    const slider = workGallerySliders[sliderIndex];
+    pauseWorkGallery(sliderIndex);
+    slider.index = n;
+    gotoWorkGallerySlide(sliderIndex, slider.index);
+}
+
+function toggleWorkGallery( toggle ) {
+    let sliderIndex = toggle.closest('.work-card').id;
+
+    const slider = workGallerySliders[sliderIndex];
+    if( slider.isPaused ) {
+        playWorkGallery(sliderIndex);
+    } else {
+        pauseWorkGallery(sliderIndex);
+    }
+}
 
 function getCurrentDateTime(){
     let currentdate = new Date();
