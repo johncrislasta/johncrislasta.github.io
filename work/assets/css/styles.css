@@ -634,6 +634,12 @@ section#work > .work-card.active {
 
 .work-card-buttons {
     display: flex;
+    position: sticky;
+    margin: -10px;
+    padding: 10px;
+    top: -10px;
+    background: rgb(255,255,255);
+    background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
 }
 
 .work-card-buttons .button-close{
