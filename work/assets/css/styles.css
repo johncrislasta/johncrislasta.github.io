@@ -188,12 +188,6 @@ header {
     100% { background-position: 100vh 100vh; }
 }
 
-@media screen and (orientation:portrait) {
-    #match-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
 /* The flip card container - set the width and height to whatever you want. We have added the border property to demonstrate that the flip itself goes out of the box on hover (remove perspective if you don't want the 3D effect */
 .static-card,
 .flip-card {
@@ -211,7 +205,8 @@ header {
 
 .static-card span {
     display: inline-block;
-    font-size: 100px;
+    font-size: 12.5vw;
+    line-height: 1;
     margin: auto;
 }
 
@@ -331,6 +326,16 @@ header {
     animation: tada 1.1s infinite;
 }
 
+@media screen and (orientation:portrait) {
+    #match-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .static-card span {
+        font-size: 25vw;
+    }
+}
+
 /*-----------------------------
  * END - Match Two Styles
  *--------------------------- */
@@ -419,6 +424,10 @@ section#work:has(.work-card.active ) {
     padding-top: 100vh;
 }
 
+body:has(.work-card.active ) section:not(#work) {
+    display: none;
+}
+
 section#work > .work-card.active {
     position: fixed;
     inset: 0;
@@ -455,7 +464,7 @@ section#work > .work-card.active {
     background: rgba(255, 255, 255, 0.8);
     margin-top: auto;
     padding: 10px;
-    transition: all .3s linear;
+    transition: all 0.1s linear;
     box-sizing: border-box;
     z-index: 3;
 }
@@ -483,6 +492,7 @@ section#work > .work-card.active {
     width: 100%;
     height: 100%;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.5s ease-in-out;
     position: absolute;
 }
@@ -609,6 +619,7 @@ section#work > .work-card.active {
 .work-card.active .work-card-gallery-item.active {
     display: block;
     opacity: 1;
+    pointer-events: all;
 }
 .work-card.active .work-card-gallery-dot.active {
     transform: rotate(45deg);
@@ -634,6 +645,7 @@ section#work > .work-card.active {
 
 .work-card-buttons {
     display: flex;
+    gap: 1rem;
     position: sticky;
     margin: -10px;
     padding: 10px;
@@ -642,13 +654,45 @@ section#work > .work-card.active {
     background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
 }
 
-.work-card-buttons .button-close{
+.work-card-buttons .button-zoom,
+.work-card-buttons .button-info
+{
+    display: none;
+}
+
+.work-card-buttons .button-close {
     display: none;
     margin-left: auto;
 }
-
+.work-card.active .button-zoom,
 .work-card.active .button-close {
     display: inline-block;
+}
+section#work > .work-card.active:has(.zoom) {
+    z-index: 3;
+}
+.work-card.active .work-card-front.zoom,
+.work-card.active .work-card-front.zoom .work-card-gallery-item {
+    background-size: cover;
+    background-position: top left;
+}
+.work-card.active .work-card-front.zoom .button-info {
+    display: inline-block;
+}
+.work-card.active .work-card-front.zoom .work-card-front-label {
+    height: 54px;
+    background: transparent;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+.work-card.active .work-card-front.zoom .work-card-front-label .work-card-buttons {
+    background: transparent;
+}
+.work-card.active .work-card-front.zoom .button-zoom,
+.work-card.active .work-card-front.zoom .button-close,
+.work-card.active .work-card-front.zoom .work-card-navigation {
+    display: none;
 }
 
 
@@ -674,6 +718,7 @@ section#work > .work-card.active {
     .work-card.active .work-card-front-label {
         margin: auto auto 0;
         width: 100%;
+        overflow-y: auto;
     }
 
 }
@@ -721,9 +766,19 @@ i.button.button-globe:before {
     font-size: 20px;
 }
 
-i.button.button-new-window:before {
+i.button.button-launch:before {
     content: '\1F680';
     font-size: 20px;
+}
+
+i.button.button-zoom:before {
+    content: "\1F50E";
+    font-size: 22px;
+}
+
+i.button.button-info:before {
+    content: "\1F4C4";
+    font-size: 22px;
 }
 
 /*-----------------------------

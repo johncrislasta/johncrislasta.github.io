@@ -270,8 +270,10 @@ async function renderWorkGrid() {
                         <div class="work-card-front-label">
                             <div class="work-card-buttons">
                                 <a href="${el.url}" target="_blank" title="Visit Page">
-                                    <i class="button button-new-window"></i>
+                                    <i class="button button-launch"></i>
                                 </a>
+                                <i class="button button-zoom" onclick="event.stopPropagation(); zoomInWorkCardImages(this)"></i>
+                                <i class="button button-info" onclick="event.stopPropagation(); zoomOutWorkCardImages(this)"></i>
                                 <i class="button button-close" onclick="event.stopPropagation(); closeWorkCard(this)"></i>
                             </div>
                             <h2>${el.title}</h2>
@@ -379,7 +381,6 @@ function autoPlayWorkGallerySlides(sliderIndex) {
 
 function pauseWorkGallery(sliderIndex) {
     const slider = workGallerySliders[sliderIndex];
-    console.log(slider);
     if ( slider === undefined ) return false;
 
     if ( !slider.isPaused )
@@ -431,6 +432,40 @@ function toggleWorkGallery( toggle ) {
     }
 }
 
+function zoomInWorkCardImages( button ) {
+    const workCardFront = button.closest('.work-card-front');
+    const workCardGallery = workCardFront.querySelectorAll('.work-card-gallery-item');
+
+    workCardFront.classList.add('zoom');
+    if( workCardFront.dataset.backgroundPosition )
+        workCardFront.style.backgroundPosition = workCardFront.dataset.backgroundPosition;
+
+    AttachDragBGTo(workCardFront);
+
+    workCardGallery.forEach(function(item){
+        if( item.dataset.backgroundPosition )
+            item.style.backgroundPosition = item.dataset.backgroundPosition;
+        AttachDragBGTo(item);
+    });
+}
+
+function zoomOutWorkCardImages( button ) {
+    const workCardFront = button.closest('.work-card-front');
+    const workCardGallery = workCardFront.querySelectorAll('.work-card-gallery-item');
+
+    workCardFront.classList.remove('zoom');
+
+    workCardFront.dataset.backgroundPosition = workCardFront.style.backgroundPosition
+    workCardFront.style.backgroundPosition = ''; // Remove background position
+
+    workCardGallery.forEach(function(item){
+        item.dataset.backgroundPosition = item.style.backgroundPosition
+        item.style.backgroundPosition = ''; // Remove background position
+    });
+
+    workSection.scrollIntoView();
+}
+
 function getCurrentDateTime(){
     let currentdate = new Date();
     let datetime = currentdate.getDate() + "/"
@@ -441,3 +476,84 @@ function getCurrentDateTime(){
         + currentdate.getSeconds();
     return datetime;
 }
+
+let AttachDragBGTo = (function () {
+    let _AttachDragBGTo = function (el) {
+        this.el = el;
+        this.mouse_is_down = false;
+
+        this.init();
+    };
+
+    _AttachDragBGTo.prototype = {
+        onMousemove: function (e) {
+            if ( !this.mouse_is_down ) return;
+            let tg = e.target,
+                x = e.clientX,
+                y = e.clientY;
+
+            tg.style.backgroundPositionX = x - this.origin_x + this.origin_bg_pos_x + 'px';
+            tg.style.backgroundPositionY = y - this.origin_y + this.origin_bg_pos_y + 'px';
+        },
+
+        onTouchmove: function (e) {
+            console.log('touch is moving: ', e);
+            if ( !this.mouse_is_down ) return;
+            let tg = e.target,
+                x = e.changedTouches[0].clientX,
+                y = e.changedTouches[0].clientY;
+
+            tg.style.backgroundPositionX = x - this.origin_x + this.origin_bg_pos_x + 'px';
+            tg.style.backgroundPositionY = y - this.origin_y + this.origin_bg_pos_y + 'px';
+        },
+
+        onMousedown: function(e) {
+            this.mouse_is_down = true;
+            this.origin_x = e.clientX;
+            this.origin_y = e.clientY;
+        },
+
+        onTouchstart: function(e) {
+            this.mouse_is_down = true;
+            this.origin_x = e.changedTouches[0].clientX;
+            this.origin_y = e.changedTouches[0].clientY;
+        },
+
+        onMouseup: function(e) {
+            let tg = e.target,
+                styles = getComputedStyle(tg);
+
+            this.mouse_is_down = false;
+            this.origin_bg_pos_x = parseInt(styles.getPropertyValue('background-position-x'), 10);
+            this.origin_bg_pos_y = parseInt(styles.getPropertyValue('background-position-y'), 10);
+        },
+
+        onTouchend: function(e) {
+            let tg = e.target,
+                styles = getComputedStyle(tg);
+
+            this.mouse_is_down = false;
+            this.origin_bg_pos_x = parseInt(styles.getPropertyValue('background-position-x'), 10);
+            this.origin_bg_pos_y = parseInt(styles.getPropertyValue('background-position-y'), 10);
+        },
+
+        init: function () {
+            let styles = getComputedStyle(this.el);
+            this.origin_bg_pos_x = parseInt(styles.getPropertyValue('background-position-x'), 10);
+            this.origin_bg_pos_y = parseInt(styles.getPropertyValue('background-position-y'), 10);
+
+            //attach events
+            this.el.addEventListener('mousedown', this.onMousedown.bind(this), false);
+            this.el.addEventListener('mouseup', this.onMouseup.bind(this), false);
+            this.el.addEventListener('mousemove', this.onMousemove.bind(this), false);
+
+            this.el.addEventListener('touchstart', this.onTouchstart.bind(this), false);
+            this.el.addEventListener('touchend', this.onTouchend.bind(this), false);
+            this.el.addEventListener('touchmove', this.onTouchmove.bind(this), false);
+        }
+    };
+
+    return function ( el ) {
+        new _AttachDragBGTo(el);
+    };
+})();
