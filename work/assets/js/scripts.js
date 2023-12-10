@@ -300,15 +300,14 @@ function openWorkCard( card ) {
         pauseWorkGallery(e.id);
     });
     card.classList.add('active');
-    setTimeout(function(){
-        card.scrollIntoView();
-    }, 350);
+    workSection.scrollIntoView();
     playWorkGallery(card.id);
 }
 function closeWorkCard( button ) {
     let card = button.closest('.work-card');
     card.classList.remove('active');
     pauseWorkGallery(card.id);
+    workSection.scrollIntoView();
 }
 function showPrevWorkCard() {
     console.log(document.querySelector( '.work-card.active' ).previousElementSibling);

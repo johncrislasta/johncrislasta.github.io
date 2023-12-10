@@ -411,14 +411,22 @@ section#work > .work-card {
     min-width: 0;
     min-height: 0;
     cursor: pointer;
+    z-index: 2;
+}
+
+section#work:has(.work-card.active ) {
+    padding-top: 100vh;
 }
 
 section#work > .work-card.active {
+    position: fixed;
+    inset: 0;
     width: 100vw;
     height: 100vh;
     flex-basis: 100%;
     aspect-ratio: auto;
     cursor: initial;
+    z-index: 1;
 }
 
 .work-card:hover .work-card-front {
