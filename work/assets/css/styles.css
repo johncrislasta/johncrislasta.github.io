@@ -412,6 +412,7 @@ section#work > .work-card {
     min-height: 0;
     cursor: pointer;
     z-index: 2;
+    box-shadow: 0 0 1rem;
 }
 
 section#work:has(.work-card.active ) {
