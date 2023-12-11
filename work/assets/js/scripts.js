@@ -435,6 +435,9 @@ function toggleWorkGallery( toggle ) {
 function zoomInWorkCardImages( button ) {
     const workCardFront = button.closest('.work-card-front');
     const workCardGallery = workCardFront.querySelectorAll('.work-card-gallery-item');
+    const sliderIndex = workCardFront.closest('.work-card').id;
+
+    pauseWorkGallery( sliderIndex );
 
     workCardFront.classList.add('zoom');
     if( workCardFront.dataset.backgroundPosition )

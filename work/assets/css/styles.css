@@ -680,11 +680,11 @@ section#work > .work-card.active:has(.zoom) {
     display: inline-block;
 }
 .work-card.active .work-card-front.zoom .work-card-front-label {
-    height: 54px;
+    height: 66px;
     background: transparent;
     width: 100%;
+    margin: auto auto 0;
     overflow: hidden;
-    margin-bottom: 0;
 }
 .work-card.active .work-card-front.zoom .work-card-front-label .work-card-buttons {
     background: transparent;
