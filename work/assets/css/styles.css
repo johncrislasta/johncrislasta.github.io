@@ -270,38 +270,62 @@ header {
     animation: filter 1s linear;
 }
 
-[data-back="PHP"] .flip-card-back {
-    background-image: url("../img/logos/PHP.png");
+[data-back="BeaverBuilder"] .flip-card-back {
+    background-image: url("../img/logos/BeaverBuilder.png");
 }
-[data-back="JavaScript"] .flip-card-back {
-    background-image: url("../img/logos/JavaScript.png");
+[data-back="CakePHP"] .flip-card-back {
+    background-image: url("../img/logos/CakePHP.png");
 }
-[data-back="HTML"] .flip-card-back {
-    background-image: url("../img/logos/HTML.png");
+[data-back="CodeIgniter"] .flip-card-back {
+    background-image: url("../img/logos/CodeIgniter.png");
+}
+[data-back="Cornerstone"] .flip-card-back {
+    background-image: url("../img/logos/Cornerstone.png");
 }
 [data-back="CSS"] .flip-card-back {
     background-image: url("../img/logos/CSS.png");
 }
-[data-back="WordPress"] .flip-card-back {
-    background-image: url("../img/logos/WordPress.png");
-}
-[data-back="ReactJS"] .flip-card-back {
-    background-image: url("../img/logos/ReactJS.png");
-}
-[data-back="WPBakery"] .flip-card-back {
-    background-image: url("../img/logos/WPBakery.png");
-}
 [data-back="Elementor"] .flip-card-back {
     background-image: url("../img/logos/Elementor.png");
 }
-[data-back="SEO"] .flip-card-back {
-    background-image: url("../img/logos/SEO.png");
+[data-back="GTM"] .flip-card-back {
+    background-image: url("../img/logos/GTM.png");
+}
+[data-back="HTML"] .flip-card-back {
+    background-image: url("../img/logos/HTML.png");
+}
+[data-back="JavaScript"] .flip-card-back {
+    background-image: url("../img/logos/JavaScript.png");
+}
+[data-back="jQuery"] .flip-card-back {
+    background-image: url("../img/logos/jQuery.png");
+}
+[data-back="Laravel"] .flip-card-back {
+    background-image: url("../img/logos/Laravel.png");
 }
 [data-back="MySQL"] .flip-card-back {
     background-image: url("../img/logos/MySQL.png");
 }
-[data-back="jQuery"] .flip-card-back {
-    background-image: url("../img/logos/jQuery.png");
+[data-back="PHP"] .flip-card-back {
+    background-image: url("../img/logos/PHP.png");
+}
+[data-back="ReactJS"] .flip-card-back {
+    background-image: url("../img/logos/ReactJS.png");
+}
+[data-back="ThemeCo-Pro"] .flip-card-back {
+    background-image: url("../img/logos/ThemeCo-Pro.png");
+}
+[data-back="WooCommerce"] .flip-card-back {
+    background-image: url("../img/logos/WooCommerce.png");
+}
+[data-back="WordPress"] .flip-card-back {
+    background-image: url("../img/logos/WordPress.png");
+}
+[data-back="WP-Plugin"] .flip-card-back {
+    background-image: url("../img/logos/WP-Plugin.png");
+}
+[data-back="WPBakery"] .flip-card-back {
+    background-image: url("../img/logos/WPBakery.png");
 }
 
 @keyframes tada {

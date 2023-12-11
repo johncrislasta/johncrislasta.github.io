@@ -1,7 +1,44 @@
-let matchItems = ['PHP', 'JavaScript', 'HTML', 'CSS', 'WordPress', 'jQuery', 'WPBakery', 'Elementor', 'SEO', 'MySQL'];
+let skills = {};
+// Fetch the JSON file
+let skillsJsonFilePath = "data/skills.json";
+let coreSkills = ['PHP', 'JavaScript', 'HTML', 'CSS', 'WordPress'];
+let otherSkills = [];
+fetch(skillsJsonFilePath)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Failed to fetch ${skillsJsonFilePath}`);
+        }
+        return response.json();
+    })
+    .then(jsonObject => {
+        skills = jsonObject;
+
+        let skillsArray = Object.keys(skills);
+        otherSkills =  skillsArray.filter( function( el ) {
+            return !coreSkills.includes( el );
+        } );
+
+        reshuffleMatchGrid();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+
+// Randomly select from the remaining skills to add into Match items
+function getRandomSkills( skillSet, count ) {
+    const shuffled = skillSet.sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
+}
+
+function getSkillsForMatchItems() {
+    let matchItems = coreSkills.concat( getRandomSkills ( otherSkills, 5 ) );
+    let duplicateMatchItems = [].concat(matchItems, matchItems);
+    return duplicateMatchItems.sort(() => Math.random() - 0.5);
+
+}
 // let matchItems = ['PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP'];
 let staticItems = ['J', 'C', 'Y', 'L'];
-let duplicateMatchItems = [].concat(matchItems, matchItems);
 const matchFeedback = {
     'didNotBother': "Thanks for scrolling through! If you haven't tried the match-two game yet, give it a shot—it's a fun way to uncover the tech tools I love using.",
     'triedALittle': "Hey there! I noticed you gave the match-two game a go—awesome! Feel free to take another shot when you have a minute. It's a little sneak peek into my love for problem-solving.",
@@ -13,32 +50,12 @@ const matchFeedback = {
 }
 let matchFeedbackKey = 'didNotBother';
 
-function shuffle(array) {
-    let currentIndex = array.length,  randomIndex;
-
-    // While there remain elements to shuffle.
-    while (currentIndex > 0) {
-
-        // Pick a remaining element.
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-    }
-
-    return array;
-}
-
 const grid = document.querySelector('#match-grid');
 let shuffledMatchItems = [];
 let flippedCard = [];
 let solvedCards = [];
 let numberOfFlips = 0;
 let numberOfSolves = getNumOfSolves() ?? 0;
-
-reshuffleMatchGrid();
 
 function reshuffleMatchGrid() {
     updateLeastFlips( numberOfFlips );
@@ -48,7 +65,7 @@ function reshuffleMatchGrid() {
     solvedCards = [];
     numberOfFlips = 0;
 
-    shuffledMatchItems = shuffle(duplicateMatchItems);
+    shuffledMatchItems = getSkillsForMatchItems();
 
     shuffledMatchItems.forEach(function(el) {
         let div = document.createElement("div");
@@ -56,7 +73,7 @@ function reshuffleMatchGrid() {
         div.innerHTML = `<div class="flip-card-inner" onclick="openCard(this)" data-back="${el}">
                     <div class="flip-card-front">
                     </div>
-                    <div class="flip-card-back">
+                    <div class="flip-card-back" title="${skills[el].title}">
                         <h1>${el}</h1>
                     </div>
                 </div>`;
@@ -85,7 +102,6 @@ function openCard( card ) {
     if( flippedCard.length === 2) {
         grid.classList.add('locked');
 
-        console.log([flippedCard[0].dataset.back === card.dataset.back , flippedCard[0].dataset.back, card.dataset.back ])
         // Check if they match
         if ( flippedCard[0].dataset.back === card.dataset.back ) {
             setTimeout(function(){
