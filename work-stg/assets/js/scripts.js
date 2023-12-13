@@ -21,6 +21,7 @@ fetch(skillsJsonFilePath)
         reshuffleMatchGrid();
 
         renderSkillsCloud();
+        renderSkillsCloud();
     })
     .catch(error => {
         console.error('Error:', error);
@@ -247,14 +248,15 @@ matchGridFeedbackObserver.observe( document.querySelector('#intro') )
 // To stop observing:
 // observer.unobserve(entry.target)
 
-const workSection = document.querySelector('section#work');
-
+/* --------------------
+/* Skills Cloud - Start
+/* -------------------- */
 const skillsContainer = document.getElementById('skillsCloud');
 const containerWidth = skillsContainer.offsetWidth;
 const containerHeight = skillsContainer.offsetHeight;
 
 // Variables to track the dragging state
-let isDragging = false;
+let isDraggingSkill = false;
 let offset = { x: 0, y: 0 };
 let draggedSkill = null;
 
@@ -277,13 +279,13 @@ function renderSkillsCloud() {
 
         // Add mousedown event listener to start dragging
         skillDiv.addEventListener('mousedown', (event) => {
-            isDragging = true;
+            isDraggingSkill = true;
             draggedSkill = skillDiv;
             offset = {
                 x: event.clientX - skillDiv.offsetLeft,
                 y: event.clientY - skillDiv.offsetTop
             };
-            // console.log(draggedSkill, offset, event.clientY)
+            console.log('drag started', draggedSkill, offset, event.clientY)
         });
 
 
@@ -297,7 +299,7 @@ function renderSkillsCloud() {
             attempts++;
         } while (checkOverlap(positionX, positionY, skillDiv) && attempts < 10);
         let hasOverlapped = checkOverlap(positionX, positionY, skillDiv );
-        console.log('hasOverlapped', hasOverlapped);
+        // console.log('hasOverlapped', hasOverlapped);
 
 
         positionX = ( positionX / containerWidth ) * 100;
@@ -323,20 +325,20 @@ function renderSkillsCloud() {
         // Check if overflowing container
         return x + size.width > containerWidth ||
             y + size.height > containerHeight;
-         // Not overlapping
+        // Not overlapping
     }
 
     function elementsOverlap(el1, el2) {
         const domRect1 = el1.getBoundingClientRect();
         const domRect2 = el2.getBoundingClientRect();
 
-        console.log(domRect1.top > domRect2.bottom,
-            domRect1.right < domRect2.left,
-            domRect1.bottom < domRect2.top,
-            domRect1.left > domRect2.right,
-            domRect1,
-            domRect2
-            )
+        // console.log(domRect1.top > domRect2.bottom,
+        //     domRect1.right < domRect2.left,
+        //     domRect1.bottom < domRect2.top,
+        //     domRect1.left > domRect2.right,
+        //     domRect1,
+        //     domRect2
+        //     )
 
         return !(
             domRect1.top > domRect2.bottom ||
@@ -358,7 +360,7 @@ function renderSkillsCloud() {
 }
 // Add mousemove and mouseup event listeners to handle dragging
 skillsContainer.addEventListener('mousemove', (event) => {
-    if (isDragging && draggedSkill) {
+    if (isDraggingSkill && draggedSkill) {
         const x = event.clientX - offset.x;
         const y = event.clientY - offset.y;
         // console.log(draggedSkill, x, y);
@@ -368,9 +370,208 @@ skillsContainer.addEventListener('mousemove', (event) => {
 });
 
 skillsContainer.addEventListener('mouseup', () => {
-    isDragging = false;
+    isDraggingSkill = false;
     draggedSkill = null;
 });
+
+/* --------------------
+/* Skills Cloud - End
+/* -------------------- */
+
+
+/* --------------------
+/* Hero Cubes - Start
+/* -------------------- */
+
+class Cube {
+    constructor(cubeId, containerId, faceLabels = ['front', 'back', 'right', 'left', 'top', 'bottom']) {
+        this.isDragging = false;
+        this.previousX = 0;
+        this.previousY = 0;
+        this.currentX = 0;
+        this.currentY = 0;
+        this.rotationX = 0;
+        this.rotationY = 0;
+
+        this.container = document.getElementById(containerId);
+        this.faceLabels = faceLabels;
+        this.id = cubeId;
+        this.createCube();
+        this.addEventListeners();
+    }
+
+    createCube() {
+        this.cube = document.createElement('div');
+        this.cube.id = this.id;
+        this.cube.className = 'cube show-front';
+        const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+
+        let faceLabelsIdx = 0;
+        faces.forEach((face) => {
+            let faceLabel = this.faceLabels[faceLabelsIdx];
+            const faceElement = document.createElement('div');
+            faceElement.className = `cube__face cube__face--${face}`;
+            faceElement.textContent = faceLabel;
+            faceElement.dataset.label = faceLabel;
+            this.cube.appendChild(faceElement);
+            faceLabelsIdx++;
+        });
+
+        this.container.appendChild(this.cube);
+    }
+
+    addEventListeners() {
+        document.addEventListener('mousedown', (e) => {
+            if( e.target.classList.contains('cube__face') ){
+                this.isDragging = true;
+                this.previousX = e.clientX;
+                this.previousY = e.clientY;
+                this.cube.className = 'cube';
+            } else {
+                this.isDragging = false;
+            }
+        });
+
+        document.addEventListener('touchstart', (e) => {
+            if( e.target.classList.contains('cube__face') ){
+                this.isDragging = true;
+                this.previousX = e.changedTouches[0].clientX;
+                this.previousY = e.changedTouches[0].clientY;
+                this.cube.className = 'cube';
+                e.stopPropagation();
+            } else {
+                this.isDragging = false;
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!this.isDragging) return;
+
+            this.currentX = e.clientX;
+            this.currentY = e.clientY;
+
+            const deltaX = this.currentX - this.previousX;
+            const deltaY = this.currentY - this.previousY;
+
+            this.rotationY += deltaX * 0.5;
+            this.rotationX -= deltaY * 0.5;
+
+            this.cube.style.transform = `rotateX(${this.rotationX}deg) rotateY(${this.rotationY}deg)`;
+
+            this.previousX = this.currentX;
+            this.previousY = this.currentY;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!this.isDragging) return;
+
+            this.currentX = e.changedTouches[0].clientX;
+            this.currentY = e.changedTouches[0].clientY;
+
+            const deltaX = this.currentX - this.previousX;
+            const deltaY = this.currentY - this.previousY;
+
+            this.rotationY += deltaX * 0.5;
+            this.rotationX -= deltaY * 0.5;
+
+            this.cube.style.transform = `rotateX(${this.rotationX}deg) rotateY(${this.rotationY}deg)`;
+
+            this.previousX = this.currentX;
+            this.previousY = this.currentY;
+        });
+
+        document.addEventListener('mouseup', () => {
+            this.isDragging = false;
+
+            let face = this.getFacingFace(this.rotationX, this.rotationY);
+            this.cube.classList.add('show-' + face);
+            this.cube.dataset.face = face;
+            this.cube.dispatchEvent(new Event('cubeRotated') );
+        });
+
+        document.addEventListener('touchend', () => {
+            this.isDragging = false;
+
+            let face = this.getFacingFace(this.rotationX, this.rotationY);
+            this.cube.classList.add('show-' + face);
+            this.cube.dataset.face = face;
+            this.cube.dispatchEvent(new Event('cubeRotated') );
+        });
+    }
+
+    getFacingFace(rotationX, rotationY) {
+        // Define threshold values for each face
+        const threshold = 45;
+
+        // Normalize rotation values to be within the range [0, 360)
+        rotationX = (rotationX % 360 + 360) % 360;
+        rotationY = (rotationY % 360 + 360) % 360;
+
+        // Check each face based on rotation angles
+        if (rotationX >= 90 - threshold && rotationX < 90 + threshold) {
+            return 'bottom';
+        } else if (rotationX >= 270 - threshold && rotationX < 270 + threshold) {
+            return 'top';
+        } else if (rotationY < threshold || rotationY >= 360 - threshold) {
+            return 'front';
+        } else if (rotationY >= 90 - threshold && rotationY < 90 + threshold) {
+            return 'left';
+        } else if (rotationY >= 180 - threshold && rotationY < 180 + threshold) {
+            return 'back';
+        } else if (rotationY >= 270 - threshold && rotationY < 270 + threshold) {
+            return 'right';
+        }
+
+        // If rotationY doesn't fall into any specific range, return null or a default face
+        return 'unknown';
+    }
+
+    autoRotate() {
+        this.rotationY += 1;
+        this.cube.style.transform = `rotateX(${this.rotationX}deg) rotateY(${this.rotationY}deg)`;
+
+        requestAnimationFrame(() => this.autoRotate());
+    }
+}
+
+const cube1Faces = ['John', 'Wo', 'Web', 'In', 'Prob', 'J'];
+const cube1 = new Cube('cube1', 'cube-scene-1', cube1Faces);
+
+const cube2Faces = ['Cris', 'rd', 'Dev', 'no', 'lem', 'C'];
+const cube2 = new Cube('cube2', 'cube-scene-2', cube2Faces);
+
+const cube3Faces = ['Yañez', 'Pr', 'elo', 'va', 'Sol', 'Y'];
+const cube3 = new Cube('cube3', 'cube-scene-3', cube3Faces);
+
+
+const cube4Faces = ['Lasta', 'ess', 'per', 'ting', 'ver', 'L'];
+const cube4 = new Cube('cube4', 'cube-scene-4', cube4Faces);
+
+const heroTitles = ['My name is', 'I am a', 'I love', 'I am always', 'I\'m a huge', 'I am']
+const autoAnimateCubeFace = ['front', 'right', 'back', 'left', 'top', 'bottom'];
+
+const heroTitle = document.querySelector('#heroTitle');
+
+for( let i = 1; i <= 5; i++ ){
+    setTimeout(function(){
+        document.querySelectorAll('.cube').forEach(function(cube){
+            cube.className = 'cube show-' + autoAnimateCubeFace[i];
+        });
+        heroTitle.innerHTML = heroTitles[i];
+    }, 2000 * i )
+}
+
+
+document.querySelectorAll('.cube').forEach( (cube) =>{
+    cube.addEventListener("cubeRotated", function (e) {
+        heroTitle.innerHTML = heroTitles[ autoAnimateCubeFace.indexOf( e.target.dataset.face )];
+    });
+});
+
+
+/* --------------------
+/* Hero Cubes - End
+/* -------------------- */
 
 // Parallax effect on scroll
 window.addEventListener('scroll', function () {
@@ -383,6 +584,8 @@ window.addEventListener('scroll', function () {
         skillDiv.style.transform = `translateY(${translateY}px)`;
     });
 });
+
+const workSection = document.querySelector('section#work');
 
 async function renderWorkGrid() {
     const response = await fetch("data/highlighted-work.json");
