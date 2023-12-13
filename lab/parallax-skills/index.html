@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #skills-container {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .skill {
+            position: absolute;
+            white-space: nowrap;
+            color: #333;
+            transition: all 0.2s cubic-bezier(0, 0, 0, 2.5);
+            cursor: grab;
+        }
+        section {
+            height: 100vh;
+            width: 100%;
+        }
+        #about {
+            background: blue;
+        }
+        #contact {
+            background: red;
+        }
+    </style>
+    <title>Parallax Skills with Draggable</title>
+</head>
+<body>
+
+<div id="skills-container"></div>
+<section id="about"></section>
+<section id="contact"></section>
+
+<script>
+    const skillsData = {
+        "PHP": {
+            "title": "PHP",
+            "years": 13
+        },
+        "JavaScript": {
+            "title": "JavaScript",
+            "years": 13
+        },
+        "HTML": {
+            "title": "HTML5",
+            "years": 13
+        },
+        "CSS": {
+            "title": "CSS3",
+            "years": 13
+        },
+        "WordPress": {
+            "title": "WordPress",
+            "years": 7
+        },
+        "WP-Plugin-Development": {
+            "title": "WP Plugin Development",
+            "years": 7
+        },
+        "jQuery": {
+            "title": "jQuery",
+            "years": 11
+        },
+        "WPBakery": {
+            "title": "WPBakery",
+            "years": 3
+        },
+        "Elementor": {
+            "title": "Elementor",
+            "years": 3
+        },
+        "BeaverBuilder": {
+            "title": "Beaver Builder",
+            "years": 3
+        },
+        "ThemeCo-Pro": {
+            "title": "ThemeCo's Pro Theme",
+            "years": 1
+        },
+        "Cornerstone": {
+            "title": "ThemeCo's Cornerstone",
+            "years": 1
+        },
+        "ReactJS": {
+            "title": "ReactJS",
+            "years": 1
+        },
+        "Laravel": {
+            "title": "Laravel",
+            "years": 2
+        },
+        "CodeIgniter": {
+            "title": "CodeIgniter",
+            "years": 2
+        },
+        "CakePHP": {
+            "title": "CakePHP",
+            "years": 2
+        },
+        "Git": {
+            "title": "Git",
+            "years": 3
+        }
+    };
+
+    const skillsContainer = document.getElementById('skills-container');
+
+    // Variables to track the dragging state
+    let isDragging = false;
+    let offset = { x: 0, y: 0 };
+    let draggedSkill = null;
+
+    // Create skill divs based on the JSON data
+    for (const skill in skillsData) {
+        const skillDiv = document.createElement('div');
+        skillDiv.dataset.id = skill;
+        skillDiv.className = 'skill';
+        skillDiv.textContent = skillsData[skill].title;
+        skillsContainer.appendChild(skillDiv);
+
+        // Set font size based on years
+        const fontSize = 16 + skillsData[skill].years * 2; // Adjust the multiplier as needed
+        skillDiv.style.fontSize = `${fontSize}px`;
+
+        // Position skill divs randomly within the container
+        const randomX = Math.random() * (100 - fontSize);
+        const randomY = Math.random() * (100 - fontSize);
+        skillDiv.style.left = `${randomX}vw`;
+        skillDiv.style.top = `${randomY}vh`;
+
+        // Add mousedown event listener to start dragging
+        skillDiv.addEventListener('mousedown', (event) => {
+            isDragging = true;
+            draggedSkill = skillDiv;
+            offset = {
+                x: event.clientX - skillDiv.getBoundingClientRect().left,
+                y: event.clientY - skillDiv.offsetTop
+            };
+            console.log(draggedSkill, offset, event.clientY)
+        });
+    }
+
+    // Add mousemove and mouseup event listeners to handle dragging
+    document.addEventListener('mousemove', (event) => {
+        if (isDragging && draggedSkill) {
+            const x = event.clientX - offset.x;
+            const y = event.clientY - offset.y;
+            console.log(draggedSkill, x, y);
+            draggedSkill.style.left = `${x}px`;
+            draggedSkill.style.top = `${y}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        draggedSkill = null;
+    });
+
+    // Parallax effect on scroll
+    window.addEventListener('scroll', function () {
+        const scrollY = window.scrollY;
+
+        // Translate skill divs on the Y-axis based on scroll and years
+        document.querySelectorAll('.skill').forEach(skillDiv => {
+            const speed = skillsData[skillDiv.dataset.id].years / 5; // Adjust the divisor as needed
+            const translateY = scrollY * speed;
+            skillDiv.style.transform = `translateY(${translateY}px)`;
+        });
+    });
+</script>
+
+</body>
+</html>

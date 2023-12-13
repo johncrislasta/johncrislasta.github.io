@@ -19,6 +19,8 @@ fetch(skillsJsonFilePath)
         } );
 
         reshuffleMatchGrid();
+
+        renderSkillsCloud();
     })
     .catch(error => {
         console.error('Error:', error);
@@ -74,7 +76,7 @@ function reshuffleMatchGrid() {
                     <div class="flip-card-front">
                     </div>
                     <div class="flip-card-back" title="${skills[el].title}">
-                        <h1>${el}</h1>
+                        <h1>${skills[el].title}</h1>
                     </div>
                 </div>`;
         grid.appendChild(div);
@@ -87,7 +89,12 @@ function reshuffleMatchGrid() {
         grid.appendChild(div);
     });
 
+    adjustMatchBackTitleFontSizes();
 }
+
+// Call the adjustFontSize function initially and on window resize
+window.addEventListener('resize', adjustMatchBackTitleFontSizes);
+
 
 function openCard( card ) {
     if ( grid.classList.contains( 'locked' ) ) return false;
@@ -242,6 +249,141 @@ matchGridFeedbackObserver.observe( document.querySelector('#intro') )
 
 const workSection = document.querySelector('section#work');
 
+const skillsContainer = document.getElementById('skillsCloud');
+const containerWidth = skillsContainer.offsetWidth;
+const containerHeight = skillsContainer.offsetHeight;
+
+// Variables to track the dragging state
+let isDragging = false;
+let offset = { x: 0, y: 0 };
+let draggedSkill = null;
+
+function renderSkillsCloud() {
+    // Create skill divs based on the JSON data
+    for (const skill in skills) {
+        const skillDiv = document.createElement('div');
+        skillDiv.dataset.id = skill;
+        skillDiv.dataset.years = skills[skill].years;
+        skillDiv.className = 'skill';
+        skillDiv.textContent = skills[skill].title;
+        skillsContainer.appendChild(skillDiv);
+
+        // Set font size based on years
+        const fontSize = 16 + skills[skill].years * 2; // Adjust the multiplier as needed
+        skillDiv.style.fontSize = `${fontSize}px`;
+
+        // Position skill divs randomly within the container
+        positionSkillDiv(skillDiv, fontSize);
+
+        // Add mousedown event listener to start dragging
+        skillDiv.addEventListener('mousedown', (event) => {
+            isDragging = true;
+            draggedSkill = skillDiv;
+            offset = {
+                x: event.clientX - skillDiv.offsetLeft,
+                y: event.clientY - skillDiv.offsetTop
+            };
+            // console.log(draggedSkill, offset, event.clientY)
+        });
+
+
+    }
+
+    function positionSkillDiv(skillDiv, fontSize) {
+        let positionX, positionY, attempts = 0;
+        do {
+            positionX = Math.random() * (containerWidth - fontSize);
+            positionY = Math.random() * (containerHeight - fontSize);
+            attempts++;
+        } while (checkOverlap(positionX, positionY, skillDiv) && attempts < 10);
+        let hasOverlapped = checkOverlap(positionX, positionY, skillDiv );
+        console.log('hasOverlapped', hasOverlapped);
+
+
+        positionX = ( positionX / containerWidth ) * 100;
+        positionY = ( positionY / containerHeight ) * 100;
+
+        skillDiv.style.left = `${positionX}vw`;
+        skillDiv.style.top = `${positionY}vh`;
+    }
+
+    function checkOverlap(x, y, skillDiv) {
+        // Check if the new position overlaps with existing skill divs
+        const existingSkills = document.querySelectorAll('.skill');
+        for (const existingSkill of existingSkills) {
+
+            // console.log( skillDiv, existingSkill, skillDiv === existingSkill );
+            if( skillDiv === existingSkill ) continue;
+
+            if ( elementsOverlap( skillDiv, existingSkill ) )
+                return true;
+        }
+
+        let size = skillDiv.getBoundingClientRect();
+        // Check if overflowing container
+        return x + size.width > containerWidth ||
+            y + size.height > containerHeight;
+         // Not overlapping
+    }
+
+    function elementsOverlap(el1, el2) {
+        const domRect1 = el1.getBoundingClientRect();
+        const domRect2 = el2.getBoundingClientRect();
+
+        console.log(domRect1.top > domRect2.bottom,
+            domRect1.right < domRect2.left,
+            domRect1.bottom < domRect2.top,
+            domRect1.left > domRect2.right,
+            domRect1,
+            domRect2
+            )
+
+        return !(
+            domRect1.top > domRect2.bottom ||
+            domRect1.right < domRect2.left ||
+            domRect1.bottom < domRect2.top ||
+            domRect1.left > domRect2.right
+        );
+    }
+
+    setTimeout(function(){
+        skillsContainer.classList.add('centered');
+    }, 1000);
+    setTimeout(function(){
+        skillsContainer.classList.remove('loading');
+    }, 1500);
+    setTimeout(function(){
+        skillsContainer.classList.remove('centered');
+    }, 2000);
+}
+// Add mousemove and mouseup event listeners to handle dragging
+skillsContainer.addEventListener('mousemove', (event) => {
+    if (isDragging && draggedSkill) {
+        const x = event.clientX - offset.x;
+        const y = event.clientY - offset.y;
+        // console.log(draggedSkill, x, y);
+        draggedSkill.style.left = `${x}px`;
+        draggedSkill.style.top = `${y}px`;
+    }
+});
+
+skillsContainer.addEventListener('mouseup', () => {
+    isDragging = false;
+    draggedSkill = null;
+});
+
+// Parallax effect on scroll
+window.addEventListener('scroll', function () {
+    const scrollY = window.scrollY;
+
+    // Translate skill divs on the Y-axis based on scroll and years
+    skillsContainer.querySelectorAll('.skill').forEach(skillDiv => {
+        const speed = skills[skillDiv.dataset.id].years / 5; // Adjust the divisor as needed
+        const translateY = scrollY * speed;
+        skillDiv.style.transform = `translateY(${translateY}px)`;
+    });
+});
+
 async function renderWorkGrid() {
     const response = await fetch("data/highlighted-work.json");
     const work = await response.json();
@@ -328,12 +470,12 @@ function closeWorkCard( button ) {
     workSection.scrollIntoView();
 }
 function showPrevWorkCard() {
-    console.log(document.querySelector( '.work-card.active' ).previousElementSibling);
+    // console.log(document.querySelector( '.work-card.active' ).previousElementSibling);
     document.querySelector( '.work-card.active' ).previousElementSibling.click();
     event.stopPropagation();
 }
 function showNextWorkCard() {
-    console.log(document.querySelector( '.work-card.active' ).nextElementSibling);
+    // console.log(document.querySelector( '.work-card.active' ).nextElementSibling);
     document.querySelector('.work-card.active').nextElementSibling.click();
     event.stopPropagation();
 }
@@ -358,13 +500,13 @@ function initializeWorkGallerySliders() {
 let sliderSpeed = 5000;
 
 function gotoWorkGallerySlide(sliderIndex, slideIndex) {
-    console.log('showWorkGallerySlides ' + sliderIndex + "; slide index: " + slideIndex);
+    // console.log('showWorkGallerySlides ' + sliderIndex + "; slide index: " + slideIndex);
 
     const card = document.querySelector(`#${sliderIndex}`);
     let galleryItems = card.querySelectorAll('.work-card-gallery-item');
     if ( galleryItems.length === 1 ) return false;
 
-    console.log('gallery items is more than one');
+    // console.log('gallery items is more than one');
 
     let galleryDots = card.querySelectorAll('.work-card-gallery-dot');
 
@@ -385,7 +527,7 @@ function autoPlayWorkGallerySlides(sliderIndex) {
     const slider = workGallerySliders[sliderIndex];
     if (!slider.isPaused) {
 
-        console.log('gallery is not paused');
+        // console.log('gallery is not paused');
 
         slider.index++;
 
@@ -415,7 +557,7 @@ function playWorkGallery(sliderIndex) {
     if ( slider === undefined ) return false;
 
     if ( slider.isPaused ) {
-        console.log('slider should now play');
+        // console.log('slider should now play');
         setTimeout(() => autoPlayWorkGallerySlides(sliderIndex), sliderSpeed);
     }
 
@@ -485,6 +627,10 @@ function zoomOutWorkCardImages( button ) {
     workSection.scrollIntoView();
 }
 
+/* -------------------
+/*  Utilities
+/* ------------------- */
+
 function getCurrentDateTime(){
     let currentdate = new Date();
     let datetime = currentdate.getDate() + "/"
@@ -516,7 +662,7 @@ let AttachDragBGTo = (function () {
         },
 
         onTouchmove: function (e) {
-            console.log('touch is moving: ', e);
+            // console.log('touch is moving: ', e);
             if ( !this.mouse_is_down ) return;
             let tg = e.target,
                 x = e.changedTouches[0].clientX,
@@ -576,3 +722,27 @@ let AttachDragBGTo = (function () {
         new _AttachDragBGTo(el);
     };
 })();
+
+function adjustMatchBackTitleFontSizes(){
+    let matchH1s = document.querySelectorAll('.flip-card-back h1');
+    matchH1s.forEach(function(h1) {
+        adjustFontSize( h1.parentElement, h1, 22);
+    })
+}
+
+// Function to adjust font size based on container width and text length
+function adjustFontSize(container, adjustableText, baseFontSize) {
+
+    const containerStyles = window.getComputedStyle(container, null);
+    const containerWidth = container.offsetWidth; // minus the horizontal padding of the container
+    const textLength = adjustableText.scrollWidth;
+
+    baseFontSize = baseFontSize ?? 32;
+    // console.log(containerWidth, textLength, baseFontSize);
+    // Calculate the font size based on the ratio of container width to text length
+    let fontSize = containerWidth / textLength * baseFontSize;
+    fontSize = fontSize > baseFontSize ? baseFontSize : fontSize;
+
+    // Apply the calculated font size to the text element
+    adjustableText.style.fontSize = `${fontSize}px`;
+}

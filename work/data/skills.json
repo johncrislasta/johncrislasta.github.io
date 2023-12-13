@@ -62,5 +62,9 @@
   "CakePHP": {
     "title": "CakePHP",
     "years": 2
+  },
+  "Git": {
+    "title": "Git",
+    "years": 3
   }
 }
