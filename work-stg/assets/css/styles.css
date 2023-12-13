@@ -378,6 +378,9 @@ header {
 [data-back="WPBakery"] .flip-card-back {
     background-image: url("../img/logos/WPBakery.png");
 }
+[data-back="Git"] .flip-card-back {
+    background-image: url("../img/logos/Git.png");
+}
 
 @keyframes tada {
     0% {
