@@ -1,0 +1,70 @@
+{
+  "PHP": {
+    "title": "PHP",
+    "years": 13
+  },
+  "JavaScript": {
+    "title": "JavaScript",
+    "years": 13
+  },
+  "HTML": {
+    "title": "HTML5",
+    "years": 13
+  },
+  "CSS": {
+    "title": "CSS3",
+    "years": 13
+  },
+  "WordPress": {
+    "title": "WordPress",
+    "years": 7
+  },
+  "WP-Plugin": {
+    "title": "WP Plugin Development",
+    "years": 7
+  },
+  "jQuery": {
+    "title": "jQuery",
+    "years": 11
+  },
+  "WPBakery": {
+    "title": "WPBakery",
+    "years": 3
+  },
+  "Elementor": {
+    "title": "Elementor",
+    "years": 3
+  },
+  "BeaverBuilder": {
+    "title": "Beaver Builder",
+    "years": 3
+  },
+  "ThemeCo-Pro": {
+    "title": "ThemeCo's Pro Theme",
+    "years": 1
+  },
+  "Cornerstone": {
+    "title": "ThemeCo's Cornerstone",
+    "years": 1
+  },
+  "ReactJS": {
+    "title": "ReactJS",
+    "years": 1
+  },
+  "Laravel": {
+    "title": "Laravel",
+    "years": 2
+  },
+  "CodeIgniter": {
+    "title": "CodeIgniter",
+    "years": 2
+  },
+  "CakePHP": {
+    "title": "CakePHP",
+    "years": 2
+  },
+  "Git": {
+    "title": "Git",
+    "years": 3
+  }
+}
