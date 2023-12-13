@@ -12,11 +12,20 @@
         #cube-container {
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
+            --cube-length: 100px;
         }
 
+        @media ( max-width: 1024px ) {
+            #cube-container {
+                --cube-length: 60px;
+            }
+        }
+
+
         .cube-scene {
-            width: 200px;
-            height: 200px;
+            width: calc( var(--cube-length) * 2 );
+            height: calc( var(--cube-length) * 2 );
             perspective: 600px;
 
             -webkit-touch-callout: none;
@@ -37,8 +46,8 @@
 
         .cube__face {
             position: absolute;
-            width: 200px;
-            height: 200px;
+            width: calc( var(--cube-length) * 2 );
+            height: calc( var(--cube-length) * 2 );
             background: rgba(255 255 255 / 0.9);
             border: 1px solid #343434;
             display: flex;
@@ -47,23 +56,24 @@
             justify-content: center;
         }
 
-        .cube__face--front  { transform: rotateY(  0deg) translateZ(100px); }
-        .cube__face--right  { transform: rotateY( 90deg) translateZ(100px); }
-        .cube__face--back   { transform: rotateY(180deg) translateZ(100px); }
-        .cube__face--left   { transform: rotateY(-90deg) translateZ(100px); }
-        .cube__face--top    { transform: rotateX( 90deg) translateZ(100px); }
-        .cube__face--bottom { transform: rotateX(-90deg) translateZ(100px); }
+        .cube__face--front  { transform: rotateY(  0deg) translateZ( var(--cube-length) ); }
+        .cube__face--right  { transform: rotateY( 90deg) translateZ( var(--cube-length) ); }
+        .cube__face--back   { transform: rotateY(180deg) translateZ( var(--cube-length) ); }
+        .cube__face--left   { transform: rotateY(-90deg) translateZ( var(--cube-length) ); }
+        .cube__face--top    { transform: rotateX( 90deg) translateZ( var(--cube-length) ); }
+        .cube__face--bottom { transform: rotateX(-90deg) translateZ( var(--cube-length) ); }
 
-        .cube.show-front  { transform: translateZ(-100px) rotateY(   0deg) !important; }
-        .cube.show-right  { transform: translateZ(-100px) rotateY( -90deg) !important; }
-        .cube.show-back   { transform: translateZ(-100px) rotateY(-180deg) !important; }
-        .cube.show-left   { transform: translateZ(-100px) rotateY(  90deg) !important; }
-        .cube.show-top    { transform: translateZ(-100px) rotateX( -90deg) !important; }
-        .cube.show-bottom { transform: translateZ(-100px) rotateX(  90deg) !important; }
+        .cube.show-front  { transform: translateZ( calc( var(--cube-length) * -1 ) ) rotateY(   0deg) !important; }
+        .cube.show-right  { transform: translateZ( calc( var(--cube-length) * -1 ) ) rotateY( -90deg) !important; }
+        .cube.show-back   { transform: translateZ( calc( var(--cube-length) * -1 ) ) rotateY(-180deg) !important; }
+        .cube.show-left   { transform: translateZ( calc( var(--cube-length) * -1 ) ) rotateY(  90deg) !important; }
+        .cube.show-top    { transform: translateZ( calc( var(--cube-length) * -1 ) ) rotateX( -90deg) !important; }
+        .cube.show-bottom { transform: translateZ( calc( var(--cube-length) * -1 ) ) rotateX(  90deg) !important; }
     </style>
     <title>3D Cube</title>
 </head>
 <body>
+<h1 id="hero-title">My name is</h1>
 <div id="cube-container">
     <div id="cube-scene-1" class="cube-scene"></div>
     <div id="cube-scene-2" class="cube-scene"></div>
@@ -111,10 +121,25 @@
 
         addEventListeners() {
             document.addEventListener('mousedown', (e) => {
-                this.isDragging = true;
-                this.previousX = e.clientX;
-                this.previousY = e.clientY;
-                this.cube.className = 'cube';
+                if( e.target.classList.contains('cube__face') ){
+                    this.isDragging = true;
+                    this.previousX = e.clientX;
+                    this.previousY = e.clientY;
+                    this.cube.className = 'cube';
+                } else {
+                    this.isDragging = false;
+                }
+            });
+
+            document.addEventListener('touchstart', (e) => {
+                if( e.target.classList.contains('cube__face') ){
+                    this.isDragging = true;
+                    this.previousX = e.changedTouches[0].clientX;
+                    this.previousY = e.changedTouches[0].clientY;
+                    this.cube.className = 'cube';
+                } else {
+                    this.isDragging = false;
+                }
             });
 
             document.addEventListener('mousemove', (e) => {
@@ -133,7 +158,24 @@
 
                 this.previousX = this.currentX;
                 this.previousY = this.currentY;
-                console.log('dragging', this.currentX, this.currentY, this.rotationX, this.rotationY);
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!this.isDragging) return;
+
+                this.currentX = e.changedTouches[0].clientX;
+                this.currentY = e.changedTouches[0].clientY;
+
+                const deltaX = this.currentX - this.previousX;
+                const deltaY = this.currentY - this.previousY;
+
+                this.rotationY += deltaX * 0.5;
+                this.rotationX -= deltaY * 0.5;
+
+                this.cube.style.transform = `rotateX(${this.rotationX}deg) rotateY(${this.rotationY}deg)`;
+
+                this.previousX = this.currentX;
+                this.previousY = this.currentY;
             });
 
             document.addEventListener('mouseup', () => {
@@ -141,6 +183,17 @@
 
                 let face = this.getFacingFace(this.rotationX, this.rotationY);
                 this.cube.classList.add('show-' + face);
+                this.cube.dataset.face = face;
+                this.cube.dispatchEvent(new Event('cubeRotated') );
+            });
+
+            document.addEventListener('touchend', () => {
+                this.isDragging = false;
+
+                let face = this.getFacingFace(this.rotationX, this.rotationY);
+                this.cube.classList.add('show-' + face);
+                this.cube.dataset.face = face;
+                this.cube.dispatchEvent(new Event('cubeRotated') );
             });
         }
 
@@ -179,22 +232,39 @@
         }
     }
 
-    // Example usage:
-    const cube1Faces = ['John', 'Wo', 'Web', 'In', 'Pro', 'J'];
+    const cube1Faces = ['John', 'Wo', 'Web', 'In', 'Prob', 'J'];
     const cube1 = new Cube('cube1', 'cube-scene-1', cube1Faces);
 
-
-    const cube2Faces = ['Cris', 'rd', 'Dev', 'no', 'fes', 'C'];
+    const cube2Faces = ['Cris', 'rd', 'Dev', 'no', 'lem', 'C'];
     const cube2 = new Cube('cube2', 'cube-scene-2', cube2Faces);
 
-    const cube3Faces = ['Yañez', 'Pr', 'elo', 'va', 'sio', 'Y'];
+    const cube3Faces = ['Yañez', 'Pr', 'elo', 'va', 'Sol', 'Y'];
     const cube3 = new Cube('cube3', 'cube-scene-3', cube3Faces);
 
 
-    const cube4Faces = ['Lasta', 'ess', 'per', 'tive', 'nal', 'L'];
+    const cube4Faces = ['Lasta', 'ess', 'per', 'ting', 'ver', 'L'];
     const cube4 = new Cube('cube4', 'cube-scene-4', cube4Faces);
 
-    for
+    const heroTitles = ['My name is', 'I am a', 'I love', 'I am always', 'I\'m a huge', 'I am']
+    const autoAnimateCubeFace = ['front', 'right', 'back', 'left', 'top', 'bottom'];
+
+    const heroTitle = document.querySelector('#hero-title');
+
+    for( let i = 1; i <= 5; i++ ){
+        setTimeout(function(){
+            document.querySelectorAll('.cube').forEach(function(cube){
+                cube.className = 'cube show-' + autoAnimateCubeFace[i];
+            });
+            heroTitle.innerHTML = heroTitles[i];
+        }, 2000 * i )
+    }
+
+
+    document.querySelectorAll('.cube').forEach( (cube) =>{
+       cube.addEventListener("cubeRotated", function (e) {
+           heroTitle.innerHTML = heroTitles[ autoAnimateCubeFace.indexOf( e.target.dataset.face )];
+       });
+   });
 
 </script>
 
