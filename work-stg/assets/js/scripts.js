@@ -285,6 +285,7 @@ function renderSkillsCloud() {
                 x: event.clientX - skillDiv.offsetLeft,
                 y: event.clientY - skillDiv.offsetTop
             };
+            skillDiv.classList.add('grabbing');
             console.log('drag started', draggedSkill, offset, event.clientY)
         });
 
@@ -375,6 +376,7 @@ skillsContainer.addEventListener('mousemove', (event) => {
 
 skillsContainer.addEventListener('mouseup', () => {
     isDraggingSkill = false;
+    draggedSkill.classList.remove('grabbing');
     draggedSkill = null;
 });
 
@@ -430,6 +432,7 @@ class Cube {
                 this.isDragging = true;
                 this.previousX = e.clientX;
                 this.previousY = e.clientY;
+                this.cube.parentElement.classList.add('grabbing');
                 this.cube.className = 'cube';
             } else {
                 this.isDragging = false;
@@ -488,6 +491,7 @@ class Cube {
             this.isDragging = false;
 
             let face = this.getFacingFace(this.rotationX, this.rotationY);
+            this.cube.parentElement.classList.remove('grabbing');
             this.cube.classList.add('show-' + face);
             this.cube.dataset.face = face;
             this.cube.dispatchEvent(new Event('cubeRotated') );

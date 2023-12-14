@@ -524,6 +524,9 @@ section:not(.parallax) {
     z-index: 1;
     opacity: 0.2;
 }
+#skillsCloud .skill.grabbing {
+    cursor: grabbing;
+}
 
 #skillsCloud.exploding .skill {
     transition: all 0.3s cubic-bezier(0, 0, 0, 2.5);
@@ -588,6 +591,10 @@ section:not(.parallax) {
     text-transform: uppercase;
     cursor: grab;
     transition: background 1s ease-in;
+}
+
+.cube-scene.grabbing .cube__face {
+    cursor: grabbing;
 }
 div#cube1:hover .cube__face {
     background: var(--brand-php);
