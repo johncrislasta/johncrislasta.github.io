@@ -21,7 +21,7 @@ fetch(skillsJsonFilePath)
         reshuffleMatchGrid();
 
         renderSkillsCloud();
-        renderSkillsCloud();
+        // renderSkillsCloud();
     })
     .catch(error => {
         console.error('Error:', error);
