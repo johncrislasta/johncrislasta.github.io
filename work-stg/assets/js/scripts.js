@@ -356,7 +356,11 @@ function renderSkillsCloud() {
     }, 1500);
     setTimeout(function(){
         skillsContainer.classList.remove('centered');
+        skillsContainer.classList.add('exploding');
     }, 2000);
+    setTimeout(function(){
+        skillsContainer.classList.remove('exploding');
+    }, 2300);
 }
 // Add mousemove and mouseup event listeners to handle dragging
 skillsContainer.addEventListener('mousemove', (event) => {

@@ -437,6 +437,24 @@ section:not(.parallax) {
     --parallax-speed: 0.75;
 }
 
+/*.parallax [data-id="PHP"] { --parallax-speed: 100; }*/
+/*.parallax [data-id="JavaScript"] { --parallax-speed: 98; }*/
+/*.parallax [data-id="HTML"] { --parallax-speed: 97; }*/
+/*.parallax [data-id="CSS"] {--parallax-speed: 96;}*/
+/*.parallax [data-id="jQuery"] {--parallax-speed: 85;}*/
+/*.parallax [data-id="WordPress"] {--parallax-speed: 74;}*/
+/*.parallax [data-id="WP-Plugin"] {--parallax-speed: 73;}*/
+/*.parallax [data-id="Git"] {--parallax-speed: 62;}*/
+/*.parallax [data-id="WPBakery"] {--parallax-speed: 51;}*/
+/*.parallax [data-id="Elementor"] {--parallax-speed: 50;}*/
+/*.parallax [data-id="BeaverBuilder"] {--parallax-speed: 49;}*/
+/*.parallax [data-id="CodeIgniter"] {--parallax-speed: 38;}*/
+/*.parallax [data-id="CakePHP"] {--parallax-speed: 37;}*/
+/*.parallax [data-id="Laravel"] {--parallax-speed: 36;}*/
+/*.parallax [data-id="ThemeCo-Pro"] {--parallax-speed: 25;}*/
+/*.parallax [data-id="Cornerstone"] {--parallax-speed: 24;}*/
+/*.parallax [data-id="ReactJS"] {--parallax-speed: 13;}*/
+
 .parallax > * {
     animation: parallax linear;
     animation-timeline: scroll();
@@ -457,7 +475,7 @@ section:not(.parallax) {
  *--------------------------- */
 
 #intro {
-    min-height: 50vh;
+    min-height: 50svh;
     /*display: flex;*/
     /*flex-direction: column;*/
     /*align-content: center;*/
@@ -476,7 +494,7 @@ section:not(.parallax) {
 #skillsCloud {
     position: relative;
     height: 100vh;
-    height: 100dvh;
+    height: 100svh;
     width: 100%;
     overflow: hidden;
     -webkit-touch-callout: none;
@@ -501,11 +519,14 @@ section:not(.parallax) {
 #skillsCloud .skill {
     position: absolute;
     white-space: nowrap;
-    transition: all 0.2s cubic-bezier(0, 0, 0, 2.5);
     cursor: grab;
     font-weight: 900;
     z-index: 1;
     opacity: 0.2;
+}
+
+#skillsCloud.exploding .skill {
+    transition: all 0.3s cubic-bezier(0, 0, 0, 2.5);
 }
 
 #heroHeader {
@@ -566,7 +587,28 @@ section:not(.parallax) {
     justify-content: center;
     text-transform: uppercase;
     cursor: grab;
+    transition: background 1s ease-in;
 }
+div#cube1:hover .cube__face {
+    background: var(--brand-php);
+    transition: none;
+}
+
+div#cube2:hover .cube__face {
+    background: var(--brand-javascript);
+    transition: none;
+}
+
+div#cube3:hover .cube__face {
+    background: var(--brand-html);
+    transition: none;
+}
+
+div#cube4:hover .cube__face {
+    background: var(--brand-css);
+    transition: none;
+}
+
 
 .cube__face:nth-child(1){
     font-size: 3.5rem;
@@ -1051,3 +1093,70 @@ i.button.button-info:before {
 /*-----------------------------
  * END - Buttons
  *--------------------------- */
+/*-----------------------------
+ * START - Parallax Transform Z
+ *--------------------------- */
+
+.parallax-z {
+    height: 100vh;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    perspective: 1px;
+}
+.parallax-z [data-id="PHP"] {
+    transform: translateZ(0);
+}
+.parallax-z [data-id="JavaScript"] {
+    transform: translateZ(-1px) scale(2);
+}
+.parallax-z [data-id="HTML"] {
+    transform: translateZ(-2px) scale(3);
+}
+.parallax-z [data-id="CSS"] {
+    transform: translateZ(-3px) scale(4);
+}
+.parallax-z [data-id="jQuery"] {
+    transform: translateZ(-4px) scale(5);
+}
+.parallax-z [data-id="WordPress"] {
+    transform: translateZ(-10px) scale(11);
+}
+.parallax-z [data-id="WP-Plugin"] {
+    transform: translateZ(-11px) scale(12);
+}
+.parallax-z [data-id="Git"] {
+    transform: translateZ(-20px) scale(21);
+}
+.parallax-z [data-id="WPBakery"] {
+    transform: translateZ(-21px) scale(22);
+}
+.parallax-z [data-id="Elementor"] {
+    transform: translateZ(-22px) scale(23);
+}
+.parallax-z [data-id="BeaverBuilder"] {
+    transform: translateZ(-23px) scale(24);
+}
+.parallax-z [data-id="CodeIgniter"] {
+    transform: translateZ(-30px) scale(31);
+}
+.parallax-z [data-id="CakePHP"] {
+    transform: translateZ(-31px) scale(32);
+}
+.parallax-z [data-id="Laravel"] {
+    transform: translateZ(-32px) scale(33);
+}
+.parallax-z [data-id="ThemeCo-Pro"] {
+    transform: translateZ(-40px) scale(41);
+}
+.parallax-z [data-id="Cornerstone"] {
+    transform: translateZ(-41px) scale(42);
+}
+.parallax-z [data-id="ReactJS"] {
+    transform: translateZ(-42px) scale(43);
+}
+/*-----------------------------
+ * END - Parallax
+ *--------------------------- */
+
