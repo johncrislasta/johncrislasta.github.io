@@ -295,7 +295,7 @@ function renderSkillsCloud() {
                 y: event.clientY - skillDiv.offsetTop
             };
             skillDiv.classList.add('grabbing');
-            console.log('drag started', draggedSkill, offset, event.clientY)
+            // console.log('drag started', draggedSkill, offset, event.clientY)
         });
 
 
@@ -586,7 +586,8 @@ function animateHeroCubes() {
         setTimeout(function(){
             let highlightedCube = document.getElementById("cubeScene" + i);
             highlightedCube.classList.add('highlight');
-            highlightedCube.previousElementSibling.classList.remove('highlight');
+            if( highlightedCube.previousElementSibling )
+                highlightedCube.previousElementSibling.classList.remove('highlight');
         }, 10000 + 100 * i )
     }
     setTimeout(function(){
