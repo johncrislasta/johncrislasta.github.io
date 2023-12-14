@@ -20,13 +20,22 @@ fetch(skillsJsonFilePath)
 
         reshuffleMatchGrid();
 
-        renderSkillsCloud();
+        animateSkillsCloud();
+        animateHeroCubes();
         // renderSkillsCloud();
     })
     .catch(error => {
         console.error('Error:', error);
     });
 
+function animateSkillsCloud() {
+    skillsContainer.innerHTML = "";
+    skillsContainer.classList.add('loading');
+
+    setTimeout(() => {
+        renderSkillsCloud();
+    }, 8500)
+}
 
 // Randomly select from the remaining skills to add into Match items
 function getRandomSkills( skillSet, count ) {
@@ -53,7 +62,7 @@ const matchFeedback = {
 }
 let matchFeedbackKey = 'didNotBother';
 
-const grid = document.querySelector('#match-grid');
+const matchGrid = document.querySelector('#matchGrid');
 let shuffledMatchItems = [];
 let flippedCard = [];
 let solvedCards = [];
@@ -63,7 +72,7 @@ let numberOfSolves = getNumOfSolves() ?? 0;
 function reshuffleMatchGrid() {
     updateLeastFlips( numberOfFlips );
     setNumOfSolves();
-    grid.innerHTML = "";
+    matchGrid.innerHTML = "";
     flippedCard = [];
     solvedCards = [];
     numberOfFlips = 0;
@@ -80,14 +89,14 @@ function reshuffleMatchGrid() {
                         <h1>${skills[el].title}</h1>
                     </div>
                 </div>`;
-        grid.appendChild(div);
+        matchGrid.appendChild(div);
     });
 
     staticItems.forEach(function(el) {
         let div = document.createElement("div");
         div.className = "static-card";
         div.innerHTML = `<span>${el}</span>`;
-        grid.appendChild(div);
+        matchGrid.appendChild(div);
     });
 
     adjustMatchBackTitleFontSizes();
@@ -98,7 +107,7 @@ window.addEventListener('resize', adjustMatchBackTitleFontSizes);
 
 
 function openCard( card ) {
-    if ( grid.classList.contains( 'locked' ) ) return false;
+    if ( matchGrid.classList.contains( 'locked' ) ) return false;
     if ( card.classList.contains( 'opened' ) ) return false;
 
     card.classList.add('opened');
@@ -108,7 +117,7 @@ function openCard( card ) {
     updateNumOfFlips( numberOfFlips );
 
     if( flippedCard.length === 2) {
-        grid.classList.add('locked');
+        matchGrid.classList.add('locked');
 
         // Check if they match
         if ( flippedCard[0].dataset.back === card.dataset.back ) {
@@ -118,11 +127,11 @@ function openCard( card ) {
                 solvedCards.push(flippedCard[0]);
                 solvedCards.push(card);
                 flippedCard = [];
-                grid.classList.remove('locked');
+                matchGrid.classList.remove('locked');
 
                 // Check if all cards are solved
                 if ( solvedCards.length === shuffledMatchItems.length ) {
-                    grid.classList.add('solved');
+                    matchGrid.classList.add('solved');
                     numberOfSolves++;
                     setNumOfSolves();
 
@@ -130,10 +139,10 @@ function openCard( card ) {
                         document.querySelectorAll(".flip-card-inner").forEach((el) => {
                             el.classList.add('animate__tada');
                         });
-                        grid.classList.remove('solved');
+                        matchGrid.classList.remove('solved');
                     }, 5000)
 
-                    // Clear match grid and reshuffle
+                    // Clear match matchGrid and reshuffle
                     setTimeout( reshuffleMatchGrid, 6000 );
                 }
             }, 300);
@@ -143,7 +152,7 @@ function openCard( card ) {
                     closeCard( card );
                 })
                 flippedCard = [];
-                grid.classList.remove('locked');
+                matchGrid.classList.remove('locked');
             }, 1000);
         }
     }
@@ -354,7 +363,7 @@ function renderSkillsCloud() {
     }, 1000);
     setTimeout(function(){
         skillsContainer.classList.remove('loading');
-    }, 1500);
+    }, 1950);
     setTimeout(function(){
         skillsContainer.classList.remove('centered');
         skillsContainer.classList.add('exploding');
@@ -543,30 +552,49 @@ class Cube {
 }
 
 const cube1Faces = ['John', 'Wo', 'Web', 'In', 'Prob', 'J'];
-const cube1 = new Cube('cube1', 'cube-scene-1', cube1Faces);
+const cube1 = new Cube('cube1', 'cubeScene1', cube1Faces);
 
 const cube2Faces = ['Cris', 'rd', 'Dev', 'no', 'lem', 'C'];
-const cube2 = new Cube('cube2', 'cube-scene-2', cube2Faces);
+const cube2 = new Cube('cube2', 'cubeScene2', cube2Faces);
 
 const cube3Faces = ['Yañez', 'Pr', 'elo', 'va', 'Sol', 'Y'];
-const cube3 = new Cube('cube3', 'cube-scene-3', cube3Faces);
+const cube3 = new Cube('cube3', 'cubeScene3', cube3Faces);
 
 
 const cube4Faces = ['Lasta', 'ess', 'per', 'ting', 'ver', 'L'];
-const cube4 = new Cube('cube4', 'cube-scene-4', cube4Faces);
+const cube4 = new Cube('cube4', 'cubeScene4', cube4Faces);
 
 const heroTitles = ['My name is', 'I am a', 'I love', 'I am always', 'I\'m a huge', 'I am']
 const autoAnimateCubeFace = ['front', 'right', 'back', 'left', 'top', 'bottom'];
 
 const heroTitle = document.querySelector('#heroTitle');
 
-for( let i = 1; i <= 5; i++ ){
+function animateHeroCubes() {
+    document.querySelectorAll('.cube').forEach(function(cube){
+        cube.className = 'cube show-front';
+    });
+    heroTitle.innerHTML = heroTitles[0];
+    for( let i = 1; i <= 5; i++ ){
+        setTimeout(function(){
+            document.querySelectorAll('.cube').forEach(function(cube){
+                cube.className = 'cube show-' + autoAnimateCubeFace[i];
+            });
+            heroTitle.innerHTML = heroTitles[i];
+        }, 2000 * i )
+    }
+    for( let i = 1; i <= 4; i++ ){
+        setTimeout(function(){
+            let highlightedCube = document.getElementById("cubeScene" + i);
+            highlightedCube.classList.add('highlight');
+            highlightedCube.previousElementSibling.classList.remove('highlight');
+        }, 10000 + 100 * i )
+    }
     setTimeout(function(){
-        document.querySelectorAll('.cube').forEach(function(cube){
-            cube.className = 'cube show-' + autoAnimateCubeFace[i];
-        });
-        heroTitle.innerHTML = heroTitles[i];
-    }, 2000 * i )
+        let highlightedCube = document.getElementById("cubeScene4");
+        highlightedCube.classList.remove('highlight');
+
+        document.getElementById('introActions').classList.add('show');
+    }, 10500 )
 }
 
 
@@ -837,6 +865,20 @@ function zoomOutWorkCardImages( button ) {
 
     workSection.scrollIntoView();
 }
+
+
+/* --------------------------------------
+    Nav actions event listeners - START
+/* -------------------------------------- */
+document.getElementById("restartAnimationAction").addEventListener("click", function(e){
+    e.target.parentElement.classList.remove('show');
+    animateSkillsCloud();
+    animateHeroCubes();
+});
+/* --------------------------------------
+    Nav actions event listeners - END
+/* -------------------------------------- */
+
 
 /* -------------------
 /*  Utilities

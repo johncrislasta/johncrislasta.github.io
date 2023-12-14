@@ -187,6 +187,7 @@ body {
 nav {
     display: flex;
     background: var(--dark);
+    overflow: hidden;
 }
 
 nav ul {
@@ -194,6 +195,21 @@ nav ul {
     list-style: none;
     gap: 1rem;
     color: white;
+}
+
+#sectionActions {
+    margin-left: auto;
+    padding-right: 1rem;
+    position: relative;
+}
+
+#sectionActions .action-group {
+    transition: transform 0.5s ease-out;
+    transform: translateX(100vh);
+}
+
+#sectionActions .action-group.show {
+    transform: translateX(0);
 }
 /*-----------------------------
  * End - Nav
@@ -208,14 +224,14 @@ header {
     align-items: baseline;
 }
 
-#match-grid {
+#matchGrid {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     gap: 1px;
     overflow: hidden;
 }
 
-#match-grid.solved {
+#matchGrid.solved {
     background: rgb(122,134,184);
     background: linear-gradient(180deg,
     rgba(122,134,184,1) 0%,
@@ -405,7 +421,7 @@ header {
 }
 
 @media screen and (orientation:portrait) {
-    #match-grid {
+    #matchGrid {
         grid-template-columns: repeat(4, 1fr);
     }
 
@@ -433,7 +449,7 @@ section:not(.parallax) {
     z-index: 0;
 }
 
-#match-grid {
+#matchGrid {
     --parallax-speed: 0.75;
 }
 
@@ -547,7 +563,7 @@ section:not(.parallax) {
     z-index: 3;
 }
 
-#cube-container {
+#cubeContainer {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
@@ -596,21 +612,22 @@ section:not(.parallax) {
 .cube-scene.grabbing .cube__face {
     cursor: grabbing;
 }
+div#cubeScene1.highlight .cube__face,
 div#cube1:hover .cube__face {
     background: var(--brand-php);
     transition: none;
 }
-
+div#cubeScene2.highlight .cube__face,
 div#cube2:hover .cube__face {
     background: var(--brand-javascript);
     transition: none;
 }
-
+div#cubeScene3.highlight .cube__face,
 div#cube3:hover .cube__face {
     background: var(--brand-html);
     transition: none;
 }
-
+div#cubeScene4.highlight .cube__face,
 div#cube4:hover .cube__face {
     background: var(--brand-css);
     transition: none;
@@ -642,7 +659,7 @@ div#cube4:hover .cube__face {
 }
 
 @media ( max-width: 1024px ) {
-    #cube-container {
+    #cubeContainer {
         --cube-length: 60px;
     }
 
