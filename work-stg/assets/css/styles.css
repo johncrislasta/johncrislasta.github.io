@@ -184,17 +184,38 @@ body {
 /*-----------------------------
  * START - Nav
  *--------------------------- */
-nav {
+nav#mainNav {
     display: flex;
     background: var(--dark);
     overflow: hidden;
+    top: -100px;
 }
 
-nav ul {
+#mainNav.fixed {
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    width: 100%;
+    background: #ffffff90;
+    backdrop-filter: blur(10px);
+    outline: 1px solid white;
+    box-shadow: 0 1px 10px 0 #00000050;
+    transition: top 0.2s linear;
+}
+
+#mainNav.fixed + #intro {
+    margin-top: 53px;
+}
+
+#mainNav ul {
     display: flex;
     list-style: none;
     gap: 1rem;
     color: white;
+}
+
+#mainNav.fixed ul a {
+    color: var(--dark);
 }
 
 #sectionActions {

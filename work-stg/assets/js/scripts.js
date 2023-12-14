@@ -20,22 +20,13 @@ fetch(skillsJsonFilePath)
 
         reshuffleMatchGrid();
 
-        animateSkillsCloud();
-        animateHeroCubes();
+        animateSkillsCloud = new AnimateSkillsCloud();
+        animateHeroCubes = new AnimateHeroCubes();
         // renderSkillsCloud();
     })
     .catch(error => {
         console.error('Error:', error);
     });
-
-function animateSkillsCloud() {
-    skillsContainer.innerHTML = "";
-    skillsContainer.classList.add('loading');
-
-    setTimeout(() => {
-        renderSkillsCloud();
-    }, 8500)
-}
 
 // Randomly select from the remaining skills to add into Match items
 function getRandomSkills( skillSet, count ) {
@@ -358,19 +349,6 @@ function renderSkillsCloud() {
         );
     }
 
-    setTimeout(function(){
-        skillsContainer.classList.add('centered');
-    }, 1000);
-    setTimeout(function(){
-        skillsContainer.classList.remove('loading');
-    }, 1950);
-    setTimeout(function(){
-        skillsContainer.classList.remove('centered');
-        skillsContainer.classList.add('exploding');
-    }, 2000);
-    setTimeout(function(){
-        skillsContainer.classList.remove('exploding');
-    }, 2300);
 }
 // Add mousemove and mouseup event listeners to handle dragging
 skillsContainer.addEventListener('mousemove', (event) => {
@@ -384,10 +362,48 @@ skillsContainer.addEventListener('mousemove', (event) => {
 });
 
 skillsContainer.addEventListener('mouseup', () => {
+    if (!draggedSkill) return;
     isDraggingSkill = false;
     draggedSkill.classList.remove('grabbing');
     draggedSkill = null;
 });
+
+let animateSkillsCloud;
+function AnimateSkillsCloud() {
+    this.timeouts = [];
+    skillsContainer.innerHTML = "";
+    skillsContainer.classList.add('loading');
+
+    this.timeouts.push( new PausableTimeout(() => {
+        renderSkillsCloud();
+    }, 8500) );
+
+
+    this.timeouts.push( new PausableTimeout(function(){
+        skillsContainer.classList.add('centered');
+    }, 9500) );
+    this.timeouts.push( new PausableTimeout(function(){
+        skillsContainer.classList.remove('loading');
+    }, 10450) );
+    this.timeouts.push( new PausableTimeout(function(){
+        skillsContainer.classList.remove('centered');
+        skillsContainer.classList.add('exploding');
+    }, 10500) );
+    this.timeouts.push( new PausableTimeout(function(){
+        skillsContainer.classList.remove('exploding');
+    }, 10800) );
+
+    this.pause = function() {
+        this.timeouts.forEach( ( timeout ) => {
+            timeout.pause();
+        })
+    }
+    this.resume = function() {
+        this.timeouts.forEach( ( timeout ) => {
+            timeout.resume();
+        })
+    }
+}
 
 /* --------------------
 /* Skills Cloud - End
@@ -497,6 +513,7 @@ class Cube {
         });
 
         document.addEventListener('mouseup', () => {
+            if (!this.isDragging) return;
             this.isDragging = false;
 
             let face = this.getFacingFace(this.rotationX, this.rotationY);
@@ -507,6 +524,7 @@ class Cube {
         });
 
         document.addEventListener('touchend', () => {
+            if (!this.isDragging) return;
             this.isDragging = false;
 
             let face = this.getFacingFace(this.rotationX, this.rotationY);
@@ -569,39 +587,55 @@ const autoAnimateCubeFace = ['front', 'right', 'back', 'left', 'top', 'bottom'];
 
 const heroTitle = document.querySelector('#heroTitle');
 
-function animateHeroCubes() {
+let animateHeroCubes;
+function AnimateHeroCubes() {
+    this.timeouts = [];
+
     document.querySelectorAll('.cube').forEach(function(cube){
         cube.className = 'cube show-front';
     });
     heroTitle.innerHTML = heroTitles[0];
     for( let i = 1; i <= 5; i++ ){
-        setTimeout(function(){
+        this.timeouts.push( new PausableTimeout(function(){
             document.querySelectorAll('.cube').forEach(function(cube){
                 cube.className = 'cube show-' + autoAnimateCubeFace[i];
             });
             heroTitle.innerHTML = heroTitles[i];
-        }, 2000 * i )
+        }, 2000 * i ) );
     }
     for( let i = 1; i <= 4; i++ ){
-        setTimeout(function(){
+        this.timeouts.push( new PausableTimeout(function(){
             let highlightedCube = document.getElementById("cubeScene" + i);
             highlightedCube.classList.add('highlight');
             if( highlightedCube.previousElementSibling )
                 highlightedCube.previousElementSibling.classList.remove('highlight');
-        }, 10000 + 100 * i )
+        }, 10000 + 100 * i ) );
     }
-    setTimeout(function(){
+    this.timeouts.push( new PausableTimeout (function(){
         let highlightedCube = document.getElementById("cubeScene4");
         highlightedCube.classList.remove('highlight');
 
         document.getElementById('introActions').classList.add('show');
-    }, 10500 )
+    }, 10500 ) );
+
+    this.pause = function() {
+        this.timeouts.forEach( ( timeout ) => {
+            timeout.pause();
+        })
+    }
+    this.resume = function() {
+        this.timeouts.forEach( ( timeout ) => {
+            timeout.resume();
+        })
+    }
 }
 
 
 document.querySelectorAll('.cube').forEach( (cube) =>{
     cube.addEventListener("cubeRotated", function (e) {
-        heroTitle.innerHTML = heroTitles[ autoAnimateCubeFace.indexOf( e.target.dataset.face )];
+        if( e.target.dataset.face ) {
+            heroTitle.innerHTML = heroTitles[ autoAnimateCubeFace.indexOf( e.target.dataset.face )];
+        }
     });
 });
 
@@ -867,14 +901,31 @@ function zoomOutWorkCardImages( button ) {
     workSection.scrollIntoView();
 }
 
+const mainNav = document.getElementById('mainNav');
 
+const cubesObserver = new IntersectionObserver(function (entries) {
+    if (!entries[0].isIntersecting) {
+        animateSkillsCloud.pause();
+        animateHeroCubes.pause();
+        mainNav.classList.add('fixed');
+    }
+    else {
+        if(animateSkillsCloud && animateHeroCubes) {
+            animateSkillsCloud.resume();
+            animateHeroCubes.resume();
+        }
+        mainNav.classList.remove('fixed');
+    }
+});
+
+cubesObserver.observe(document.querySelector("#cubeContainer"))
 /* --------------------------------------
     Nav actions event listeners - START
 /* -------------------------------------- */
 document.getElementById("restartAnimationAction").addEventListener("click", function(e){
     e.target.parentElement.classList.remove('show');
-    animateSkillsCloud();
-    animateHeroCubes();
+    animateSkillsCloud = new AnimateSkillsCloud();
+    animateHeroCubes = new AnimateHeroCubes();
 });
 /* --------------------------------------
     Nav actions event listeners - END
@@ -1000,3 +1051,24 @@ function adjustFontSize(container, adjustableText, baseFontSize) {
     // Apply the calculated font size to the text element
     adjustableText.style.fontSize = `${fontSize}px`;
 }
+
+function PausableTimeout(callback, delay) {
+    this.timerId,
+    this.start,
+    this.remaining = delay;
+
+    this.pause = function() {
+        clearTimeout(this.timerId);
+        this.remaining -= Date.now() - this.start;
+    };
+
+    this.resume = function() {
+        if( this.remaining < 0 ) return;
+        this.start = Date.now();
+        clearTimeout(this.timerId);
+        this.timerId = setTimeout(callback, this.remaining);
+    };
+
+    this.resume();
+}
+
