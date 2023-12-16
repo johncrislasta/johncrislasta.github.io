@@ -569,21 +569,21 @@ class Cube {
     }
 }
 
-const cube1Faces = ['John', 'Wo', 'Web', 'In', 'Sol', 'J'];
+const cube1Faces = ['Sol', 'Wo', 'In', 'Web', 'John', 'J'];
 const cube1 = new Cube('cube1', 'cubeScene1', cube1Faces);
 
-const cube2Faces = ['Cris', 'rd', 'Dev', 'no', 'ving', 'C'];
+const cube2Faces = ['ving', 'rd', 'no', 'Dev', 'Cris', 'C'];
 const cube2 = new Cube('cube2', 'cubeScene2', cube2Faces);
 
-const cube3Faces = ['Yañez', 'Pr', 'elo', 'va', 'Prob', 'Y'];
+const cube3Faces = ['Prob', 'Pr', 'va', 'elo', 'Yañez', 'Y'];
 const cube3 = new Cube('cube3', 'cubeScene3', cube3Faces);
 
 
-const cube4Faces = ['Lasta', 'ess', 'per', 'tion', 'lems', 'L'];
+const cube4Faces = ['lems', 'ess', 'tion', 'per', 'Lasta', 'L'];
 const cube4 = new Cube('cube4', 'cubeScene4', cube4Faces);
 
-const heroTitles = ['My name is', 'I am a', 'I love', 'I embrace', 'I enjoy', 'I am']
-const autoAnimateCubeFace = ['front', 'right', 'back', 'left', 'top', 'bottom'];
+const heroTitles = ['My name is', 'I am a', 'I enjoy', 'I embrace', 'I love', 'I am']
+const autoAnimateCubeFace = ['top', 'left', 'front', 'right', 'back', 'bottom'];
 
 const heroTitle = document.querySelector('#heroTitle');
 
@@ -592,7 +592,7 @@ function AnimateHeroCubes() {
     this.timeouts = [];
 
     document.querySelectorAll('.cube').forEach(function(cube){
-        cube.className = 'cube show-front';
+        cube.className = 'cube show-top';
     });
     heroTitle.innerHTML = heroTitles[0];
     for( let i = 1; i <= 5; i++ ){
