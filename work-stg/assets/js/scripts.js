@@ -1046,7 +1046,7 @@ document.getElementById("restartAnimationAction").addEventListener("click", func
     animateHeroCubes = new AnimateHeroCubes();
 });
 document.getElementById("openWork").addEventListener("click", function(e){
-    if(activeWorkIndex < 0)
+    if(activeWorkIndex < 0 || activeWorkIndex === undefined)
         openWorkIndex(0);
     else
         openWorkIndex(activeWorkIndex);
