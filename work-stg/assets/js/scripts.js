@@ -726,6 +726,15 @@ async function renderWorkGrid() {
 
 renderWorkGrid();
 
+let activeWorkIndex = -1;
+
+function openWorkIndex( index ) {
+    let workCards = document.querySelectorAll('.work-card');
+    if( index > workCards.length ) return false;
+    const card = workCards[index];
+    openWorkCard( card );
+}
+
 function openWorkCard( card ) {
     if( card.classList.contains('active') ) return;
 
@@ -918,7 +927,36 @@ const cubesObserver = new IntersectionObserver(function (entries) {
     }
 });
 
-cubesObserver.observe(document.querySelector("#cubeContainer"))
+cubesObserver.observe(document.querySelector("#cubeContainer"));
+
+const observerThresholds = {
+    intro: 0.2,
+    work: 0.5,
+    about: 0.9,
+    match: 0.9
+}
+
+const navActions = {
+    intro: document.querySelector('#introActions'),
+    work: document.querySelector('#workActions'),
+    about: document.querySelector('#aboutActions'),
+    match: document.querySelector('#matchActions'),
+}
+
+document.querySelectorAll("section").forEach(function(section){
+    new IntersectionObserver( function(entries){
+        let section = entries[0].target;
+        console.log(section.id, navActions, navActions[section.id]);
+        if ( !entries[0].isIntersecting ) {
+            navActions[section.id].classList.remove('show');
+        } else {
+            navActions[section.id].classList.add('show');
+        }
+    }, {
+        root: null,   // default is the viewport
+        threshold: observerThresholds[section.id] // percentage of target's visible area. Triggers "onIntersection"
+    }).observe(section);
+})
 /* --------------------------------------
     Nav actions event listeners - START
 /* -------------------------------------- */
@@ -1039,7 +1077,7 @@ function adjustMatchBackTitleFontSizes(){
 function adjustFontSize(container, adjustableText, baseFontSize) {
 
     const containerStyles = window.getComputedStyle(container, null);
-    const containerWidth = container.offsetWidth; // minus the horizontal padding of the container
+    const containerWidth = container.offsetWidth;
     const textLength = adjustableText.scrollWidth;
 
     baseFontSize = baseFontSize ?? 32;

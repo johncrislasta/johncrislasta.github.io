@@ -66,6 +66,29 @@
     "gallery": []
   },
   {
+    "id": "k9divine",
+    "title": "K9 Divine",
+    "url": "https://k-9divine.com/",
+    "summary": "Oversee the entire site build",
+    "work": [
+      "Managed most of the website from the ground up",
+      "Converted the Adobe XD designs to the pages",
+      "Used the in-house Advanced Custom Fields based page builder"
+    ],
+    "featured_image": "k-9divine-home.png",
+    "skills": [
+      "WordPress",
+      "Advanced Custom Fields",
+      "JavaScript",
+      "SASS"
+    ],
+    "gallery": [
+      "k-9divine-services.png",
+      "k-9divine-pricing.png",
+      "k-9divine-faq.png"
+    ]
+  },
+  {
     "id": "coworkercoffee",
     "title": "Coworker Coffee",
     "url": "https://coworkercoffee.com",

@@ -223,15 +223,30 @@ nav#mainNav {
     margin-left: auto;
     padding-right: 1rem;
     position: relative;
+    display: grid;
+    grid-template-areas: "actions";
 }
 
 #sectionActions .action-group {
     transition: transform 0.5s ease-out;
     transform: translateX(100vh);
+    grid-area: actions;
+    justify-content: end;
 }
 
 #sectionActions .action-group.show {
     transform: translateX(0);
+}
+
+#sectionActions .action-group.show ~ .action-group.show {
+    transform: translateX(100vh);
+}
+
+.work-action:not(#openWork) {
+    display: none;
+}
+.work-action:not(#openWork) {
+    display: none;
 }
 /*-----------------------------
  * End - Nav
