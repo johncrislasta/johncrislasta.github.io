@@ -230,20 +230,20 @@ function getMatchGridFeedback() {
     matchGridFeedback.style.display = "block";
 }
 
-// define an observer instance
 let matchGridFeedbackObserver = new IntersectionObserver(getMatchGridFeedback, {
     root: null,   // default is the viewport
     threshold: 0.75 // percentage of target's visible area. Triggers "onIntersection"
 })
 
-// callback is called on intersection change
 function onIntersection(entries, opts){
     entries.forEach(entry =>
         entry.target.classList.toggle('visible', entry.isIntersecting)
     )
 }
+
+const introSection = document.getElementById('intro');
 // Use the observer to observe an element
-matchGridFeedbackObserver.observe( document.querySelector('#intro') )
+matchGridFeedbackObserver.observe( introSection )
 
 // To stop observing:
 // observer.unobserve(entry.target)
@@ -371,8 +371,10 @@ skillsContainer.addEventListener('mouseup', () => {
 let animateSkillsCloud;
 function AnimateSkillsCloud() {
     this.timeouts = [];
+    this.animationDone = false;
     skillsContainer.innerHTML = "";
     skillsContainer.classList.add('loading');
+    navActions.intro.classList.add('animating');
 
     this.timeouts.push( new PausableTimeout(() => {
         renderSkillsCloud();
@@ -391,7 +393,13 @@ function AnimateSkillsCloud() {
     }, 10500) );
     this.timeouts.push( new PausableTimeout(function(){
         skillsContainer.classList.remove('exploding');
+        navActions.intro.classList.remove('animating');
+        this.animationDone = true;
     }, 10800) );
+
+    this.isDone = function() {
+        return this.animationDone;
+    }
 
     this.pause = function() {
         this.timeouts.forEach( ( timeout ) => {
@@ -414,6 +422,15 @@ function AnimateSkillsCloud() {
 /* Hero Cubes - Start
 /* -------------------- */
 
+const cubeShow = {
+    front: { x: 0, y: 0, z: 0 },
+    right: { x: 0, y: -90, z: 0 },
+    back: { x: 0, y: -180, z: 0 },
+    left: { x: 0, y: 90, z: 0 },
+    top: { x: -90, y: 0, z: 0 },
+    bottom: { x: 90, y: 0, z: 0 }
+}
+
 class Cube {
     constructor(cubeId, containerId, faceLabels = ['front', 'back', 'right', 'left', 'top', 'bottom']) {
         this.isDragging = false;
@@ -426,9 +443,12 @@ class Cube {
 
         this.container = document.getElementById(containerId);
         this.faceLabels = faceLabels;
+        this.facing = '';
         this.id = cubeId;
         this.createCube();
         this.addEventListeners();
+
+        this.isAnimating = false;
     }
 
     createCube() {
@@ -518,7 +538,7 @@ class Cube {
 
             let face = this.getFacingFace(this.rotationX, this.rotationY);
             this.cube.parentElement.classList.remove('grabbing');
-            this.cube.classList.add('show-' + face);
+            this.setFacingFace(face);
             this.cube.dataset.face = face;
             this.cube.dispatchEvent(new Event('cubeRotated') );
         });
@@ -528,10 +548,51 @@ class Cube {
             this.isDragging = false;
 
             let face = this.getFacingFace(this.rotationX, this.rotationY);
-            this.cube.classList.add('show-' + face);
+            this.setFacingFace(face);
             this.cube.dataset.face = face;
             this.cube.dispatchEvent(new Event('cubeRotated') );
         });
+
+        document.addEventListener('scroll', () => {
+
+            if( this.isAnimating ) return false;
+            // Get the scroll percentage
+            const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+
+            // Define the maximum rotation angle (positive or negative) you want when scrolling
+            const maxRotation = 30;
+            let newRotation = this.rotationX + scrollPercentage;
+
+            if(this.facing === 'left') {
+                newRotation = scrollPercentage;
+                this.cube.style.transform = `translateZ( calc( var(--cube-length) * -1 ) ) rotateY(${this.rotationY}deg) rotateX(${this.rotationX}deg) rotateZ(${newRotation}deg)`;
+            } else if(this.facing === 'right')  {
+                newRotation = scrollPercentage * -1;
+                this.cube.style.transform = `translateZ( calc( var(--cube-length) * -1 ) ) rotateY(${this.rotationY}deg) rotateX(${this.rotationX}deg) rotateZ(${newRotation}deg)`;
+            } else if(this.facing === 'back')  {
+                newRotation = this.rotationX + ( scrollPercentage * -1 );
+                this.cube.style.transform = `translateZ( calc( var(--cube-length) * -1 ) ) rotateY(${this.rotationY}deg) rotateX(${newRotation}deg) rotateZ(0deg)`;
+            } else {
+                this.cube.style.transform = `translateZ( calc( var(--cube-length) * -1 ) ) rotateY(${this.rotationY}deg) rotateX(${newRotation}deg) rotateZ(0deg)`;
+            }
+            // Calculate the new rotation angle based on scroll percentage
+
+            // Apply the new rotation to the cube
+            console.log('scrolling', scrollPercentage, newRotation, this.cube.style);
+        });
+    }
+
+    clearStyles () {
+        this.cube.style = null;
+    }
+
+    setFacingFace( face ) {
+        this.cube.classList.add('show-' + face);
+        this.cube.style.transform = `translateZ( calc( var(--cube-length) * -1 ) )
+            rotateX(${cubeShow[face].x}deg) rotateY(${cubeShow[face].y}deg) rotateZ(0deg)`;
+        this.rotationX = cubeShow[face].x;
+        this.rotationY = cubeShow[face].y;
+        this.facing = face;
     }
 
     getFacingFace(rotationX, rotationY) {
@@ -569,18 +630,20 @@ class Cube {
     }
 }
 
+let heroCubes = [];
+
 const cube1Faces = ['Sol', 'Wo', 'In', 'Web', 'John', 'J'];
-const cube1 = new Cube('cube1', 'cubeScene1', cube1Faces);
+heroCubes.push( new Cube('cube1', 'cubeScene1', cube1Faces) );
 
 const cube2Faces = ['ving', 'rd', 'no', 'Dev', 'Cris', 'C'];
-const cube2 = new Cube('cube2', 'cubeScene2', cube2Faces);
+heroCubes.push( new Cube('cube2', 'cubeScene2', cube2Faces ) );
 
 const cube3Faces = ['Prob', 'Pr', 'va', 'elo', 'Yañez', 'Y'];
-const cube3 = new Cube('cube3', 'cubeScene3', cube3Faces);
-
+heroCubes.push( new Cube('cube3', 'cubeScene3', cube3Faces ) );
 
 const cube4Faces = ['lems', 'ess', 'tion', 'per', 'Lasta', 'L'];
-const cube4 = new Cube('cube4', 'cubeScene4', cube4Faces);
+heroCubes.push( new Cube('cube4', 'cubeScene4', cube4Faces) );
+
 
 const heroTitles = ['My name is', 'I am a', 'I enjoy', 'I embrace', 'I love', 'I am']
 const autoAnimateCubeFace = ['top', 'left', 'front', 'right', 'back', 'bottom'];
@@ -590,15 +653,19 @@ const heroTitle = document.querySelector('#heroTitle');
 let animateHeroCubes;
 function AnimateHeroCubes() {
     this.timeouts = [];
+    this.animationDone = false;
 
-    document.querySelectorAll('.cube').forEach(function(cube){
-        cube.className = 'cube show-top';
+    const animation = this;
+
+    heroCubes.forEach(function(cube){
+        cube.isAnimating = true;
+        cube.setFacingFace('top')
     });
     heroTitle.innerHTML = heroTitles[0];
     for( let i = 1; i <= 5; i++ ){
         this.timeouts.push( new PausableTimeout(function(){
-            document.querySelectorAll('.cube').forEach(function(cube){
-                cube.className = 'cube show-' + autoAnimateCubeFace[i];
+            heroCubes.forEach(function(cube){
+                cube.setFacingFace(autoAnimateCubeFace[i])
             });
             heroTitle.innerHTML = heroTitles[i];
         }, 2000 * i ) );
@@ -615,8 +682,16 @@ function AnimateHeroCubes() {
         let highlightedCube = document.getElementById("cubeScene4");
         highlightedCube.classList.remove('highlight');
 
-        document.getElementById('introActions').classList.add('show');
+        navActions.intro.classList.add('show');
+        animation.animationDone = true;
+        heroCubes.forEach(function(cube){
+            cube.isAnimating = false;
+        });
     }, 10500 ) );
+
+    this.isDone = function (){
+        return this.animationDone;
+    }
 
     this.pause = function() {
         this.timeouts.forEach( ( timeout ) => {
@@ -657,10 +732,12 @@ window.addEventListener('scroll', function () {
 });
 
 const workSection = document.querySelector('section#work');
+let workCards = [];
 
 async function renderWorkGrid() {
     const response = await fetch("data/highlighted-work.json");
     const work = await response.json();
+    let workIndex = 0;
     work.forEach(function(el) {
         let div = document.createElement("div");
         let skills = el.skills.join(' | ');
@@ -691,6 +768,7 @@ async function renderWorkGrid() {
 
         div.id = "work-card-" + el.id;
         div.className = "work-card";
+        div.dataset.url = el.url;
         div.setAttribute("onclick", "openWorkCard(this)");
         div.innerHTML = `<div class="work-card-inner">
                     <div class="work-card-front" style="background-image: url(assets/img/work/${el.featured_image})">
@@ -700,14 +778,6 @@ async function renderWorkGrid() {
                         </div>
                         ${workGallery}
                         <div class="work-card-front-label">
-                            <div class="work-card-buttons">
-                                <a href="${el.url}" target="_blank" title="Visit Page">
-                                    <i class="button button-launch"></i>
-                                </a>
-                                <i class="button button-zoom" onclick="event.stopPropagation(); zoomInWorkCardImages(this)"></i>
-                                <i class="button button-info" onclick="event.stopPropagation(); zoomOutWorkCardImages(this)"></i>
-                                <i class="button button-close" onclick="event.stopPropagation(); closeWorkCard(this)"></i>
-                            </div>
                             <h2>${el.title}</h2>
                             <h4>${el.summary}</h4>
                             <h6>${skills}</h6>
@@ -718,9 +788,11 @@ async function renderWorkGrid() {
                     </div>
                 </div>`;
         workSection.appendChild(div);
+        workIndex++;
     });
 
     initializeWorkGallerySliders();
+    workCards = document.querySelectorAll('.work-card');
 
 }
 
@@ -729,7 +801,6 @@ renderWorkGrid();
 let activeWorkIndex = -1;
 
 function openWorkIndex( index ) {
-    let workCards = document.querySelectorAll('.work-card');
     if( index > workCards.length ) return false;
     const card = workCards[index];
     openWorkCard( card );
@@ -745,12 +816,16 @@ function openWorkCard( card ) {
     card.classList.add('active');
     workSection.scrollIntoView();
     playWorkGallery(card.id);
+    navActions.work.classList.add('opened');
+    activeWorkIndex = card.dataset.index;
 }
-function closeWorkCard( button ) {
-    let card = button.closest('.work-card');
+function closeWorkCard( card ) {
     card.classList.remove('active');
     pauseWorkGallery(card.id);
     workSection.scrollIntoView();
+    navActions.work.classList.remove('opened');
+
+    zoomOutWorkCardImages( card );
 }
 function showPrevWorkCard() {
     // console.log(document.querySelector( '.work-card.active' ).previousElementSibling);
@@ -873,8 +948,8 @@ function toggleWorkGallery( toggle ) {
     }
 }
 
-function zoomInWorkCardImages( button ) {
-    const workCardFront = button.closest('.work-card-front');
+function zoomInWorkCardImages( card ) {
+    const workCardFront = card.querySelector('.work-card-front');
     const workCardGallery = workCardFront.querySelectorAll('.work-card-gallery-item');
     const sliderIndex = workCardFront.closest('.work-card').id;
 
@@ -891,10 +966,13 @@ function zoomInWorkCardImages( button ) {
             item.style.backgroundPosition = item.dataset.backgroundPosition;
         AttachDragBGTo(item);
     });
+
+
+    navActions.work.classList.add('zoomed');
 }
 
-function zoomOutWorkCardImages( button ) {
-    const workCardFront = button.closest('.work-card-front');
+function zoomOutWorkCardImages( card ) {
+    const workCardFront = card.querySelector('.work-card-front');
     const workCardGallery = workCardFront.querySelectorAll('.work-card-gallery-item');
 
     workCardFront.classList.remove('zoom');
@@ -908,6 +986,8 @@ function zoomOutWorkCardImages( button ) {
     });
 
     workSection.scrollIntoView();
+    navActions.work.classList.remove('zoomed');
+
 }
 
 const mainNav = document.getElementById('mainNav');
@@ -964,6 +1044,28 @@ document.getElementById("restartAnimationAction").addEventListener("click", func
     e.target.parentElement.classList.remove('show');
     animateSkillsCloud = new AnimateSkillsCloud();
     animateHeroCubes = new AnimateHeroCubes();
+});
+document.getElementById("openWork").addEventListener("click", function(e){
+    if(activeWorkIndex < 0)
+        openWorkIndex(0);
+    else
+        openWorkIndex(activeWorkIndex);
+});
+document.getElementById("closeWork").addEventListener("click", function(e){
+    const card = document.querySelector('.work-card.active');
+    closeWorkCard(card);
+});
+document.getElementById("visitSiteWork").addEventListener("click", function(e){
+    const card = document.querySelector('.work-card.active');
+    window.open(card.dataset.url);
+});
+document.getElementById("zoomInWork").addEventListener("click", function(e){
+    const card = document.querySelector('.work-card.active');
+    zoomInWorkCardImages( card );
+});
+document.getElementById("zoomOutWork").addEventListener("click", function(e){
+    const card = document.querySelector('.work-card.active');
+    zoomOutWorkCardImages( card );
 });
 /* --------------------------------------
     Nav actions event listeners - END
@@ -1101,10 +1203,11 @@ function PausableTimeout(callback, delay) {
     };
 
     this.resume = function() {
-        if( this.remaining < 0 ) return;
+        if( this.remaining < 0 ) return false;
         this.start = Date.now();
         clearTimeout(this.timerId);
         this.timerId = setTimeout(callback, this.remaining);
+        return true;
     };
 
     this.resume();
