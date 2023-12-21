@@ -1011,9 +1011,16 @@ cubesObserver.observe(document.querySelector("#cubeContainer"));
 
 const observerThresholds = {
     intro: 0.2,
-    work: 0.5,
+    work: 0.15,
     about: 0.9,
     match: 0.9
+}
+
+const navMenuItems = {
+    intro: document.querySelector('#introMenuItem'),
+    work: document.querySelector('#workMenuItem'),
+    about: document.querySelector('#aboutMenuItem'),
+    match: document.querySelector('#matchMenuItem'),
 }
 
 const navActions = {
@@ -1023,13 +1030,17 @@ const navActions = {
     match: document.querySelector('#matchActions'),
 }
 
+// Section Observer
 document.querySelectorAll("section").forEach(function(section){
     new IntersectionObserver( function(entries){
         let section = entries[0].target;
         console.log(section.id, navActions, navActions[section.id]);
         if ( !entries[0].isIntersecting ) {
+            navMenuItems[section.id].classList.remove('active');
             navActions[section.id].classList.remove('show');
+
         } else {
+            navMenuItems[section.id].classList.add('active');
             navActions[section.id].classList.add('show');
         }
     }, {

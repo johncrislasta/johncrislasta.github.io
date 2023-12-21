@@ -223,6 +223,44 @@ nav#mainNav {
     color: var(--dark);
 }
 
+#mainNav .menu-item a{
+    transform: scale(1);
+    transition: all 0.1s linear;
+    display: inline-block;
+}
+
+#mainNav .menu-item.active a {
+    font-weight: 900;
+    text-shadow: 0 0 10px white;
+    transform: scale(1.1);
+}
+
+#mainNav.fixed ul .menu-item.active a {
+    text-shadow: 0 0 10px #34343480;
+}
+
+#mainNav #introMenuItem.menu-item:hover a {
+    color: var(--brand-php);
+}
+
+#mainNav #workMenuItem.menu-item:hover a {
+    color: var(--brand-javascript);
+}
+
+#mainNav #aboutMenuItem.menu-item:hover a {
+    color: var(--brand-html);
+}
+
+#mainNav #matchMenuItem.menu-item:hover a {
+    color: var(--brand-css);
+}
+
+@media (max-width: 500px) {
+    #mainNav .menu-item:not(.active) {
+        display: none;
+    }
+}
+
 #sectionActions {
     margin-left: auto;
     padding-right: 1rem;
