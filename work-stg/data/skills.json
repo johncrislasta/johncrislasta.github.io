@@ -66,5 +66,17 @@
   "Git": {
     "title": "Git",
     "years": 3.9
+  },
+  "Advanced-Custom-Fields": {
+    "title": "Advanced Custom Fields",
+    "years": 4.1
+  },
+  "SASS": {
+    "title": "SASS",
+    "years": 5.5
+  },
+  "LESS": {
+    "title": "LESS",
+    "years": 3.5
   }
 }

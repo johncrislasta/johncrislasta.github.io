@@ -92,7 +92,7 @@
     "id": "coworkercoffee",
     "title": "Coworker Coffee",
     "url": "https://coworkercoffee.com",
-    "summary": "A startup project initiated by my colleague. My first WordPress rodeo!",
+    "summary": "A startup project initiated by my colleague.<br/>My first WordPress rodeo!",
     "work": [
       "Created custom plugins and theme to create a platform for companies to have their employees be randomly paired once a week",
       "Created a user dashboard that displays a calendar, using fullcalendar.js, and moment.js for their past, present and future matches, to initiate communication with their assigned pair, and an ability to select frequency of matches per month.",

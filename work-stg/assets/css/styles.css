@@ -287,7 +287,17 @@ nav#mainNav {
     transform: translateX(100vh);
 }
 
-.work-action {
+@media (max-width: 768px) {
+    #sectionActions .action-group li a span {
+        display: none;
+    }
+    #sectionActions .action-group li a {
+        padding-right: 1rem;
+    }
+}
+
+
+.work-action:not(:first-child) {
     border-left: 1px solid #343434;
     padding-left: 1rem;
     cursor: pointer;
@@ -495,6 +505,15 @@ header {
 }
 [data-back="Git"] .flip-card-back {
     background-image: url("../img/logos/Git.png");
+}
+[data-back="Advanced-Custom-Fields"] .flip-card-back {
+    background-image: url("../img/logos/Advanced-Custom-Fields.png");
+}
+[data-back="SASS"] .flip-card-back {
+    background-image: url("../img/logos/SASS.png");
+}
+[data-back="LESS"] .flip-card-back {
+    background-image: url("../img/logos/LESS.png");
 }
 
 @keyframes tada {
@@ -1130,13 +1149,13 @@ section#work > .work-card.active:has(.zoom) {
     }
     .work-card.active .work-card-front {
         background-size: contain;
-        background-position: top center;
+        background-position: center 53px;
     }
 
     .work-card.active .work-card-front-label {
         margin: auto 10px 10px;
         width: calc( 100% - 20px);
-        height: 70%;
+        height: 60%;
         overflow-y: auto;
     }
 }
@@ -1146,6 +1165,7 @@ section#work > .work-card.active:has(.zoom) {
         margin: auto auto 0;
         width: 100%;
         overflow-y: auto;
+        max-height: calc(100svh - 53px);
     }
 
 }
@@ -1188,6 +1208,7 @@ i.button {
     border-radius: 50%;
     font-style: normal;
     cursor: pointer;
+    filter: grayscale(100%);
 }
 
 i.button:before {
@@ -1196,8 +1217,20 @@ i.button:before {
     color: var(--dark);
 }
 
+i.button.small {
+    width: 16px;
+    height: 16px;
+    border: none;
+    background: transparent;
+}
+
+i.button.small:before {
+    font-size: 16px;
+    line-height: 16px;
+}
+
 i.button.button-close:before {
-    content: '\2715';
+    content: '\274C';
 }
 
 i.button.button-globe:before {
@@ -1210,14 +1243,45 @@ i.button.button-launch:before {
     font-size: 20px;
 }
 
+i.button.button-works:before {
+    content: "\1F4C2";
+    font-size: 22px;
+}
 i.button.button-zoom:before {
     content: "\1F50E";
     font-size: 22px;
 }
-
+i.button.button-zoom-out:before {
+    content: "\1F50D";
+    font-size: 22px;
+}
+i.button.button-zoom:after {
+    content: "+";
+    position: absolute;
+    top: -5px;
+    right: -6px;
+    z-index: 9999;
+    color: black;
+    text-shadow: 1px 1px white;
+    font-weight: bold;
+}
+i.button.button-zoom-out:after {
+    content: "—";
+    position: absolute;
+    top: -6px;
+    right: -1px;
+    z-index: 9999;
+    color: black;
+    text-shadow: 1px 1px white;
+    font-weight: bold;
+}
 i.button.button-info:before {
     content: "\1F4C4";
     font-size: 22px;
+}
+i.button.button-reload:before {
+    content: "\1F504";
+    font-size: 20px;
 }
 
 /*-----------------------------

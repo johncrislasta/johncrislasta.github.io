@@ -578,7 +578,7 @@ class Cube {
             // Calculate the new rotation angle based on scroll percentage
 
             // Apply the new rotation to the cube
-            console.log('scrolling', scrollPercentage, newRotation, this.cube.style);
+            // console.log('scrolling', scrollPercentage, newRotation, this.cube.style);
         });
     }
 
@@ -1012,8 +1012,8 @@ cubesObserver.observe(document.querySelector("#cubeContainer"));
 const observerThresholds = {
     intro: 0.2,
     work: 0.15,
-    about: 0.9,
-    match: 0.9
+    about: 0.4,
+    match: 0.5
 }
 
 const navMenuItems = {
