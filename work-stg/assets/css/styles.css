@@ -1283,6 +1283,43 @@ i.button.button-reload:before {
     content: "\1F504";
     font-size: 20px;
 }
+i.button.button-mglass {
+    position: relative;
+    display: inline-block;
+    background: #fff;
+    border-radius: 30px;
+    height: 12px;
+    width: 12px;
+    border: 2px solid #888;
+}
+i.button.button-mglass:after {
+    content: "";
+    height: 3px;
+    width: 8px;
+    background: #888;
+    position:absolute;
+    top: 12px;
+    left: 9px;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+}
+i.button.button-mglass:before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: 1px;
+    font-weight: bold;
+    text-shadow: 1px 1px #d7d7d7;
+}
+i.button.button-mglass.plus:before {
+    content: "+";
+}
+i.button.button-mglass.minus:before {
+    content: "-";
+}
+
 
 /*-----------------------------
  * END - Buttons
