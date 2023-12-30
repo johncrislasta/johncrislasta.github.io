@@ -291,8 +291,11 @@ nav#mainNav {
     #sectionActions .action-group li a span {
         display: none;
     }
-    #sectionActions .action-group li a {
+    #sectionActions .action-group li a:not(:has(.button-mglass)) {
         padding-right: 1rem;
+    }
+    #sectionActions .action-group li a:has(.button-mglass) {
+        padding-right: 0.5rem;
     }
 }
 
