@@ -1,0 +1,114 @@
+[
+  {
+    "id": "verobuildingsystems",
+    "title": "Vero Building Systems",
+    "url": "https://verobuildingsystems.com/",
+    "summary": "Built a Custom Beaver Builder Module",
+    "work": [
+      "Created a custom Beaver Builder module that enhances the default slider module.",
+      "This new module allows you to set the minimum and maximum slides to display at a time, and it even supports decimal values to render a peeking slide.",
+      "The new module also includes a highlight slide feature, enabling you to set the background and text color for a specific slide to be highlighted."
+    ],
+    "featured_image": "verobuildingsystems-home.png",
+    "skills": [
+      "WordPress",
+      "Beaver Builder",
+      "JavaScript",
+      "CSS",
+      "WP Plugin Development"
+    ],
+    "gallery": [
+      "verobuildingsystems-home-slider.png"
+    ]
+  },
+  {
+    "id": "sukkot",
+    "title": "The Sukkah Project",
+    "url": "https://www.sukkot.com/",
+    "summary": "Built a Year On Year Sales Report Dashboard",
+    "work": [
+      "Created a dashboard on the backend of WordPress to display a Year on Year sales report with adjustments to the varying start and end dates of the Sukkot, a Jewish holiday, which is observed in different dates every year.",
+      "Retrieved the varying start and end dates of Sukkot on their Jewish Calendar Rest API",
+      "Implemented custom shipping options inside WooCommerce based on the location of the customer and the shipping classes of the products in their cart"
+    ],
+    "featured_image": "sukkot-home.png",
+    "skills": [
+      "WordPress",
+      "jQuery",
+      "API",
+      "WooCommerce",
+      "WPBakery",
+      "JavaScript",
+      "CSS",
+      "WP Plugin Development"
+    ],
+    "gallery": []
+  },
+  {
+    "id": "lauraletchingerart",
+    "title": "Laura Letchinger Art",
+    "url": "https://www.lauraletchingerart.com/",
+    "summary": "Implemented Add-to-List functionality",
+    "work": [
+      "Implemented the \"Add to List\" functionality for each paintings with a heart button that animates on click",
+      "The list is shown on a collapsible sidebar where users can preview their list",
+      "All the paintings in the list can then be included in the email when users submit the inquiry form"
+    ],
+    "featured_image": "lauraletchingerart-paintings.png",
+    "skills": [
+      "WordPress",
+      "jQuery",
+      "LocalStorage",
+      "ThemeCo Pro",
+      "JavaScript",
+      "CSS"
+    ],
+    "gallery": []
+  },
+  {
+    "id": "k9divine",
+    "title": "K9 Divine",
+    "url": "https://k-9divine.com/",
+    "summary": "Oversee the entire site build",
+    "work": [
+      "Managed most of the website from the ground up",
+      "Converted the Adobe XD designs to the pages",
+      "Used the in-house Advanced Custom Fields based page builder"
+    ],
+    "featured_image": "k-9divine-home.png",
+    "skills": [
+      "WordPress",
+      "Advanced Custom Fields",
+      "JavaScript",
+      "SASS"
+    ],
+    "gallery": [
+      "k-9divine-services.png",
+      "k-9divine-pricing.png",
+      "k-9divine-faq.png"
+    ]
+  },
+  {
+    "id": "coworkercoffee",
+    "title": "Coworker Coffee",
+    "url": "https://coworkercoffee.com",
+    "summary": "A startup project initiated by my colleague.<br/>My first WordPress rodeo!",
+    "work": [
+      "Created custom plugins and theme to create a platform for companies to have their employees be randomly paired once a week",
+      "Created a user dashboard that displays a calendar, using fullcalendar.js, and moment.js for their past, present and future matches, to initiate communication with their assigned pair, and an ability to select frequency of matches per month.",
+      "Created a Slack bot using their API to interact with the members and initiate their coffee \"dates\" with their selected coworker for the week.",
+      "Integrated Google Calendar to further enhance the scheduling and pairing",
+      "Created a dynamic pairing system in Excel VBA to visualize the pairing of the employees, to ease up the creating of the most efficient matches based on the variables like schedules, frequency, and availability of every employees"
+    ],
+    "featured_image": "coworker-coffee-home.png",
+    "skills": [
+      "WordPress",
+      "jQuery",
+      "API",
+      "JavaScript",
+      "CSS",
+      "WP-Plugin"
+    ],
+    "gallery": []
+  }
+]

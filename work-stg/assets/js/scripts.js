@@ -587,6 +587,8 @@ class Cube {
     }
 
     setFacingFace( face ) {
+
+        checkIfBrowserIsSafariAppleSilicon();
         this.cube.classList.add('show-' + face);
         this.cube.style.transform = `translateZ( calc( var(--cube-length) * -1 ) )
             rotateX(${cubeShow[face].x}deg) rotateY(${cubeShow[face].y}deg) rotateZ(0deg)`;
@@ -1224,3 +1226,9 @@ function PausableTimeout(callback, delay) {
     this.resume();
 }
 
+function checkIfBrowserIsSafariAppleSilicon() {
+    let isApple10_15plus = navigator.userAgent.match(/OS X 10_([789]|1[01234])/);
+    console.log('is apple 10.15?', isApple10_15plus);
+}
+
+alert('hoy!');

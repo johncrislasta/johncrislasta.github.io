@@ -1,0 +1,82 @@
+{
+  "PHP": {
+    "title": "PHP",
+    "years": 13.8
+  },
+  "JavaScript": {
+    "title": "JavaScript",
+    "years": 13
+  },
+  "HTML": {
+    "title": "HTML5",
+    "years": 13.5
+  },
+  "CSS": {
+    "title": "CSS3",
+    "years": 13.2
+  },
+  "WordPress": {
+    "title": "WordPress",
+    "years": 7.9
+  },
+  "WP-Plugin": {
+    "title": "WP Plugin Development",
+    "years": 7
+  },
+  "jQuery": {
+    "title": "jQuery",
+    "years": 11
+  },
+  "WPBakery": {
+    "title": "WPBakery",
+    "years": 3.5
+  },
+  "Elementor": {
+    "title": "Elementor",
+    "years": 3.2
+  },
+  "BeaverBuilder": {
+    "title": "Beaver Builder",
+    "years": 3
+  },
+  "ThemeCo-Pro": {
+    "title": "ThemeCo's Pro Theme",
+    "years": 1.1
+  },
+  "Cornerstone": {
+    "title": "ThemeCo's Cornerstone",
+    "years": 1
+  },
+  "ReactJS": {
+    "title": "ReactJS",
+    "years": 0.9
+  },
+  "Laravel": {
+    "title": "Laravel",
+    "years": 2.5
+  },
+  "CodeIgniter": {
+    "title": "CodeIgniter",
+    "years": 2.9
+  },
+  "CakePHP": {
+    "title": "CakePHP",
+    "years": 2.7
+  },
+  "Git": {
+    "title": "Git",
+    "years": 3.9
+  },
+  "Advanced-Custom-Fields": {
+    "title": "Advanced Custom Fields",
+    "years": 4.1
+  },
+  "SASS": {
+    "title": "SASS",
+    "years": 5.5
+  },
+  "LESS": {
+    "title": "LESS",
+    "years": 3.5
+  }
+}
