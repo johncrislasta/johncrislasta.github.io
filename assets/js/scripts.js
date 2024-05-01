@@ -1457,7 +1457,7 @@ async function contactHandleSubmit(event) {
     data.append("matchTwoDetails", JSON.stringify(matchTwoDetails));
     data.append("clientInfo", JSON.stringify(clientInfo));
 
-    console.log(submissionAuthenticator);
+    // console.log(submissionAuthenticator);
 
     submitButton.innerText = 'Sending...';
     submitButton.disabled = true;
@@ -1470,7 +1470,7 @@ async function contactHandleSubmit(event) {
     }).then(response => {
         if (response.ok) {
             response.json().then(data => {
-                console.log(data);
+                // console.log(data);
 
                 if ( data.success ) {
                     status.innerHTML = "Many thanks for reaching out! I'll get back to you as fast as I can!";
@@ -1486,7 +1486,7 @@ async function contactHandleSubmit(event) {
                 if (Object.hasOwn(data, 'error')) {
                     status.innerHTML = data["error"].map(error => error["message"]).join(", ")
                 } else {
-                    status.innerHTML = "Oops! There was a problem submitting your form"
+                    status.innerHTML = "Oops! There was a problem submitting your form. Please try sending it again, thank you!"
                 }
             })
         }
@@ -1520,7 +1520,7 @@ function calculateTimeTaken(event) {
         timesTaken[fieldId] += timeTaken;
     else
         timesTaken[fieldId] = timeTaken;
-    console.log(`Time taken for ${fieldId}: ${timeTaken} seconds`);
+    // console.log(`Time taken for ${fieldId}: ${timeTaken} seconds`);
 }
 
 // Attach event listeners to input fields

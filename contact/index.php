@@ -54,7 +54,7 @@ if (!isset($_SERVER['HTTP_ORIGIN']) && isset($_GET['test'])) {
 
 $wildcard = FALSE; // Set $wildcard to TRUE if you do not plan to check or limit the domains
 $credentials = FALSE; // Set $credentials to TRUE if expects credential requests (Cookies, Authentication, SSL certificates)
-$allowedOrigins = array('https://jcyl.work',
+$allowedOrigins = array('https://www.jcyl.work',
 	'http://johncrislasta.github.io.test',
 	'https://f1c7-158-62-76-53.ngrok-free.app',
 );
@@ -150,8 +150,10 @@ $mail->isHTML(true);                                  // Set email format to HTM
 $matchTwoDetails = json_decode($_POST['matchTwoDetails'], true);
 $leastFlips = json_decode($matchTwoDetails['leastFlips'], true);
 
+$leastFlips = empty($leastFlips) ? 0 : "{$leastFlips['count']} on {$leastFlips['date']}";
+
 $message .= "<hr/><h3>Match Two Game:</h3>
-<p><b>Least Flips</b>: {$leastFlips['count']} on {$leastFlips['date']}</p>
+<p><b>Least Flips</b>: $leastFlips</p>
 <p><b>Number of Solves</b>: {$matchTwoDetails['numSolves']}</p>";
 
 
