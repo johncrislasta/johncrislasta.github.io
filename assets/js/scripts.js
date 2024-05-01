@@ -37,7 +37,7 @@ function getRandomSkills( skillSet, count ) {
 function getSkillsForMatchItems() {
     let matchItems = coreSkills.concat( getRandomSkills ( otherSkills, 5 ) );
     // Uncomment for testing match feedback
-    matchItems = ['PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP'];
+    // matchItems = ['PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP'];
     let duplicateMatchItems = [].concat(matchItems, matchItems);
     return duplicateMatchItems.sort(() => Math.random() - 0.5);
 }

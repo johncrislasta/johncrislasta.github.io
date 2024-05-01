@@ -1197,6 +1197,13 @@ section#work > .work-card.active:has(.zoom) {
 }
 
 
+@media ( max-width: 1024px ) {
+    section#work > .work-card {
+        aspect-ratio: 1/1;
+        flex: 0 1 50%;
+    }
+}
+
 @media ( max-width: 480px ) {
     section#work > .work-card {
         aspect-ratio: 1/1;
@@ -1262,10 +1269,102 @@ section#about p {
     line-height: 1.5;
 }
 
-section#about img {
+section#about .portrait img {
     max-width: 100%;
+}
+
+section#about .portrait {
     grid-row: 1 / 4;
     margin-inline: auto;
+}
+
+.portrait {
+    position: relative;
+}
+.portrait-bw {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 0;
+    aspect-ratio: 1;
+}
+.portrait-bw div {
+    background-color: var(--dark);
+    background-image: url(../img/portrait-transparent.png);
+    background-size: calc(100% * 4);
+    background-repeat: no-repeat;
+    opacity: 1;
+    transition: opacity 1s linear;
+}
+
+.portrait-bw div:hover {
+    opacity: 0;
+    transition-duration: 0.2s;
+}
+.portrait-bw div:nth-child(1) {
+    background-position: 0 0;
+}
+
+.portrait-bw div:nth-child(2) {
+    background-position: 33% 0;
+}
+
+.portrait-bw div:nth-child(3) {
+    background-position: 66% 0;
+}
+
+.portrait-bw div:nth-child(4) {
+    background-position: 100% 0;
+}
+
+.portrait-bw div:nth-child(5) {
+    background-position: 0 33%;
+}
+
+.portrait-bw div:nth-child(6) {
+    background-position: 33% 33%;
+}
+
+.portrait-bw div:nth-child(7) {
+    background-position: 66% 33%;
+}
+
+.portrait-bw div:nth-child(8) {
+    background-position: 100% 33%;
+}
+
+.portrait-bw div:nth-child(9) {
+    background-position: 0% 66%;
+}
+
+.portrait-bw div:nth-child(10) {
+    background-position: 33% 66%;
+}
+
+.portrait-bw div:nth-child(11) {
+    background-position: 66% 66%;
+}
+
+.portrait-bw div:nth-child(12) {
+    background-position: 100% 66%;
+}
+
+.portrait-bw div:nth-child(13) {
+    background-position: 0 100%;
+}
+
+.portrait-bw div:nth-child(14) {
+    background-position: 33% 100%;
+}
+
+.portrait-bw div:nth-child(15) {
+    background-position: 66% 100%;
+}
+
+.portrait-bw div:nth-child(16) {
+    background-position: 100% 100%;
 }
 
 #contactForm {
@@ -1309,7 +1408,7 @@ label[for=newsletter] {
 }
 
 @media ( max-width: 768px ) {
-    section#about img,
+    section#about .portrait,
     section#about p {
         grid-column: 1/3;
     }

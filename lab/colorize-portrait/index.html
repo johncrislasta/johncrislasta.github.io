@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Colorize Portrait on Hover</title>
+    <style>
+
+
+
+        body {
+            --dark:             #343434;
+            --brand-php:        #7A86B8;
+            --brand-javascript: #F0DB4F;
+            --brand-html:       #E34C26;
+            --brand-css:        #214CE5;
+
+            --brand-php-light:        #aeb2d5;
+            --brand-javascript-light: #fbd63c;
+            --brand-html-light:       #ef652a;
+            --brand-css-light:        #2965f1;
+        }
+
+        body {
+            background: var(--dark);
+            margin: 0;
+        }
+
+        /*-----------------------------
+         * START - About
+         *--------------------------- */
+
+        section#about {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 1rem;
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto;
+            overflow: hidden;
+        }
+
+        section#about p {
+            text-align: justify;
+            text-shadow: 2px 2px var(--dark);
+            grid-column: 2 / 3;
+            margin-block: 0;
+            line-height: 1.5;
+        }
+
+        section#about .portrait img {
+            max-width: 100%;
+        }
+
+        section#about .portrait {
+            grid-row: 1 / 4;
+            margin-inline: auto;
+        }
+
+        #contactForm {
+            display: grid;
+            grid-template-columns: 5rem auto;
+            gap: 20px;
+            padding-top: 4rem;
+            grid-column: 2 / 3;
+        }
+
+        #contactForm input,
+        #contactForm button,
+        #contactForm textarea {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 4px;
+            background: white;
+            color: var(--dark);
+        }
+
+        label[for=newsletter] {
+            position: absolute;
+            right: -100vw;
+            pointer-events: none;
+            opacity: 0.01;
+        }
+
+        #submitButton {
+            grid-column-start: 2;
+        }
+
+        #formStatus {
+            grid-column: 1 / 3;
+            text-align: center;
+        }
+
+        @media ( max-width: 1024px ) {
+            #contactForm {
+                grid-column: 1/3;
+            }
+        }
+
+        @media ( max-width: 768px ) {
+            section#about img,
+            section#about p {
+                grid-column: 1/3;
+            }
+            section#about p {
+                text-align: left;
+            }
+        }
+
+        .portrait {
+            position: relative;
+        }
+        .portrait-bw {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 0;
+            aspect-ratio: 1;
+        }
+        .portrait-bw div {
+            background-color: var(--dark);
+            background-image: url(assets/img/portrait-transparent.png);
+            background-size: calc(100% * 4);
+            background-repeat: no-repeat;
+            opacity: 1;
+            transition: opacity 1s linear;
+        }
+        .portrait-bw div:hover {
+            opacity: 0;
+            transition-duration: 0.2s;
+        }
+        .portrait-bw div:nth-child(1) {
+            background-position: 0 0;
+        }
+
+        .portrait-bw div:nth-child(2) {
+            background-position: 33% 0;
+        }
+
+        .portrait-bw div:nth-child(3) {
+            background-position: 66% 0;
+        }
+
+        .portrait-bw div:nth-child(4) {
+            background-position: 100% 0;
+        }
+
+        .portrait-bw div:nth-child(5) {
+            background-position: 0 33%;
+        }
+
+        .portrait-bw div:nth-child(6) {
+            background-position: 33% 33%;
+        }
+
+        .portrait-bw div:nth-child(7) {
+            background-position: 66% 33%;
+        }
+
+        .portrait-bw div:nth-child(8) {
+            background-position: 100% 33%;
+        }
+
+        .portrait-bw div:nth-child(9) {
+            background-position: 0% 66%;
+        }
+
+        .portrait-bw div:nth-child(10) {
+            background-position: 33% 66%;
+        }
+
+        .portrait-bw div:nth-child(11) {
+            background-position: 66% 66%;
+        }
+
+        .portrait-bw div:nth-child(12) {
+            background-position: 100% 66%;
+        }
+
+        .portrait-bw div:nth-child(13) {
+            background-position: 0 100%;
+        }
+
+        .portrait-bw div:nth-child(14) {
+            background-position: 33% 100%;
+        }
+
+        .portrait-bw div:nth-child(15) {
+            background-position: 66% 100%;
+        }
+
+        .portrait-bw div:nth-child(16) {
+            background-position: 100% 100%;
+        }
+
+        /*-----------------------------
+         * END - About
+         *--------------------------- */
+    </style>
+</head>
+<body>
+<section id="about">
+    <div class="portrait">
+        <img src="assets/img/portrait.png">
+        <div class="portrait-bw">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <p>Hello! I'm John Cris Lasta, a seasoned Web Developer with a passion for crafting digital experiences since 2010.
+        Over the years, I've honed my skills in front-end and back-end development, adept at creating responsive and
+        user-friendly websites that resonate with audiences. My journey in web development has been marked by a
+        commitment to staying abreast of emerging technologies and industry trends, ensuring that my work remains
+        innovative and cutting-edge.</p>
+
+    <p>Driven by a relentless pursuit of excellence, I thrive in collaborative environments where I can leverage my
+        expertise to turn ideas into reality. Whether you're a startup looking to establish a strong online
+        presence, a business in need of a website revamp, or an individual with a unique project in mind, I'm here
+        to help bring your vision to life. I'd love to work with you to create tailored solutions that meet your
+        specific needs and objectives. Don't hesitate to reach out—I'm just an email away, and I'm eager to embark
+        on this journey together. Let's build something amazing!</p>
+
+    <form id="contactForm" action="https://jcylasta.000webhostapp.com/" method="post">
+        <!--    <form id="contactForm" action="http://johncrislasta.github.io.test/contact/" method="post">-->
+        <label for="nameInput">Name:</label>
+        <input type="text" name="name" id="nameInput" placeholder="What should I call you?" required="" fdprocessedid="tapttc">
+
+        <label for="emailInput">Email:</label>
+        <input type="email" name="email" id="emailInput" placeholder="Let me reply to you" required="" fdprocessedid="p8cwtm">
+
+        <label for="messageArea">Message:</label>
+        <textarea name="message" id="messageArea" placeholder="I'd love to hear from you!" rows="6" required=""></textarea>
+
+        <button id="submitButton" name="submit" fdprocessedid="wyqamv">Send</button>
+
+        <label for="newsletter">
+            <input type="checkbox" name="newsletter" id="newsletter"> Would you like to receive updates from me?
+        </label>
+        <p id="formStatus">Failed to send message. Sorry to suspect you as a spam, but can you provide a sentence or two proving that you are a human? Thanks!</p>
+    </form>
+</section>
+</body>
+</html>

@@ -100,7 +100,7 @@ if ( $time_taken < $min_allowed_time ) {
 	                         'success'       => false,
 	                         'error'         => 'Sorry to suspect you as a spam, but can you provide a sentence or two proving that you are a human? Thanks!'
 	) );
-	exit();
+	die();
 }
 
 if ( $time_taken > $max_allowed_time ) {
@@ -110,18 +110,18 @@ if ( $time_taken > $max_allowed_time ) {
 	                         'success'       => false,
 	                         'error'         => 'Sorry to suspect you as a bot, but it took you too long to compose a message. Would you like to try sending a message again? Also include in your message a sentence or two to prove you are a human. Thanks!'
 	) );
-	exit();
+	die();
 }
 
 // Honeypot checked.
-if( $_POST['newsletter'] == "on" ) {
+if( isset($_POST['newsletter']) && $_POST['newsletter'] == "on" ) {
 	echo json_encode( array( 'status'        => 'Failed',
 	                         'authenticator' => $authenticator,
 	                         'post'          => $_POST,
 	                         'success'       => false,
 	                         'error'         => 'Sorry, I am not sending out newsletters at the moment.'
 	) );
-	exit();
+	die();
 }
 
 // Response
@@ -148,10 +148,11 @@ $mail->isHTML(true);                                  // Set email format to HTM
 
 
 $matchTwoDetails = json_decode($_POST['matchTwoDetails'], true);
+$leastFlips = json_decode($matchTwoDetails['leastFlips'], true);
 
 $message .= "<hr/><h3>Match Two Game:</h3>
-<p><b>Least Flips</b>: {$matchTwoDetails['leastFlips']}</p>
-<p><b>Number of Solves*</b>: {$matchTwoDetails['numSolves']}</p>";
+<p><b>Least Flips</b>: {$leastFlips['count']} on {$leastFlips['date']}</p>
+<p><b>Number of Solves</b>: {$matchTwoDetails['numSolves']}</p>";
 
 
 $clientInfo = json_decode($_POST['clientInfo'], true);

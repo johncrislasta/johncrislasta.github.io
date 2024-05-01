@@ -1,5 +1,83 @@
 [
   {
+    "id": "jcyl-work",
+    "title": "My Portfolio Website",
+    "url": "https://jcyl.work/",
+    "summary": "A passion project to display my skills and experiences",
+    "work": [
+      "Built from the ground up without the use of any JS or CSS frameworks, I decided to go back to my roots and develop my website from scratch.",
+      "I wanted to showcase my skills and talents while still making my website interactive and intuitive.",
+      "I made sure that this website is viewable and enjoyable even in the slowest android device from 5 years ago",
+      "I wanted to do some 3D effects, parallax, and animations while keeping the information about my work and myself short and concise.",
+      "I implemented a multi-layer spam protection on my contact form, so if you get an error in sending a message, I'd love to know what you did.",
+      "I will continuously improve this website like tracking visitor interactions, and adding a timer on the match two game"
+    ],
+    "featured_image": "jcyl_work.png",
+    "skills": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "PHP"
+    ],
+    "gallery": [
+      "jcyl_work-match.png",
+      "jcyl_work-match-solved.png",
+      "jcyl_work-ipad-portrait.jpg",
+      "jcyl_work-ipad-landscape.jpg"
+    ]
+  },
+  {
+    "id": "lionkingflooring",
+    "title": "Lion King Flooring",
+    "url": "https://dev-lion-king-flooring.pantheonsite.io/",
+    "summary": "Built site using Gutenberg ACF Blocks",
+    "work": [
+      "Built Gutenberg Blocks using ACF and built the pages based on the Figma designs",
+      "Implemented custom product archive filters, gallery filters, Gravity Form select field filters, post grids, sliders, etc.",
+      "Implemented a custom WooCommerce add to cart functionality where the sample version of the product is added instead of the actual product",
+      "Implemented the get product quote functionality that populates a repeater section of quote forms built with Gravity Forms",
+      "The development environment uses Pantheon, Lando, Docker and WSL"
+    ],
+    "featured_image": "lionking-home.png",
+    "skills": [
+      "WordPress",
+      "Gutenberg Blocks",
+      "Advanced Custom Fields",
+      "jQuery",
+      "SASS",
+      "Pantheon",
+      "Lando"
+    ],
+    "gallery": [
+      "lionking-gutenberg-blocks.png",
+      "lionking-product-filter.png",
+      "lionking-single-product.png",
+      "lionking-quote-form-repeaters.png"
+    ]
+  },
+  {
+    "id": "liveinelevations",
+    "title": "Elevations by Green Cedar Homes",
+    "url": "https://liveinelevations.ca/",
+    "summary": "Implemented Home Search",
+    "work": [
+      "Implemented Home Search functionality that filters homes by floor area, number of beds and bathrooms, price, style, community and home type.",
+      "Restructured their post types, sorted out the data, created Elementor templates and pages.",
+      "Maintained, updated and added elements to existing pages across the site"
+    ],
+    "featured_image": "elevations-home-search.png",
+    "skills": [
+      "WordPress",
+      "Elementor",
+      "Advanced Custom Fields",
+      "jQuery",
+      "CSS"
+    ],
+    "gallery": [
+      "elevations-edit-home.png"
+    ]
+  },
+  {
     "id": "verobuildingsystems",
     "title": "Vero Building Systems",
     "url": "https://verobuildingsystems.com/",
