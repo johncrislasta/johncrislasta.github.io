@@ -7,6 +7,10 @@
     "title": "JavaScript",
     "years": 13
   },
+  "jQuery": {
+    "title": "jQuery",
+    "years": 11
+  },
   "HTML": {
     "title": "HTML5",
     "years": 13.5
@@ -14,6 +18,18 @@
   "CSS": {
     "title": "CSS3",
     "years": 13.2
+  },
+  "Git": {
+    "title": "Git",
+    "years": 3.9
+  },
+  "SASS": {
+    "title": "SASS",
+    "years": 5.5
+  },
+  "LESS": {
+    "title": "LESS",
+    "years": 3.5
   },
   "WordPress": {
     "title": "WordPress",
@@ -23,9 +39,9 @@
     "title": "WP Plugin Development",
     "years": 7
   },
-  "jQuery": {
-    "title": "jQuery",
-    "years": 11
+  "Advanced-Custom-Fields": {
+    "title": "Advanced Custom Fields",
+    "years": 4.1
   },
   "WPBakery": {
     "title": "WPBakery",
@@ -47,10 +63,6 @@
     "title": "ThemeCo's Cornerstone",
     "years": 1
   },
-  "ReactJS": {
-    "title": "ReactJS",
-    "years": 0.9
-  },
   "Laravel": {
     "title": "Laravel",
     "years": 2.5
@@ -63,20 +75,8 @@
     "title": "CakePHP",
     "years": 2.7
   },
-  "Git": {
-    "title": "Git",
-    "years": 3.9
-  },
-  "Advanced-Custom-Fields": {
-    "title": "Advanced Custom Fields",
-    "years": 4.1
-  },
-  "SASS": {
-    "title": "SASS",
-    "years": 5.5
-  },
-  "LESS": {
-    "title": "LESS",
-    "years": 3.5
+  "ReactJS": {
+    "title": "ReactJS",
+    "years": 0.9
   }
 }

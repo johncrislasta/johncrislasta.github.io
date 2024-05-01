@@ -1,4 +1,12 @@
 <?php
+// TODO: setup db connection for saving guest activities
+/*
+ * 000webhost mysql:
+ * DB Name: id20556261_jcyl_work
+ * DB User: id20556261_root
+ * DB Pass: JCY6589Last@
+ */
+
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -46,7 +54,10 @@ if (!isset($_SERVER['HTTP_ORIGIN']) && isset($_GET['test'])) {
 
 $wildcard = FALSE; // Set $wildcard to TRUE if you do not plan to check or limit the domains
 $credentials = FALSE; // Set $credentials to TRUE if expects credential requests (Cookies, Authentication, SSL certificates)
-$allowedOrigins = array('https://jcyl.work', 'http://johncrislasta.github.io.test');
+$allowedOrigins = array('https://jcyl.work',
+	'http://johncrislasta.github.io.test',
+	'https://f1c7-158-62-76-53.ngrok-free.app',
+);
 
 if ( !isset($_SERVER['HTTP_ORIGIN']) || ( !in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins) && !$wildcard ) ) {
 	// Origin is not allowed
@@ -64,8 +75,53 @@ header('P3P: CP="CAO PSA OUR"'); // Makes IE to support cookies
 
 // Handling the Preflight
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-	echo json_encode(array('status' => 'Failed', 'post' => $_POST, 'success' => false, 'errors' => 'Permission denied!'));
+	echo json_encode(array('status' => 'Failed', 'post' => $_POST, 'success' => false, 'error' => 'Permission denied!'));
 	exit;
+}
+
+
+$authenticator = json_decode($_POST['submissionAuthenticator'], true);
+
+// Get times taken. If it's less than 5 seconds, it must be a spam. If longer than 5 minutes, it could be a bot.
+
+$min_allowed_time = 5;
+$max_allowed_time = 600;
+
+$time_taken = 0;
+
+foreach($authenticator['timeTaken'] as $time) {
+	$time_taken += $time;
+}
+
+if ( $time_taken < $min_allowed_time ) {
+	echo json_encode( array( 'status'        => 'Failed',
+	                         'authenticator' => $authenticator,
+	                         'post'          => $_POST,
+	                         'success'       => false,
+	                         'error'         => 'Sorry to suspect you as a spam, but can you provide a sentence or two proving that you are a human? Thanks!'
+	) );
+	exit();
+}
+
+if ( $time_taken > $max_allowed_time ) {
+	echo json_encode( array( 'status'        => 'Failed',
+	                         'authenticator' => $authenticator,
+	                         'post'          => $_POST,
+	                         'success'       => false,
+	                         'error'         => 'Sorry to suspect you as a bot, but it took you too long to compose a message. Would you like to try sending a message again? Also include in your message a sentence or two to prove you are a human. Thanks!'
+	) );
+	exit();
+}
+
+// Honeypot checked.
+if( $_POST['newsletter'] == "on" ) {
+	echo json_encode( array( 'status'        => 'Failed',
+	                         'authenticator' => $authenticator,
+	                         'post'          => $_POST,
+	                         'success'       => false,
+	                         'error'         => 'Sorry, I am not sending out newsletters at the moment.'
+	) );
+	exit();
 }
 
 // Response
@@ -90,14 +146,54 @@ $mail->addAddress($to);     // Add a recipient
 
 $mail->isHTML(true);                                  // Set email format to HTML
 
+
+$matchTwoDetails = json_decode($_POST['matchTwoDetails'], true);
+
+$message .= "<hr/><h3>Match Two Game:</h3>
+<p><b>Least Flips</b>: {$matchTwoDetails['leastFlips']}</p>
+<p><b>Number of Solves*</b>: {$matchTwoDetails['numSolves']}</p>";
+
+
+$clientInfo = json_decode($_POST['clientInfo'], true);
+
+$message .= "<hr/><h3>Client Info:</h3>
+<p>". getIp() ."</p>
+<p><b>User Agent</b>: {$clientInfo['userAgent']}</p>
+<p><b>App Name*</b>: {$clientInfo['appName']}</p>
+<p><b>App Version*</b>: {$clientInfo['appVersion']}</p>
+<p><b>Vendor</b>: {$clientInfo['vendor']}</p>
+<p><b>Platform*</b>: {$clientInfo['platform']}</p>
+<p><b>Language</b>: {$clientInfo['language']}</p>
+<p><b>Cookies Enabled</b>: {$clientInfo['cookiesEnabled']}</p>
+<p><b>Screen Width</b>: {$clientInfo['screenWidth']}</p>
+<p><b>Screen Height</b>: {$clientInfo['screenHeight']}</p>
+<p><b>Device Pixel Ratio</b>: {$clientInfo['devicePixelRatio']}</p>";
+
+
 $mail->Subject = $subject;
 $mail->Body    = $message;
 
 if(!$mail->send()) {
-	echo json_encode(array('status' => 'Failed', 'post' => $_POST, 'success' => false, 'errors' => 'Message could not be sent. Mailer Error: ' . $mail->ErrorInfo));
+	echo json_encode(array('status' => 'Failed', 'post' => $_POST, 'success' => false, 'error' => 'Message could not be sent. Mailer Error: ' . $mail->ErrorInfo));
 } else {
 	echo json_encode(array('status' => 'OK', 'post' => $_POST, 'success' => true));
 }
 
-//echo json_encode(array('status' => 'OK', 'post' => $_POST));
-?>
+
+/**
+ * Function to get the client IP address.
+ *
+ * @return string The IP address
+ */
+function getIp() {
+	$return = "<b>IP Address</b>: ";
+	if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+		$return .= "Client IP = " . $_SERVER['HTTP_CLIENT_IP'] . "; ";
+	}
+	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		$return .= "Forwarded For = " . $_SERVER['HTTP_X_FORWARDED_FOR'] . "; ";
+	}
+	$return .= $_SERVER['REMOTE_ADDR'];
+
+	return $return;
+}

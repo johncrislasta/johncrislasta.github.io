@@ -13,7 +13,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JCYL's Work</title>
-    <link rel="stylesheet" href="assets/css/styles.css?v=1.1.4">
+    <link rel="stylesheet" href="assets/css/styles.css?v=1.1.6">
     <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
@@ -88,18 +88,21 @@
 
         </ul>
         <ul id="matchGridFeedback" class="action-group">
-
-            <li id="matchGridNumOfFlips" class="match-action">
+            <li id="matchGridNumOfFlips" class="match-action" style="display: none;">
                 <span>Flips:</span>
                 <span id="numOfFlips">0</span>
             </li>
-            <li id="matchGridBest" class="match-action">
-                <span>Best:</span>
+            <li id="matchGridBest" class="match-action" style="display: none;">
+                <i class="button button-trophy small"></i>
                 <span id="leastFlips">0</span>
             </li>
-            <li id="matchGridNumOfSolves" class="match-action">
-                <span>Solves:</span>
+            <li id="matchGridNumOfSolves" class="match-action" style="display: none;">
+                <i class="button button-party small"></i>
                 <span id="numOfSolves">0</span>
+            </li>
+            <li id="playMatchTwo" class="match-action">
+                <i class="button button-puzzle small"></i>
+                <span>Play</span>
             </li>
         </ul>
     </div>
@@ -121,43 +124,44 @@
 
 </section>
 <section id="about">
-    <div id="introText">
-        <img src="assets/img/portrait-transparent.png"/>
-    </div>
-    <div id="contactFormContainer">
-        <p>I'm John Cris Lasta, a seasoned Web Developer with a passion for crafting digital experiences since 2010.
-            Over the years, I've honed my skills in front-end and back-end development, adept at creating responsive and
-            user-friendly websites that resonate with audiences. My journey in web development has been marked by a
-            commitment to staying abreast of emerging technologies and industry trends, ensuring that my work remains
-            innovative and cutting-edge.</p>
+    <img src="assets/img/portrait-transparent.png"/>
+    <p>Hello! I'm John Cris Lasta, a seasoned Web Developer with a passion for crafting digital experiences since 2010.
+        Over the years, I've honed my skills in front-end and back-end development, adept at creating responsive and
+        user-friendly websites that resonate with audiences. My journey in web development has been marked by a
+        commitment to staying abreast of emerging technologies and industry trends, ensuring that my work remains
+        innovative and cutting-edge.</p>
 
-        <p>Driven by a relentless pursuit of excellence, I thrive in collaborative environments where I can leverage my
-            expertise to turn ideas into reality. Whether you're a startup looking to establish a strong online
-            presence, a business in need of a website revamp, or an individual with a unique project in mind, I'm here
-            to help bring your vision to life. I'd love to work with you to create tailored solutions that meet your
-            specific needs and objectives. Don't hesitate to reach out—I'm just an email away, and I'm eager to embark
-            on this journey together. Let's build something amazing!</p>
-        
-        <form id="contactForm" action="http://johncrislasta.github.io.test/contact/" method="post">
-            <label for="nameInput">Name:</label>
-            <input type="text" name="name" id="nameInput" placeholder="What should I call you?" required>
+    <p>Driven by a relentless pursuit of excellence, I thrive in collaborative environments where I can leverage my
+        expertise to turn ideas into reality. Whether you're a startup looking to establish a strong online
+        presence, a business in need of a website revamp, or an individual with a unique project in mind, I'm here
+        to help bring your vision to life. I'd love to work with you to create tailored solutions that meet your
+        specific needs and objectives. Don't hesitate to reach out—I'm just an email away, and I'm eager to embark
+        on this journey together. Let's build something amazing!</p>
 
-            <label for="emailInput">Email:</label>
-            <input type="email" name="email" id="emailInput" placeholder="Let me reply to you" required>
+    <form id="contactForm" action="https://jcylasta.000webhostapp.com/" method="post">
+<!--    <form id="contactForm" action="http://johncrislasta.github.io.test/contact/" method="post">-->
+        <label for="nameInput">Name:</label>
+        <input type="text" name="name" id="nameInput" placeholder="What should I call you?" required>
 
-            <label for="messageArea">Message:</label>
-            <textarea name="message" id="messageArea" placeholder="I'd love to hear from you!" rows="6" required></textarea>
+        <label for="emailInput">Email:</label>
+        <input type="email" name="email" id="emailInput" placeholder="Let me reply to you" required>
 
-            <button id="submitButton" name="submit">Send</button>
-            <p id="formStatus"></p>
-        </form>
-    </div>
+        <label for="messageArea">Message:</label>
+        <textarea name="message" id="messageArea" placeholder="I'd love to hear from you!" rows="6" required></textarea>
+
+        <button id="submitButton" name="submit">Send</button>
+
+        <label for="newsletter">
+            <input type="checkbox" name="newsletter" id="newsletter" /> Would you like to receive updates from me?
+        </label>
+        <p id="formStatus"></p>
+    </form>
 </section>
 <section id="match" class="">
     <h4 id="matchGridFeedbackMessage" style="display: none">Match Grid</h4>
     <div id="matchGrid" class="background">
     </div>
 </section>
-<script src="assets/js/scripts.js?v=1.1.12"></script>
+<script src="assets/js/scripts.js?v=1.1.27"></script>
 </body>
 </html>

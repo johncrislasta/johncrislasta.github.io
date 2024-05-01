@@ -18,7 +18,7 @@ fetch(skillsJsonFilePath)
             return !coreSkills.includes( el );
         } );
 
-        reshuffleMatchGrid();
+        initializeMatchGrid();
 
         animateSkillsCloud = new AnimateSkillsCloud();
         animateHeroCubes = new AnimateHeroCubes();
@@ -36,12 +36,24 @@ function getRandomSkills( skillSet, count ) {
 
 function getSkillsForMatchItems() {
     let matchItems = coreSkills.concat( getRandomSkills ( otherSkills, 5 ) );
+    // Uncomment for testing match feedback
+    matchItems = ['PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP'];
     let duplicateMatchItems = [].concat(matchItems, matchItems);
     return duplicateMatchItems.sort(() => Math.random() - 0.5);
-
 }
-// let matchItems = ['PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP', 'PHP'];
-let staticItems = ['J', 'C', 'Y', 'L'];
+
+function getAllSkills() {
+    let allSkills = coreSkills.concat( otherSkills );
+    return allSkills;
+}
+
+
+let staticItems = [
+    { title: 'LinkedIn', url: 'https://www.linkedin.com/in/jcylasta/', img: '/logos/LinkedIn.png'},
+    { title: 'Resume', url: '/resume/John_Cris_Lasta-Resume-2024.pdf', img: '/logos/Resume.png'},
+    { title: 'Mail', url: '#contactForm', img: '/logos/Mail.png'},
+    { title: 'Back To Top', url: '#intro', img: '/logos/JCYL-BW.png'}
+];
 const matchFeedback = {
     'didNotBother': "Thanks for scrolling through! If you haven't tried the match-two game yet, give it a shot—it's a fun way to uncover the tech tools I love using.",
     'triedALittle': "Hey there! I noticed you gave the match-two game a go—awesome! Feel free to take another shot when you have a minute. It's a little sneak peek into my love for problem-solving.",
@@ -53,14 +65,46 @@ const matchFeedback = {
 }
 let matchFeedbackKey = 'didNotBother';
 
+const matchSection = document.querySelector('#match');
 const matchGrid = document.querySelector('#matchGrid');
+let isInitialMatchGrid = true;
 let shuffledMatchItems = [];
 let flippedCard = [];
 let solvedCards = [];
 let numberOfFlips = 0;
 let numberOfSolves = getNumOfSolves() ?? 0;
 
+function initializeMatchGrid() {
+    updateLeastFlips( numberOfFlips );
+    setNumOfSolves();
+    matchGrid.innerHTML = "";
+    flippedCard = [];
+    solvedCards = [];
+    numberOfFlips = 0;
+
+    let allSkills = getAllSkills();
+
+    allSkills.forEach(function(el) {
+        let div = document.createElement("div");
+        div.className = "flip-card";
+        div.innerHTML = `<div class="flip-card-inner initial opened" onclick="openCard(this)" data-back="${el}">
+                    <div class="flip-card-front">
+                    </div>
+                    <div class="flip-card-back" title="${skills[el].title}">
+                        <h1>${skills[el].title}</h1>
+                    </div>
+                </div>`;
+        matchGrid.appendChild(div);
+    });
+
+    renderStaticCards();
+
+    adjustMatchBackTitleFontSizes();
+    matchGrid.dispatchEvent(new Event('initializedMatchGrid'));
+}
+
 function reshuffleMatchGrid() {
+    isInitialMatchGrid = false;
     updateLeastFlips( numberOfFlips );
     setNumOfSolves();
     matchGrid.innerHTML = "";
@@ -83,15 +127,31 @@ function reshuffleMatchGrid() {
         matchGrid.appendChild(div);
     });
 
-    staticItems.forEach(function(el) {
-        let div = document.createElement("div");
-        div.className = "static-card";
-        div.innerHTML = `<span>${el}</span>`;
-        matchGrid.appendChild(div);
-    });
+    renderStaticCards();
 
     adjustMatchBackTitleFontSizes();
+
+    matchGrid.dispatchEvent(new Event('reshuffledMatchGrid'));
 }
+
+function renderStaticCards(){
+    staticItems.forEach(function(el) {
+        let div = document.createElement("div");
+        let target = el.url.match(/#/) ? "" : "_blank";
+
+        div.className = "static-card";
+        div.style = `--background-image: url(../img/${el.img})`;
+        div.innerHTML = `<a href="${el.url}" target="${target}"><span>${el.title}</span></a>`;
+        matchGrid.appendChild(div);
+    });
+}
+
+// Add click event listener for static card items
+document.addEventListener('click', function(event) {
+    if (event.target.matches('.static-card a[href*=contactForm]') ) {
+        document.querySelector('#nameInput').focus();
+    }
+});
 
 // Call the adjustFontSize function initially and on window resize
 window.addEventListener('resize', adjustMatchBackTitleFontSizes);
@@ -101,6 +161,7 @@ function openCard( card ) {
     if ( matchGrid.classList.contains( 'locked' ) ) return false;
     if ( card.classList.contains( 'opened' ) ) return false;
 
+    isPlayingMatchTwo = true;
     card.classList.add('opened');
     flippedCard.push(card);
 
@@ -122,6 +183,9 @@ function openCard( card ) {
 
                 // Check if all cards are solved
                 if ( solvedCards.length === shuffledMatchItems.length ) {
+                    matchGrid.dispatchEvent(new Event('matchGridSolved'));
+
+                    isPlayingMatchTwo = false;
                     matchGrid.classList.add('solved');
                     numberOfSolves++;
                     setNumOfSolves();
@@ -135,6 +199,7 @@ function openCard( card ) {
 
                     // Clear match matchGrid and reshuffle
                     setTimeout( reshuffleMatchGrid, 6000 );
+
                 }
             }, 300);
         } else {
@@ -171,10 +236,10 @@ function updateLeastFlips( flips ) {
     if( leastFlips.count > flips ) {
         localStorage.setItem('leastFlips', JSON.stringify({ count: flips, date: getCurrentDateTime() }))
 
-        leastFlipsSpan.innerHTML = flips + " flips";
+        leastFlipsSpan.innerHTML = flips;
         leastFlipsSpan.setAttribute('title', getCurrentDateTime() );
     } else {
-        leastFlipsSpan.innerHTML = leastFlips.count + " flips";
+        leastFlipsSpan.innerHTML = leastFlips.count;
         leastFlipsSpan.setAttribute('title', leastFlips.date );
     }
 }
@@ -193,14 +258,20 @@ const matchGridFeedbackMessage = document.querySelector('#matchGridFeedbackMessa
 const matchGridNumOfFlips = document.querySelector('#matchGridNumOfFlips');
 const matchGridBest = document.querySelector('#matchGridBest');
 const matchGridNumOfSolves = document.querySelector('#matchGridNumOfSolves');
+const playMatchTwo = document.querySelector('#playMatchTwo');
+let isPlayingMatchTwo = false;
 
 function getMatchGridFeedback() {
+    // console.log('getMatchGridFeedback', numberOfSolves);
 
+    if( isInitialMatchGrid ) return;
     if ( numberOfSolves == 0 ) {
 
-        matchGridNumOfFlips.style.display = "none";
-        matchGridBest.style.display = "none";
-        matchGridNumOfSolves.style.display = "none";
+        if( !isPlayingMatchTwo ) {
+            matchGridNumOfFlips.style.display = "none";
+            matchGridBest.style.display = "none";
+            matchGridNumOfSolves.style.display = "none";
+        }
 
         if( numberOfFlips > 0 ) {
             matchFeedbackKey = "triedALittle";
@@ -208,16 +279,22 @@ function getMatchGridFeedback() {
 
     }
     else if ( numberOfSolves == 1 ) {
+        playMatchTwo.style.display = "none";
         matchGridNumOfFlips.style.display = "block";
         matchFeedbackKey = "solvedOnce";
     }
     else if ( numberOfSolves == 2 ) {
+        playMatchTwo.style.display = "none";
         matchGridNumOfFlips.style.display = "block";
         matchGridBest.style.display = "block";
         matchGridNumOfSolves.style.display = "block";
         matchFeedbackKey = "solved2X";
     }
     else if ( numberOfSolves > 2 ) {
+        playMatchTwo.style.display = "none";
+        matchGridNumOfFlips.style.display = "block";
+        matchGridBest.style.display = "block";
+        matchGridNumOfSolves.style.display = "block";
         matchFeedbackKey = "solvedManyXs";
     }
 
@@ -230,20 +307,35 @@ function getMatchGridFeedback() {
     matchGridFeedback.style.display = "flex";
 }
 
+matchGrid.addEventListener('matchGridSolved', getMatchGridFeedback);
+
+playMatchTwo.addEventListener('click', function(e) {
+
+    let staggeredTimeout = 0;
+    document.querySelectorAll('.flip-card-inner.opened').forEach( function (card) {
+        setTimeout( function() { closeCard( card ) }, staggeredTimeout);
+        staggeredTimeout += 25;
+    })
+    setTimeout( reshuffleMatchGrid, 800 );
+    playMatchTwo.style.display = "none";
+    matchGridNumOfFlips.style.display = "block";
+    isPlayingMatchTwo = true;
+})
+
 let matchGridFeedbackObserver = new IntersectionObserver(getMatchGridFeedback, {
     root: null,   // default is the viewport
     threshold: 0.75 // percentage of target's visible area. Triggers "onIntersection"
 })
 
-function onIntersection(entries, opts){
+/*function onIntersection(entries, opts){
     entries.forEach(entry =>
         entry.target.classList.toggle('visible', entry.isIntersecting)
     )
-}
+}*/
 
 const introSection = document.getElementById('intro');
 // Use the observer to observe an element
-matchGridFeedbackObserver.observe( introSection )
+matchGridFeedbackObserver.observe( matchSection )
 
 // To stop observing:
 // observer.unobserve(entry.target)
@@ -252,8 +344,8 @@ matchGridFeedbackObserver.observe( introSection )
 /* Skills Cloud - Start
 /* -------------------- */
 const skillsContainer = document.getElementById('skillsCloud');
-const containerWidth = skillsContainer.offsetWidth;
-const containerHeight = skillsContainer.offsetHeight;
+const skillsContainerWidth = skillsContainer.offsetWidth;
+const skillsContainerHeight = skillsContainer.offsetHeight;
 
 // Variables to track the dragging state
 let isDraggingSkill = false;
@@ -295,16 +387,16 @@ function renderSkillsCloud() {
     function positionSkillDiv(skillDiv, fontSize) {
         let positionX, positionY, attempts = 0;
         do {
-            positionX = Math.random() * (containerWidth - fontSize);
-            positionY = Math.random() * (containerHeight - fontSize);
+            positionX = Math.random() * (skillsContainerWidth - fontSize);
+            positionY = Math.random() * (skillsContainerHeight - fontSize);
             attempts++;
         } while (checkOverlap(positionX, positionY, skillDiv) && attempts < 10);
         let hasOverlapped = checkOverlap(positionX, positionY, skillDiv );
         // console.log('hasOverlapped', hasOverlapped);
 
 
-        positionX = ( positionX / containerWidth ) * 100;
-        positionY = ( positionY / containerHeight ) * 100;
+        positionX = ( positionX / skillsContainerWidth ) * 100;
+        positionY = ( positionY / skillsContainerHeight ) * 100;
 
         skillDiv.style.left = `${positionX}vw`;
         skillDiv.style.top = `${positionY}vh`;
@@ -324,8 +416,8 @@ function renderSkillsCloud() {
 
         let size = skillDiv.getBoundingClientRect();
         // Check if overflowing container
-        return x + size.width > containerWidth ||
-            y + size.height > containerHeight;
+        return x + size.width > skillsContainerWidth ||
+            y + size.height > skillsContainerHeight;
         // Not overlapping
     }
 
@@ -801,6 +893,7 @@ async function renderWorkGrid() {
     initializeWorkGallerySliders();
     workCards = document.querySelectorAll('.work-card');
 
+    workSection.dispatchEvent(new Event("renderedWorkGrid"));
 }
 
 renderWorkGrid();
@@ -1019,11 +1112,11 @@ const cubesObserver = new IntersectionObserver(function (entries) {
 
 cubesObserver.observe(document.querySelector("#cubeContainer"));
 
-const observerThresholds = {
-    intro: 0.2,
-    work: 0.15,
-    about: 0.7,
-    match: 0.5
+let observerThresholds = {
+    intro: calculateThresholds('intro'),
+    work: calculateThresholds('work'),
+    about: calculateThresholds('about'),
+    match: calculateThresholds('match')
 }
 
 const navMenuItems = {
@@ -1040,24 +1133,62 @@ const navActions = {
     match: document.querySelector('#matchGridFeedback'),
 }
 
-// Section Observer
-document.querySelectorAll("section").forEach(function(section){
-    new IntersectionObserver( function(entries){
-        let section = entries[0].target;
-        // console.log(section.id, navActions, navActions[section.id]);
-        if ( !entries[0].isIntersecting ) {
-            navMenuItems[section.id].classList.remove('active');
-            navActions[section.id].classList.remove('show');
+function calculateThresholds( sectionID ) {
+    const section = document.querySelector( '#' + sectionID );
+    const vwHeight = window.innerHeight;
 
-        } else {
-            navMenuItems[section.id].classList.add('active');
-            navActions[section.id].classList.add('show');
-        }
-    }, {
-        root: null,   // default is the viewport
-        threshold: observerThresholds[section.id] // percentage of target's visible area. Triggers "onIntersection"
-    }).observe(section);
-})
+    if( section.offsetHeight === 0 ) return 0;
+
+    let threshold = 0.4 * vwHeight / section.offsetHeight;
+
+    // console.log('threshold: ' + threshold, vwHeight, section.offsetHeight, section);
+    return threshold;
+}
+
+function updateObserverThresholds() {
+    observerThresholds = {
+        intro: calculateThresholds('intro'),
+        work: calculateThresholds('work'),
+        about: calculateThresholds('about'),
+        match: calculateThresholds('match')
+    }
+}
+
+workSection.addEventListener('renderedWorkGrid', (e) => { updateObserverThresholds(); observeSections(); } );
+matchGrid.addEventListener('initializedMatchGrid', (e) => updateObserverThresholds() );
+
+let sectionIntersectionObservers = {};
+// Section Observer
+function observeSections() {
+    document.querySelectorAll("section").forEach(function(section){
+        sectionIntersectionObservers[section.id] = new IntersectionObserver( function(entries){
+            let section = entries[0].target;
+            // console.log(entries);
+            // console.log(section.id, navActions, navActions[section.id]);
+            if ( !entries[0].isIntersecting ) {
+                navMenuItems[section.id].classList.remove('active');
+                navActions[section.id].classList.remove('show');
+
+            } else {
+                navMenuItems[section.id].classList.add('active');
+                navActions[section.id].classList.add('show');
+                // console.log(section.id + ' is intersecting yes!', navActions[section.id].classList);
+
+                // alert('section: ' + section.id);
+                if(section.id !== 'intro')
+                    mainNav.classList.add('fixed');
+                else
+                    mainNav.classList.remove('fixed');
+            }
+
+        }, {
+            root: null,   // default is the viewport
+            threshold: observerThresholds[section.id] // percentage of target's visible area. Triggers "onIntersection"
+        });
+
+        sectionIntersectionObservers[section.id].observe(section);
+    })
+}
 /* --------------------------------------
     Nav actions event listeners - START
 /* -------------------------------------- */
@@ -1094,7 +1225,7 @@ document.getElementById("zoomOutWork").addEventListener("click", function(e){
 
 
 /* -------------------
-/*  Utilities
+/*  Utilities - START
 /* ------------------- */
 
 function getCurrentDateTime(){
@@ -1190,9 +1321,19 @@ let AttachDragBGTo = (function () {
 })();
 
 function adjustMatchBackTitleFontSizes(){
+    let baseFontSize = 22;
+    if(window.outerWidth < 412)
+        baseFontSize = 12;
+    else if(window.outerWidth < 490)
+        baseFontSize = 18;
+
     let matchH1s = document.querySelectorAll('.flip-card-back h1');
     matchH1s.forEach(function(h1) {
-        adjustFontSize( h1.parentElement, h1, 22);
+        adjustFontSize( h1.parentElement, h1, baseFontSize);
+    })
+    let staticSpans = document.querySelectorAll('.static-card span');
+    staticSpans.forEach(function(span) {
+        adjustFontSize( span.parentElement, span, baseFontSize);
     })
 }
 
@@ -1204,10 +1345,10 @@ function adjustFontSize(container, adjustableText, baseFontSize) {
     const textLength = adjustableText.scrollWidth;
 
     baseFontSize = baseFontSize ?? 32;
-    // console.log(containerWidth, textLength, baseFontSize);
     // Calculate the font size based on the ratio of container width to text length
     let fontSize = containerWidth / textLength * baseFontSize;
     fontSize = fontSize > baseFontSize ? baseFontSize : fontSize;
+    // console.log(container, adjustableText, containerWidth, textLength, baseFontSize, fontSize);
 
     // Apply the calculated font size to the text element
     adjustableText.style.fontSize = `${fontSize}px`;
@@ -1243,12 +1384,80 @@ function checkIfBrowserIsSafariAppleSilicon() {
     return !!(is_mac_os_x_10_15 && is_safari);
 }
 
+// Function to get browser and device information
+function getClientInfo() {
+    let browserInfo = {
+        userAgent: navigator.userAgent,
+        appName: navigator.appName,
+        appVersion: navigator.appVersion,
+        vendor: navigator.vendor,
+        platform: navigator.platform,
+        language: navigator.language,
+        cookiesEnabled: navigator.cookieEnabled,
+        screenWidth: window.screen.width,
+        screenHeight: window.screen.height,
+        devicePixelRatio: window.devicePixelRatio
+    };
+    return browserInfo;
+}
+
+// Usage example
+let clientInfo = getClientInfo();
+
+/*
+console.log(clientInfo);
+
+const successCallback = (position) => {
+    console.log(position);
+    // Handle the user's location data (latitude and longitude) here
+};
+
+const errorCallback = (error) => {
+    console.log(error);
+    // Handle errors (e.g., permission denied, location unavailable) here
+};
+
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
+        enableHighAccuracy: true, // Request high accuracy if available
+        timeout: 5000, // Set a timeout for the request
+        maximumAge: 0 // Don't use cached location data
+    });
+} else {
+    console.log("Geolocation is not supported by this browser.");
+}
+*/
+
+/* -------------------
+/*  Utilities - END
+/* ------------------- */
+
+
+/* ----------------------
+/*  Contact Form - START
+/* ---------------------- */
+
 const contactForm = document.getElementById("contactForm");
+let submissionAuthenticator = {};
+
 async function contactHandleSubmit(event) {
     event.preventDefault();
     const status = document.getElementById("formStatus");
     const submitButton = document.getElementById("submitButton");
     let data = new FormData(event.target);
+    submissionAuthenticator['timeTaken'] = timesTaken;
+
+    let matchTwoDetails = {
+        leastFlips: localStorage.getItem('leastFlips'),
+        numSolves: getNumOfSolves(),
+    }
+    timesTaken = {};
+
+    data.append("submissionAuthenticator", JSON.stringify(submissionAuthenticator));
+    data.append("matchTwoDetails", JSON.stringify(matchTwoDetails));
+    data.append("clientInfo", JSON.stringify(clientInfo));
+
+    console.log(submissionAuthenticator);
 
     submitButton.innerText = 'Sending...';
     submitButton.disabled = true;
@@ -1260,12 +1469,22 @@ async function contactHandleSubmit(event) {
         }
     }).then(response => {
         if (response.ok) {
-            status.innerHTML = "Many thanks for reaching out! I'll get back to you as fast as I can!";
-            contactForm.reset()
+            response.json().then(data => {
+                console.log(data);
+
+                if ( data.success ) {
+                    status.innerHTML = "Many thanks for reaching out! I'll get back to you as fast as I can!";
+                    contactForm.reset()
+                }
+                else{
+                    status.innerHTML = "Failed to send message. " + data.error;
+
+                }
+            })
         } else {
             response.json().then(data => {
-                if (Object.hasOwn(data, 'errors')) {
-                    status.innerHTML = data["errors"].map(error => error["message"]).join(", ")
+                if (Object.hasOwn(data, 'error')) {
+                    status.innerHTML = data["error"].map(error => error["message"]).join(", ")
                 } else {
                     status.innerHTML = "Oops! There was a problem submitting your form"
                 }
@@ -1281,4 +1500,44 @@ async function contactHandleSubmit(event) {
         submitButton.disabled = false;
     });
 }
-contactForm.addEventListener("submit", contactHandleSubmit)
+contactForm.addEventListener("submit", contactHandleSubmit);
+
+const startTime = {}; // Store start times for each field
+let timesTaken = {}; // Store start times for each field
+
+// Record start time when user focuses on an input field
+function recordStartTime(event) {
+    const fieldId = event.target.id;
+    startTime[fieldId] = Date.now();
+}
+
+// Calculate and display time taken when user blurs an input field
+function calculateTimeTaken(event) {
+    const fieldId = event.target.id;
+    const endTime = Date.now();
+    const timeTaken = (endTime - startTime[fieldId]) / 1000; // Convert to seconds
+    if( timesTaken[fieldId] )
+        timesTaken[fieldId] += timeTaken;
+    else
+        timesTaken[fieldId] = timeTaken;
+    console.log(`Time taken for ${fieldId}: ${timeTaken} seconds`);
+}
+
+// Attach event listeners to input fields
+
+const nameInput = document.getElementById("nameInput");
+const emailInput = document.getElementById("emailInput");
+const messageArea = document.getElementById("messageArea");
+
+nameInput.addEventListener('focus', recordStartTime);
+emailInput.addEventListener('focus', recordStartTime);
+messageArea.addEventListener('focus', recordStartTime);
+
+nameInput.addEventListener('blur', calculateTimeTaken);
+emailInput.addEventListener('blur', calculateTimeTaken);
+messageArea.addEventListener('blur', calculateTimeTaken);
+
+
+/* -------------------
+/*  Contact Form - END
+/* ------------------- */
