@@ -899,7 +899,6 @@ section#work > .work-card {
     min-height: 0;
     cursor: pointer;
     z-index: 2;
-    box-shadow: 0 0 1rem;
     overflow: hidden;
     transition: all 0.1s linear;
 }
@@ -928,6 +927,7 @@ section#work > .work-card.active {
 section#work > .work-card:not(.active):hover {
     transform: scale(1.05);
     z-index: 3;
+    box-shadow: 0 0 1rem;
 }
 
 .work-card-inner {
