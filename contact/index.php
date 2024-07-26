@@ -41,7 +41,7 @@ if (!isset($_SERVER['HTTP_ORIGIN']) && isset($_GET['test'])) {
 	$mail->isHTML(true);                                  // Set email format to HTML
 
 	$mail->Subject = 'Testing SMTP from server';
-	$mail->Body    = 'This is the HTML message body <b>in bold!</b>.<p>sent from sleeptight</p>';
+	$mail->Body    = 'This is the HTML message body <b>in bold!</b>';
 	$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
 	if(!$mail->send()) {
