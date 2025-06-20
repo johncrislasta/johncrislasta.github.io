@@ -1356,8 +1356,8 @@ function adjustFontSize(container, adjustableText, baseFontSize) {
 
 function PausableTimeout(callback, delay) {
     this.timerId,
-    this.start,
-    this.remaining = delay;
+        this.start,
+        this.remaining = delay;
 
     this.pause = function() {
         clearTimeout(this.timerId);
@@ -1432,112 +1432,84 @@ if (navigator.geolocation) {
 /*  Utilities - END
 /* ------------------- */
 
+// ----------------------
+//  Contact Form - START
+// ----------------------
 
-/* ----------------------
-/*  Contact Form - START
-/* ---------------------- */
+const form = document.getElementById("contactForm");
+const status = document.getElementById("formStatus");
+const submitButton = document.getElementById("submitButton");
 
-const contactForm = document.getElementById("contactForm");
-let submissionAuthenticator = {};
+const startTime = {};
+let timesTaken = {};
+const submissionAuthenticator = {};
 
-async function contactHandleSubmit(event) {
-    event.preventDefault();
-    const status = document.getElementById("formStatus");
-    const submitButton = document.getElementById("submitButton");
-    let data = new FormData(event.target);
-    submissionAuthenticator['timeTaken'] = timesTaken;
+// Track time spent in each field
+function recordStartTime(e) {
+    startTime[e.target.id] = Date.now();
+}
 
-    let matchTwoDetails = {
-        leastFlips: localStorage.getItem('leastFlips'),
-        numSolves: getNumOfSolves(),
-    }
+function calculateTimeTaken(e) {
+    const fieldId = e.target.id;
+    const endTime = Date.now();
+    const duration = (endTime - (startTime[fieldId] || endTime)) / 1000;
+    timesTaken[fieldId] = (timesTaken[fieldId] || 0) + duration;
+}
+
+// Attach tracking to fields
+["nameInput", "emailInput", "messageArea"].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener("focus", recordStartTime);
+    el.addEventListener("blur", calculateTimeTaken);
+});
+
+// Handle form submission
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    submissionAuthenticator.timeTaken = timesTaken;
+    const matchTwoDetails = {
+        leastFlips: localStorage.getItem("leastFlips"),
+        numSolves: typeof getNumOfSolves === "function" ? getNumOfSolves() : 0,
+    };
+
+    // Reset time tracking
     timesTaken = {};
 
-    data.append("submissionAuthenticator", JSON.stringify(submissionAuthenticator));
-    data.append("matchTwoDetails", JSON.stringify(matchTwoDetails));
-    data.append("clientInfo", JSON.stringify(clientInfo));
+    const formData = new FormData(form);
+    formData.append("submissionAuthenticator", JSON.stringify(submissionAuthenticator));
+    formData.append("matchTwoDetails", JSON.stringify(matchTwoDetails));
+    if (typeof clientInfo !== "undefined") {
+        formData.append("clientInfo", JSON.stringify(clientInfo));
+    }
 
-    // console.log(submissionAuthenticator);
-
-    submitButton.innerText = 'Sending...';
+    // UI feedback
+    status.textContent = "Sending...";
     submitButton.disabled = true;
-    fetch(event.target.action, {
-        method: contactForm.method,
-        body: data,
-        headers: {
-            'Accept': 'application/json'
-        }
-    }).then(response => {
-        if (response.ok) {
-            response.json().then(data => {
-                // console.log(data);
+    submitButton.innerText = "Sending...";
 
-                if ( data.success ) {
-                    status.innerHTML = "Many thanks for reaching out! I'll get back to you as fast as I can!";
-                    contactForm.reset()
-                }
-                else{
-                    status.innerHTML = "Failed to send message. " + data.error;
+    try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbwKjcGX5XZ9RV7Wb_OMXgaSnjCL9krVGzV8EhvJqvcZBjc56PpKdxuBqxTC6Z5EA4M80Q/exec", {
+            method: "POST",
+            body: formData,
+        });
 
-                }
-            })
+        const text = await response.text();
+        if (text === "Success") {
+            status.textContent = "Many thanks for reaching out! I'll get back to you as fast as I can!";
+            form.reset();
         } else {
-            response.json().then(data => {
-                if (Object.hasOwn(data, 'error')) {
-                    status.innerHTML = data["error"].map(error => error["message"]).join(", ")
-                } else {
-                    status.innerHTML = "Oops! There was a problem submitting your form. Please try sending it again, thank you!"
-                }
-            })
+            status.textContent = "Failed to send message. Server said: " + text;
         }
+    } catch (error) {
+        console.error("Submission error:", error);
+        status.textContent = "Oops! There was a problem submitting your form.";
+    }
 
-        submitButton.innerText = 'Send';
-        submitButton.disabled = false;
-    }).catch(error => {
-        status.innerHTML = "Oops! There was a problem submitting your form";
+    submitButton.disabled = false;
+    submitButton.innerText = "Send";
+});
 
-        submitButton.innerText = 'Send';
-        submitButton.disabled = false;
-    });
-}
-contactForm.addEventListener("submit", contactHandleSubmit);
-
-const startTime = {}; // Store start times for each field
-let timesTaken = {}; // Store start times for each field
-
-// Record start time when user focuses on an input field
-function recordStartTime(event) {
-    const fieldId = event.target.id;
-    startTime[fieldId] = Date.now();
-}
-
-// Calculate and display time taken when user blurs an input field
-function calculateTimeTaken(event) {
-    const fieldId = event.target.id;
-    const endTime = Date.now();
-    const timeTaken = (endTime - startTime[fieldId]) / 1000; // Convert to seconds
-    if( timesTaken[fieldId] )
-        timesTaken[fieldId] += timeTaken;
-    else
-        timesTaken[fieldId] = timeTaken;
-    // console.log(`Time taken for ${fieldId}: ${timeTaken} seconds`);
-}
-
-// Attach event listeners to input fields
-
-const nameInput = document.getElementById("nameInput");
-const emailInput = document.getElementById("emailInput");
-const messageArea = document.getElementById("messageArea");
-
-nameInput.addEventListener('focus', recordStartTime);
-emailInput.addEventListener('focus', recordStartTime);
-messageArea.addEventListener('focus', recordStartTime);
-
-nameInput.addEventListener('blur', calculateTimeTaken);
-emailInput.addEventListener('blur', calculateTimeTaken);
-messageArea.addEventListener('blur', calculateTimeTaken);
-
-
-/* -------------------
-/*  Contact Form - END
-/* ------------------- */
+// --------------------
+//  Contact Form - END
+// --------------------
