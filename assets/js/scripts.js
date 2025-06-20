@@ -1494,12 +1494,11 @@ form.addEventListener("submit", async (e) => {
             body: formData,
         });
 
-        const text = await response.text();
-        if (text === "Success") {
+        if (response.ok) {
             status.textContent = "Many thanks for reaching out! I'll get back to you as fast as I can!";
             form.reset();
         } else {
-            status.textContent = "Failed to send message. Server said: " + text;
+            status.textContent = "Failed to send message. Server returned: " + response.status;
         }
     } catch (error) {
         console.error("Submission error:", error);
