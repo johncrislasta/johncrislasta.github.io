@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Coin Counter</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 2rem;
+        }
+
+        .bills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .bill-card {
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .bill-card h3 {
+            margin: 0.5rem 0;
+        }
+
+        .bill-buttons button {
+            margin: 4px;
+            padding: 6px 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+
+        .grand-total {
+            font-size: 1.5em;
+            text-align: right;
+            margin-top: 2rem;
+        }
+
+        .reset-button {
+            display: block;
+            margin: 2rem auto 1rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Coin & Bill Counter</h2>
+
+<div style="margin-bottom: 1rem;">
+    <input type="text" id="session-id" placeholder="Enter Session ID or leave blank" />
+    <button onclick="startNewSession()">Start New Session</button>
+    <button onclick="loadSession()">Load Session</button>
+</div>
+
+<div class="bills-grid" id="bills-grid"></div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Coin</th>
+        <th>Buttons</th>
+        <th>Pieces</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody id="coin-table-body"></tbody>
+</table>
+
+<div class="grand-total" id="grand-total">Grand Total: ₱0.00</div>
+
+<button class="reset-button" onclick="resetCounter()">Reset All</button>
+
+<script>
+    const bills = [20, 10, 5, 1];
+    const coins = [0.50, 0.25, 0.10, 0.05];
+    const allDenoms = [...bills, ...coins];
+
+    const billContainer = document.getElementById('bills-grid');
+    const coinTable = document.getElementById('coin-table-body');
+    const grandTotalDisplay = document.getElementById('grand-total');
+
+    const state = {};
+
+    function formatMoney(val) {
+        return `₱${val.toFixed(2)}`;
+    }
+
+    function saveToLocalStorage() {
+        const savedState = {};
+        allDenoms.forEach(denom => {
+            savedState[denom] = state[denom].pieces;
+        });
+        localStorage.setItem('coinCounterState', JSON.stringify(savedState));
+    }
+
+    function loadFromLocalStorage() {
+        const saved = JSON.parse(localStorage.getItem('coinCounterState') || '{}');
+        return saved;
+    }
+
+    function updateDisplay() {
+        let grandTotal = 0;
+        allDenoms.forEach(denom => {
+            const pieces = state[denom].pieces;
+            const value = pieces * denom;
+            state[denom].piecesElem.textContent = pieces;
+            state[denom].valueElem.textContent = formatMoney(value);
+            grandTotal += value;
+        });
+        grandTotalDisplay.textContent = `Grand Total: ${formatMoney(grandTotal)}`;
+        saveToRemote(); // replaces saveToLocalStorage
+
+    }
+
+    function createBillCard(denom, initialPieces = 0) {
+        const card = document.createElement('div');
+        card.className = 'bill-card';
+
+        const title = document.createElement('h3');
+        title.textContent = `₱${denom}`;
+        card.appendChild(title);
+
+        const buttons = document.createElement('div');
+        buttons.className = 'bill-buttons';
+
+        ['+10', '-10', '+1', '-1'].forEach(action => {
+            const btn = document.createElement('button');
+            btn.textContent = action;
+            btn.onclick = () => {
+                const change = parseInt(action);
+                state[denom].pieces = Math.max(0, state[denom].pieces + change);
+                updateDisplay();
+            };
+            buttons.appendChild(btn);
+        });
+
+        card.appendChild(buttons);
+
+        const pieces = document.createElement('div');
+        card.appendChild(pieces);
+
+        const value = document.createElement('div');
+        card.appendChild(value);
+
+        billContainer.appendChild(card);
+
+        state[denom] = {
+            pieces: initialPieces,
+            piecesElem: pieces,
+            valueElem: value
+        };
+    }
+
+    function createCoinRow(denom, initialPieces = 0) {
+        const row = document.createElement('tr');
+
+        const denomCell = document.createElement('td');
+        denomCell.textContent = `₱${denom}`;
+        row.appendChild(denomCell);
+
+        const buttonsCell = document.createElement('td');
+        ['+10', '-10', '+1', '-1'].forEach(action => {
+            const btn = document.createElement('button');
+            btn.textContent = action;
+            btn.onclick = () => {
+                const change = parseInt(action);
+                state[denom].pieces = Math.max(0, state[denom].pieces + change);
+                updateDisplay();
+            };
+            buttonsCell.appendChild(btn);
+        });
+        row.appendChild(buttonsCell);
+
+        const piecesCell = document.createElement('td');
+        row.appendChild(piecesCell);
+
+        const valueCell = document.createElement('td');
+        row.appendChild(valueCell);
+
+        coinTable.appendChild(row);
+
+        state[denom] = {
+            pieces: initialPieces,
+            piecesElem: piecesCell,
+            valueElem: valueCell
+        };
+    }
+
+    function resetCounter() {
+        allDenoms.forEach(denom => {
+            state[denom].pieces = 0;
+        });
+        updateDisplay();
+    }
+
+    // Initialize
+    const savedState = loadFromLocalStorage();
+    let currentSessionId = null;
+
+    bills.forEach(denom => createBillCard(denom, savedState[denom] || 0));
+    coins.forEach(denom => createCoinRow(denom, savedState[denom] || 0));
+    updateDisplay();
+
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwPJu165lvCtAN7hWBwtOzoWvdjtU7rJKN0TBhC9rnykXxdulM79MsxI1n-2xRB4lyAUQ/exec';
+
+    function startNewSession() {
+        const input = document.getElementById('session-id').value.trim();
+        currentSessionId = input || 'session-' + Date.now();
+        alert(`Session started: ${currentSessionId}`);
+        updateDisplay(); // save immediately
+    }
+
+    function loadSession() {
+        const input = document.getElementById('session-id').value.trim();
+        if (!input) return alert("Please enter a Session ID to load.");
+        currentSessionId = input;
+
+        fetch(`${API_URL}?sessionId=${currentSessionId}`)
+            .then(res => res.json())
+            .then(data => {
+                allDenoms.forEach(denom => {
+                    const match = data.find(d => d.denomination === denom);
+                    state[denom].pieces = match ? match.pieces : 0;
+                });
+                updateDisplay();
+            })
+            .catch(() => alert('Failed to load session.'));
+    }
+
+    function saveToRemote() {
+        if (!currentSessionId) return;
+
+        const denominations = allDenoms.map(d => ({
+            denomination: d,
+            pieces: state[d].pieces
+        }));
+
+        fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ sessionId: currentSessionId, denominations }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
+</script>
+
+</body>
+</html>
