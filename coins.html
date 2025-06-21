@@ -83,6 +83,8 @@
     <tbody id="coin-table-body"></tbody>
 </table>
 
+<button class="reset-button" onclick="copyBreakdown()">Copy Breakdown</button>
+
 <div class="grand-total" id="grand-total">Grand Total: ₱0.00</div>
 
 <button class="reset-button" onclick="resetCounter()">Reset All</button>
@@ -205,6 +207,7 @@
     }
 
     function resetCounter() {
+        if( !confirm('You are about to reset everything. This can NOT be undone. Continue?') ) return;
         allDenoms.forEach(denom => {
             state[denom].pieces = 0;
         });
@@ -261,6 +264,34 @@
             headers: { 'Content-Type': 'text/plain' }
         });
     }
+
+    function copyBreakdown() {
+        let lines = [];
+
+        if (currentSessionId) {
+            lines.push(`Session ID: ${currentSessionId}\n`);
+        }
+
+        lines.push("Breakdown:");
+
+        let grandTotal = 0;
+
+        allDenoms.forEach(denom => {
+            const pieces = state[denom].pieces;
+            const value = pieces * denom;
+            grandTotal += value;
+            lines.push(`₱${denom} × ${pieces} = ${formatMoney(value)}`);
+        });
+
+        lines.push(`\nGrand Total: ${formatMoney(grandTotal)}`);
+
+        const text = lines.join('\n');
+
+        navigator.clipboard.writeText(text)
+            .then(() => alert("Breakdown copied to clipboard!"))
+            .catch(err => alert("Failed to copy breakdown."));
+    }
+
 
 </script>
 
