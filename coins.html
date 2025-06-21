@@ -125,6 +125,7 @@
             grandTotal += value;
         });
         grandTotalDisplay.textContent = `Grand Total: ${formatMoney(grandTotal)}`;
+        console.log('updating display, saving to remote...');
         saveToRemote(); // replaces saveToLocalStorage
 
     }
@@ -245,7 +246,9 @@
     }
 
     function saveToRemote() {
+        console.log('saving to remote, checking session id');
         if (!currentSessionId) return;
+        console.log('saving to remote, session ID present');
 
         const denominations = allDenoms.map(d => ({
             denomination: d,
@@ -255,7 +258,7 @@
         fetch(API_URL, {
             method: 'POST',
             body: JSON.stringify({ sessionId: currentSessionId, denominations }),
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'text/plain' }
         });
     }
 
