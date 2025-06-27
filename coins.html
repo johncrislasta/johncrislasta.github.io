@@ -313,9 +313,29 @@
 
     const API_URL = 'https://script.google.com/macros/s/AKfycbwPJu165lvCtAN7hWBwtOzoWvdjtU7rJKN0TBhC9rnykXxdulM79MsxI1n-2xRB4lyAUQ/exec';
 
+    // Auto load previous session
+    const lastSessionId = localStorage.getItem('lastSessionId');
+    if (lastSessionId) {
+        currentSessionId = lastSessionId;
+        document.getElementById('session-id').value = currentSessionId;
+
+        fetch(`${API_URL}?sessionId=${currentSessionId}`)
+            .then(res => res.json())
+            .then(data => {
+                allDenoms.forEach(denom => {
+                    const match = data.find(d => d.denomination === denom);
+                    state[denom].pieces = match ? match.pieces : 0;
+                });
+                updateDisplay();
+                alert(`Auto-loaded last session: ${currentSessionId}`);
+            })
+            .catch(() => alert('Failed to auto-load previous session.'));
+    }
+
     function startNewSession() {
         const input = document.getElementById('session-id').value.trim();
         currentSessionId = input || 'session-' + Date.now();
+        localStorage.setItem('lastSessionId', currentSessionId); // 🔥 save it
         alert(`Session started: ${currentSessionId}`);
         updateDisplay(); // save immediately
     }
@@ -324,6 +344,7 @@
         const input = document.getElementById('session-id').value.trim();
         if (!input) return alert("Please enter a Session ID to load.");
         currentSessionId = input;
+        localStorage.setItem('lastSessionId', currentSessionId); // 🔥 save it
 
         fetch(`${API_URL}?sessionId=${currentSessionId}`)
             .then(res => res.json())
@@ -336,6 +357,7 @@
             })
             .catch(() => alert('Failed to load session.'));
     }
+
 
     function saveToRemote() {
         console.log('saving to remote, checking session id');
