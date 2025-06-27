@@ -16,7 +16,7 @@
             gap: 1rem;
             margin-bottom: 2rem;
         }
-        
+
         .bill-card {
             border: 1px solid #ccc;
             border-radius: 6px;
@@ -63,6 +63,58 @@
             padding: 0.5rem 1rem;
             font-size: 1rem;
         }
+
+        .footer-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #222;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            font-size: 1.2rem;
+            z-index: 1000;
+        }
+
+        .footer-center {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        @keyframes coinDrop {
+            0% { opacity: 1; transform: translateY(-50px) scale(1); }
+            100% { opacity: 0; transform: translateY(0px) scale(0.5); }
+        }
+
+        @keyframes coinRise {
+            0% { opacity: 1; transform: translateY(0px) scale(0.5); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1); }
+        }
+
+        .coin {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            background: gold;
+            color: #222;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            pointer-events: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation-fill-mode: forwards;
+        }
+
+
     </style>
 </head>
 <body>
@@ -95,6 +147,25 @@
 
 <button class="reset-button" onclick="resetCounter()">Reset All</button>
 
+<div class="footer-bar">
+    <div class="footer-left">
+        <!-- Settings icon can go here -->
+        ⚙️
+    </div>
+    <div class="footer-center" id="footer-grand-total">₱0.00</div>
+    <div class="footer-right">
+        🕑 <span id="history-count">0</span>
+    </div>
+</div>
+
+<div id="history-popup" style="display: none; position: fixed; bottom: 60px; right: 0; background: #fff; width: 300px; max-height: 50vh; overflow-y: auto; box-shadow: -2px 0 8px rgba(0,0,0,0.3); z-index: 999;">
+    <div style="padding: 0.5rem; background: #eee; display: flex; justify-content: space-between;">
+        <strong>History</strong>
+        <button onclick="closeHistory()">✖</button>
+    </div>
+    <div id="history-list"></div>
+</div>
+
 <script>
     const bills = [20, 10, 5, 1];
     const coins = [0.50, 0.25, 0.10, 0.05];
@@ -103,6 +174,10 @@
     const billContainer = document.getElementById('bills-grid');
     const coinTable = document.getElementById('coin-table-body');
     const grandTotalDisplay = document.getElementById('grand-total');
+    const footerGrandTotalDisplay = document.getElementById('footer-grand-total');
+
+    let historyStack = [];
+    let previousTotal = 0;
 
     const state = {};
 
@@ -133,7 +208,8 @@
             grandTotal += value;
         });
         grandTotalDisplay.textContent = `Grand Total: ${formatMoney(grandTotal)}`;
-        console.log('updating display, saving to remote...');
+        footerGrandTotalDisplay.textContent = `${formatMoney(grandTotal)}`;
+        animateGrandTotal(grandTotal);
         saveToRemote(); // replaces saveToLocalStorage
 
     }
@@ -152,11 +228,18 @@
         ['+10', '-10', '+1', '-1'].forEach(action => {
             const btn = document.createElement('button');
             btn.textContent = action;
+
             btn.onclick = () => {
-                const change = parseInt(action);
+                const change = parseInt(action); // +10 or -1
+                const type = action.startsWith('+') ? '+' : '-';
+                const amount = Math.abs(change); // 10 or 1
+
                 state[denom].pieces = Math.max(0, state[denom].pieces + change);
+                animateCoinDrop(type, amount, denom);
+                addToHistory(denom, change);
                 updateDisplay();
             };
+
             buttons.appendChild(btn);
         });
 
@@ -298,6 +381,78 @@
             .catch(err => alert("Failed to copy breakdown."));
     }
 
+    function animateGrandTotal(newTotal) {
+        const el = document.getElementById('footer-grand-total');
+        const duration = 300;
+        const steps = 20;
+        const stepTime = duration / steps;
+        const diff = newTotal - previousTotal;
+        let currentStep = 0;
+
+        const interval = setInterval(() => {
+            currentStep++;
+            const tempTotal = previousTotal + (diff * currentStep) / steps;
+            el.textContent = formatMoney(tempTotal);
+            if (currentStep === steps) {
+                clearInterval(interval);
+                previousTotal = newTotal;
+            }
+        }, stepTime);
+    }
+
+    function animateCoinDrop(type = '+', count = 1, denom = '') {
+        for (let i = 0; i < Math.min(count, 10); i++) {
+            setTimeout(() => {
+                const coin = document.createElement('div');
+                coin.className = 'coin';
+                coin.textContent = denom;
+
+                const leftOffset = 50 + Math.random() * 30 - 15; // 35% to 65%
+                const duration = 0.5 + Math.random() * 0.5; // 0.5s to 1s
+
+                coin.style.left = `${leftOffset}%`;
+                coin.style.animation = `${type === '+' ? 'coinDrop' : 'coinRise'} ${duration}s ease-out`;
+
+                document.body.appendChild(coin);
+                setTimeout(() => coin.remove(), duration * 1000);
+            }, i * 60); // stagger each drop by 60ms
+        }
+    }
+
+
+    function addToHistory(denom, change) {
+        historyStack.unshift({ denom, change });
+        updateHistoryDisplay();
+    }
+
+    function updateHistoryDisplay() {
+        document.getElementById('history-count').textContent = historyStack.length;
+        const list = document.getElementById('history-list');
+        list.innerHTML = '';
+        historyStack.forEach((item, index) => {
+            const row = document.createElement('div');
+            row.style.padding = '0.5rem';
+            row.style.borderBottom = '1px solid #ddd';
+            row.innerHTML = `₱${item.denom} ${item.change > 0 ? '+' : ''}${item.change} <button onclick="undoAction(${index})">Undo</button>`;
+            list.appendChild(row);
+        });
+    }
+
+    function undoAction(index) {
+        const item = historyStack.splice(index, 1)[0];
+        state[item.denom].pieces = Math.max(0, state[item.denom].pieces - item.change);
+        updateDisplay();
+        updateHistoryDisplay();
+    }
+
+    function closeHistory() {
+        document.getElementById('history-popup').style.display = 'none';
+    }
+
+    document.querySelector('.footer-right').onclick = () => {
+        const popup = document.getElementById('history-popup');
+        popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
+    };
 
 </script>
 
