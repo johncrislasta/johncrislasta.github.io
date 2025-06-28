@@ -167,6 +167,18 @@
 </div>
 
 <script>
+
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    function updateURLWithSessionId(sessionId) {
+        const newURL = `${window.location.origin}${window.location.pathname}?session=${encodeURIComponent(sessionId)}`;
+        history.replaceState(null, '', newURL);
+    }
+
+
     const bills = [20, 10, 5, 1];
     const coins = [0.50, 0.25, 0.10, 0.05];
     const allDenoms = [...bills, ...coins];
@@ -233,10 +245,19 @@
                 const change = parseInt(action); // +10 or -1
                 const type = action.startsWith('+') ? '+' : '-';
                 const amount = Math.abs(change); // 10 or 1
+                const prevPieces = state[denom].pieces;
 
-                state[denom].pieces = Math.max(0, state[denom].pieces + change);
-                animateCoinDrop(type, amount, denom);
-                addToHistory(denom, change);
+                // Skip if no negative change is possible
+                if (prevPieces === 0 && type === '-') return;
+
+                // Compute the actual change we will apply
+                const actualChange = type === '+'
+                    ? amount
+                    : -Math.min(amount, prevPieces); // Don't subtract more than we have
+
+                state[denom].pieces += actualChange;
+                animateCoinDrop(type, Math.abs(actualChange), denom);
+                addToHistory(denom, actualChange);
                 updateDisplay();
             };
 
@@ -314,12 +335,22 @@
     const API_URL = 'https://script.google.com/macros/s/AKfycbwPJu165lvCtAN7hWBwtOzoWvdjtU7rJKN0TBhC9rnykXxdulM79MsxI1n-2xRB4lyAUQ/exec';
 
     // Auto load previous session
+    const urlSessionId = getQueryParam('session');
     const lastSessionId = localStorage.getItem('lastSessionId');
-    if (lastSessionId) {
-        currentSessionId = lastSessionId;
-        document.getElementById('session-id').value = currentSessionId;
 
-        fetch(`${API_URL}?sessionId=${currentSessionId}`)
+    if (urlSessionId) {
+        loadGivenSession(urlSessionId, true);
+    } else if (lastSessionId) {
+        loadGivenSession(lastSessionId, true);
+    }
+
+    function loadGivenSession(sessionId, silent = false) {
+        currentSessionId = sessionId;
+        document.getElementById('session-id').value = sessionId;
+        localStorage.setItem('lastSessionId', sessionId);
+        updateURLWithSessionId(sessionId);
+
+        fetch(`${API_URL}?sessionId=${sessionId}`)
             .then(res => res.json())
             .then(data => {
                 allDenoms.forEach(denom => {
@@ -327,9 +358,9 @@
                     state[denom].pieces = match ? match.pieces : 0;
                 });
                 updateDisplay();
-                alert(`Auto-loaded last session: ${currentSessionId}`);
+                if (!silent) alert(`Session loaded: ${sessionId}`);
             })
-            .catch(() => alert('Failed to auto-load previous session.'));
+            .catch(() => alert('Failed to load session.'));
     }
 
     function startNewSession() {
@@ -338,6 +369,7 @@
         localStorage.setItem('lastSessionId', currentSessionId); // 🔥 save it
         alert(`Session started: ${currentSessionId}`);
         updateDisplay(); // save immediately
+        updateURLWithSessionId(currentSessionId);
     }
 
     function loadSession() {
@@ -354,6 +386,7 @@
                     state[denom].pieces = match ? match.pieces : 0;
                 });
                 updateDisplay();
+                updateURLWithSessionId(currentSessionId);
             })
             .catch(() => alert('Failed to load session.'));
     }
