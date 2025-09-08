@@ -50,7 +50,7 @@ function getAllSkills() {
 
 let staticItems = [
     { title: 'LinkedIn', url: 'https://www.linkedin.com/in/jcylasta/', img: '/logos/LinkedIn.png'},
-    { title: 'Resume', url: '/resume/John_Cris_Lasta-Resume-2024.pdf', img: '/logos/Resume.png'},
+    { title: 'Resume', url: '/resume/John_Cris_Lasta-Resume-2025.3.pdf', img: '/logos/Resume.png'},
     { title: 'Mail', url: '#contactForm', img: '/logos/Mail.png'},
     { title: 'Back To Top', url: '#intro', img: '/logos/JCYL-logo-bw.png'}
 ];

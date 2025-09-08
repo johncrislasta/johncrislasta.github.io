@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "type": "image",
+      "src": "https://source.unsplash.com/random/800x600?nature",
+      "thumbnail": "https://source.unsplash.com/random/300x200?nature",
+      "alt": "Nature Image 1"
+    },
+    {
+      "type": "image",
+      "src": "https://source.unsplash.com/random/800x600?architecture",
+      "thumbnail": "https://source.unsplash.com/random/300x200?architecture",
+      "alt": "Architecture Image"
+    },
+    {
+      "type": "video",
+      "src": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "thumbnail": "https://www.w3schools.com/html/img_5terre_wide.jpg",
+      "alt": "Sample Video 1"
+    },
+    {
+      "type": "image",
+      "src": "https://source.unsplash.com/random/800x600?animals",
+      "thumbnail": "https://source.unsplash.com/random/300x200?animals",
+      "alt": "Animals Image"
+    },
+    {
+      "type": "video",
+      "src": "https://www.w3schools.com/html/movie.mp4",
+      "thumbnail": "https://www.w3schools.com/html/img_girl.jpg",
+      "alt": "Sample Video 2"
+    },
+    {
+      "type": "image",
+      "src": "https://source.unsplash.com/random/800x600?technology",
+      "thumbnail": "https://source.unsplash.com/random/300x200?technology",
+      "alt": "Technology Image"
+    }
+  ]
+}
