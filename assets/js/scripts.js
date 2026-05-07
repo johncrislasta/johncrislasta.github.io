@@ -918,6 +918,16 @@ function openWorkCard( card ) {
     playWorkGallery(card.id);
     navActions.work.classList.add('opened');
     activeWorkIndex = card.dataset.index;
+    
+    // Hide/show Visit Site link based on URL availability
+    const visitSiteLink = document.getElementById("visitSiteWork");
+    const cardUrl = card.dataset.url;
+    
+    if (!cardUrl || cardUrl.trim() === '') {
+        visitSiteLink.style.display = 'none';
+    } else {
+        visitSiteLink.style.display = '';
+    }
 }
 function closeWorkCard( card ) {
     card.classList.remove('active');
@@ -1209,7 +1219,12 @@ document.getElementById("closeWork").addEventListener("click", function(e){
 });
 document.getElementById("visitSiteWork").addEventListener("click", function(e){
     const card = document.querySelector('.work-card.active');
-    window.open(card.dataset.url);
+    const url = card.dataset.url;
+    
+    // Only open if URL exists and is not blank
+    if (url && url.trim() !== '') {
+        window.open(url);
+    }
 });
 document.getElementById("zoomInWork").addEventListener("click", function(e){
     const card = document.querySelector('.work-card.active');
