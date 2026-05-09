@@ -1131,6 +1131,7 @@ let observerThresholds = {
 
 const navMenuItems = {
     intro: document.querySelector('#introMenuItem'),
+    offer: document.querySelector('#offerMenuItem'),
     work: document.querySelector('#workMenuItem'),
     about: document.querySelector('#aboutMenuItem'),
     match: document.querySelector('#matchMenuItem'),
@@ -1138,6 +1139,7 @@ const navMenuItems = {
 
 const navActions = {
     intro: document.querySelector('#introActions'),
+    offer: document.querySelector('#offerMenuItem'),
     work: document.querySelector('#workActions'),
     about: document.querySelector('#aboutActions'),
     match: document.querySelector('#matchGridFeedback'),
@@ -1504,7 +1506,7 @@ form.addEventListener("submit", async (e) => {
     submitButton.innerText = "Sending...";
 
     try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbwKjcGX5XZ9RV7Wb_OMXgaSnjCL9krVGzV8EhvJqvcZBjc56PpKdxuBqxTC6Z5EA4M80Q/exec", {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbxpnqoao_8ZlaMMZ_iBToCEoZKiniNGDDc5jUA49ZSVvPN5msWIJZ73jWl1FNrZre4a0g/exec", {
             method: "POST",
             body: formData,
         });
