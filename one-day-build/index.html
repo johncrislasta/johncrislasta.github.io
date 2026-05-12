@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One Day Website Build — $100 · John Cris Lasta</title>
+  <meta name="description" content="Get a professional one-page website built in a single day for $100. By John Cris Lasta — WordPress developer with 16 years of experience.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6333b6;
+      --primary-light: #b389fc;
+      --primary-dark: #651ce4;
+      --accent: #7C3AED;
+      --accent-hover: #8B5CF6;
+      --text: #ffffff;
+      --text-secondary: #a1a1aa;
+      --text-muted: #6b7280;
+      --bg-primary: #0B0B0C;
+      --bg-secondary: #0c0616;
+      --bg-tertiary: #120c20;
+      --border: #28272a;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --bg-warning: #fff9e6;
+      --border-warning: #f5d08d;
+      --text-warning: #8a6d3b;
+    }
+
+    
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── TEXTURE ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-tertiary);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .nav-logo {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .nav-logo .live-dot {
+      width: 8px; height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: livepulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes livepulse {
+      0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      50%      { opacity:.7; box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 20px; }
+
+    .nav-link {
+      font-size: .82rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color .18s;
+    }
+    .nav-link:hover { color: var(--text); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent);
+      color: var(--text);
+      font-size: .82rem;
+      font-weight: 500;
+      padding: 9px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background .18s, transform .15s;
+    }
+    .nav-cta:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 92vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr 420px;
+      gap: 0;
+      align-items: stretch;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-left {
+      padding: 80px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp .6s .1s ease both;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 1px;
+      background: var(--text-muted);
+    }
+
+    h1 {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(3rem, 5.5vw, 5rem);
+      line-height: 1.02;
+      letter-spacing: -.02em;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp .7s .2s ease both;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    h1 .stroke {
+      -webkit-text-stroke: 1.5px var(--text);
+      color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      max-width: 500px;
+      margin-bottom: 44px;
+      opacity: 0;
+      animation: fadeUp .7s .3s ease both;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp .7s .4s ease both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: .95rem;
+      font-weight: 500;
+      padding: 15px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background .18s, transform .15s, box-shadow .15s;
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(99, 102, 241, 0.18);
+    }
+
+    .btn-secondary {
+      font-size: .88rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color .18s;
+    }
+    .btn-secondary:hover { color: var(--text); }
+    .btn-secondary svg { transition: transform .18s; }
+    .btn-secondary:hover svg { transform: translateX(3px); }
+
+    .hero-stats {
+      display: flex;
+      justify-content: space-evenly;
+      gap: 36px;
+      margin-top: 56px;
+      padding-top: 36px;
+      border-top: 1px solid var(--border);
+      opacity: 0;
+      animation: fadeUp .7s .5s ease both;
+    }
+
+    .stat-num {
+      font-family: 'Inter', sans-serif;
+      font-size: 2.2rem;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: .75rem;
+      color: var(--text-muted);
+      letter-spacing: .04em;
+      line-height: 1.4;
+    }
+
+    .hero-center{
+      padding: 60px 44px 60px 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: start;
+      border-right: 1px solid var(--border);
+    }
+
+    .hero-slider{
+        background:linear-gradient(145deg, var(--card), var(--card2));
+        border:1px solid var(--border);
+        border-radius:32px;
+        padding:30px;
+        position:relative;
+        box-shadow:0 40px 80px rgba(0,0,0,.45);
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .slider-container{
+        position:relative;
+        width:100%;
+        height:400px;
+        border-radius:20px;
+        overflow:hidden;
+        background:var(--bg-primary);
+        border:1px solid var(--border);
+    }
+
+    .slide{
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        opacity:0;
+        transition:opacity 0.5s ease-in-out;
+    }
+
+    .slide.active{
+        opacity:1;
+    }
+
+    .slide-viewport{
+        width:100%;
+        height:100%;
+        overflow:hidden;
+        border-radius:20px;
+        position:relative;
+    }
+
+    .slide-image{
+        width:100%;
+        height:100%;
+        background-size:cover;
+        background-position:center top;
+        background-repeat:no-repeat;
+        animation:panDown 8s ease-in-out forwards;
+    }
+
+    @keyframes panDown{
+        0%{
+            background-position:center top;
+        }
+        100%{
+            background-position:center 80%;
+        }
+    }
+
+    .slider-controls{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        margin-top:20px;
+    }
+
+    .slider-btn{
+        background:var(--card2);
+        border:1px solid var(--border);
+        color:var(--text);
+        width:40px;
+        height:40px;
+        border-radius:50%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        cursor:pointer;
+        font-size:18px;
+        transition:all 0.3s ease;
+    }
+
+    .slider-btn:hover{
+        background:var(--accent);
+        transform:scale(1.1);
+        color:var(--accent-text);
+    }
+
+    .slider-dots{
+        display:flex;
+        gap:8px;
+    }
+
+    .dot{
+        width:8px;
+        height:8px;
+        border-radius:50%;
+        background:var(--border);
+        cursor:pointer;
+        transition:all 0.3s ease;
+    }
+
+    .dot.active{
+        background:var(--accent);
+        width:24px;
+        border-radius:4px;
+    }
+
+    .mobile-device{
+        position:absolute;
+        bottom:20px;
+        right:20px;
+        width:180px;
+        height:360px;
+        background:var(--bg-primary);
+        border-radius:40px;
+        padding:12px;
+        box-shadow:0 20px 40px rgba(0,0,0,0.4);
+        border:2px solid var(--border);
+        z-index:10;
+    }
+
+    .mobile-device::before{
+        content:'';
+        position:absolute;
+        top:20px;
+        left:50%;
+        transform:translateX(-50%);
+        width:60px;
+        height:6px;
+        background:var(--muted);
+        border-radius:3px;
+    }
+
+    .mobile-screen{
+        width:100%;
+        height:100%;
+        background-size:cover;
+        background-position:center top;
+        background-repeat:no-repeat;
+        border-radius:28px;
+        overflow:hidden;
+    }
+
+    /* ── HERO RIGHT (price card) ── */
+    .hero-right {
+      background: var(--bg-secondary);
+      display: flex;
+      flex-direction: column;
+      padding: 60px 44px;
+      gap: 0;
+      opacity: 0;
+      animation: fadeUp .8s .35s ease both;
+    }
+
+    .price-badge {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .price-amt {
+      font-family: 'Inter', sans-serif;
+      font-size: 4.5rem;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .price-currency {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.8rem;
+      color: var(--text-muted);
+      align-self: flex-start;
+      margin-top: 10px;
+    }
+
+    .price-note {
+      font-size: .8rem;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+
+    .includes-title {
+      font-size: .7rem;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .includes-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    .includes-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: .9rem;
+      line-height: 1.4;
+    }
+
+    .includes-list li::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .card-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    .built-by {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: auto;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.2rem;
+      color: var(--text);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .built-name {
+      font-weight: 500;
+      font-size: .88rem;
+      margin-bottom: 2px;
+    }
+
+    .built-sub {
+      font-size: .76rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .built-sub a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-tertiary);
+      padding: 14px 0;
+    }
+
+    .marquee-inner {
+      display: flex;
+      gap: 0;
+      white-space: nowrap;
+      animation: marquee 30s linear infinite;
+    }
+
+    .marquee-inner span {
+      display: inline-flex;
+      align-items: center;
+      gap: 28px;
+      padding: 0 28px;
+      font-size: .76rem;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45);
+    }
+
+    .marquee-inner span strong { color: rgba(255,255,255,.9); }
+    .marquee-inner span .sep { color: var(--accent); }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── SECTION COMMON ── */
+    section { padding: 100px 56px; max-width: 1200px; margin: 0 auto; }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .7rem;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--text-muted);
+    }
+
+    h2 {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.1;
+      letter-spacing: -.02em;
+      margin-bottom: 20px;
+    }
+
+    h2 em { font-style: italic; color: var(--accent); }
+
+    /* ── HOW IT WORKS ── */
+    .how-wrap {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: 60px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .how-step {
+      padding: 36px 32px;
+      border-right: 1px solid var(--border);
+      position: relative;
+      transition: background .2s;
+    }
+
+    .how-step:last-child { border-right: none; }
+    .how-step:hover { background: var(--bg-tertiary); }
+
+    .how-num {
+      font-family: 'Inter', sans-serif;
+      font-size: 3rem;
+      color: var(--text-muted);
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+
+    .how-title {
+      font-weight: 500;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .how-desc {
+      font-size: .83rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    .how-tag {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--text);
+      font-size: .65rem;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-top: 14px;
+    }
+
+    /* ── WHAT'S INCLUDED ── */
+    .included-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: start;
+      margin-top: 16px;
+    }
+
+    .included-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .inc-item {
+      display: flex;
+      gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .inc-item:first-child { padding-top: 0; }
+
+    .inc-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .inc-title {
+      font-weight: 500;
+      font-size: .95rem;
+      margin-bottom: 4px;
+    }
+
+    .inc-desc {
+      font-size: .82rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .included-aside {
+      position: sticky;
+      top: 90px;
+    }
+
+    .aside-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 36px;
+      margin-bottom: 16px;
+    }
+
+    .aside-card h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.4rem;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .tech-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: .74rem;
+      background: var(--bg-tertiary);
+      color: var(--text);
+    }
+
+    .chip.highlight {
+      background: var(--primary);
+      color: var(--text);
+      border-color: var(--primary);
+    }
+
+    .note-card {
+      background: var(--primary-light);
+      border: 1px solid var(--primary-dark);
+      border-radius: 12px;
+      padding: 24px 28px;
+      font-size: .84rem;
+      line-height: 1.65;
+      color: var(--bg-primary);
+    }
+
+    .note-card strong { display: block; margin-bottom: 6px; font-size: .85rem; }
+
+    /* ── WHO'S IT FOR ── */
+    .who-wrap {
+      background: var(--bg-tertiary);
+      color: var(--text);
+      max-width: 100%;
+      padding: 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .who-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 56px;
+    }
+
+    .who-inner .section-label { color: var(--text-muted); }
+    .who-inner .section-label::before { background: var(--text-muted); }
+
+    .who-inner h2 { color: var(--text); }
+
+    .who-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 56px;
+    }
+
+    .who-card {
+      background: var(--bg-tertiary);
+      padding: 36px 32px;
+      transition: background .2s;
+    }
+
+    .who-card:hover { background: var(--bg-secondary); }
+
+    .who-emoji { font-size: 1.8rem; margin-bottom: 18px; }
+
+    .who-title {
+      font-weight: 500;
+      font-size: 1rem;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .who-desc {
+      font-size: .83rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .about-text p {
+      font-size: .95rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .about-text p:last-child { margin-bottom: 0; }
+
+    .about-text strong { color: var(--text); font-weight: 500; }
+
+    .exp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .exp-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .exp-item:first-child { padding-top: 0; }
+
+    .exp-year {
+      font-size: .72rem;
+      color: var(--text-muted);
+      letter-spacing: .04em;
+      white-space: nowrap;
+      min-width: 80px;
+      padding-top: 3px;
+    }
+
+    .exp-role { font-weight: 500; font-size: .9rem; margin-bottom: 2px; }
+    .exp-co   { font-size: .78rem; color: var(--text-muted); }
+
+    /* ── FAQ ── */
+    .faq-wrap {
+      background: var(--bg-secondary);
+      max-width: 100%;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faq-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 56px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .faq-list { display: flex; flex-direction: column; gap: 0; }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faq-q {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 22px 0;
+      text-align: left;
+      font-family: 'Inter', sans-serif;
+      font-size: .92rem;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .faq-q svg {
+      flex-shrink: 0;
+      transition: transform .25s ease;
+      color: var(--text-muted);
+    }
+
+    .faq-item.open .faq-q svg { transform: rotate(45deg); }
+
+    .faq-a {
+      font-size: .85rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease, padding .35s ease;
+    }
+
+    .faq-item.open .faq-a {
+      max-height: 300px;
+      padding-bottom: 20px;
+    }
+
+    /* ── CTA FOOTER ── */
+    .cta-section {
+      text-align: center;
+      padding: 120px 56px;
+      max-width: 100%;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+    }
+
+    .cta-inner { max-width: 640px; margin: 0 auto; }
+
+    .cta-section h2 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      margin-bottom: 20px;
+    }
+
+    .cta-section p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 44px;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 18px 40px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background .18s, transform .15s, box-shadow .15s;
+    }
+    .cta-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(168, 85, 247, 0.22);
+    }
+
+    .cta-sub {
+      display: block;
+      font-size: .78rem;
+      color: var(--text-muted);
+      margin-top: 18px;
+    }
+
+    /* ── SITE FOOTER ── */
+    footer {
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      padding: 32px 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .78rem;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color .18s;
+    }
+
+    footer a:hover { color: var(--text); }
+
+    .footer-logo {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      .nav-link { display: none; }
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-left { padding: 60px 28px; border-right: none; }
+      .hero-center { padding: 44px 28px; border-bottom: 1px solid var(--border); }
+      .hero-slider { max-width: 100%; }
+      .hero-right { padding: 44px 28px; }
+      .hero-stats { gap: 24px; }
+      section { padding: 72px 28px; }
+      .how-grid { grid-template-columns: 1fr 1fr; }
+      .how-step { border-bottom: 1px solid var(--border); }
+      .included-grid { grid-template-columns: 1fr; gap: 48px; }
+      .included-aside { position: static; }
+      .who-grid { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .faq-inner { grid-template-columns: 1fr; gap: 40px; padding: 72px 28px; }
+      .who-inner { padding: 72px 28px; }
+      .cta-section { padding: 80px 28px; }
+      footer { padding: 28px 24px; }
+    }
+
+    @media (max-width: 540px) {
+      .how-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 2.6rem; }
+    }
+  </style>
+
+  <link rel="apple-touch-icon" sizes="57x57" href="../favicon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="../favicon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="../favicon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="../favicon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="../favicon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="../favicon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="../favicon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="../favicon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="../favicon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="../favicon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../favicon/favicon-16x16.png">
+  <link rel="manifest" href="../favicon/manifest.json">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="live-dot"></span>
+    One Day Build
+  </a>
+  <div class="nav-right">
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#about" class="nav-link">About</a>
+    <a href="#faq" class="nav-link">FAQ</a>
+    <a href="/one-day-build/form/" class="nav-cta">Get started →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Limited slots available each week</div>
+    <h1>
+      Your website,<br>
+      <em>live</em> by<br>
+      <span class="stroke">tomorrow.</span>
+    </h1>
+    <p class="hero-desc">
+      A clean, professional one-page website — designed, built, and delivered in a single day.
+      WordPress or custom HTML/CSS. Flat rate, no surprises.
+    </p>
+    <div class="hero-cta-row">
+      <a href="/one-day-build/form/" class="btn-primary">
+        Start your brief
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="#how" class="btn-secondary">
+        See how it works
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+
+  </div>
+
+  <div class="hero-center">
+    <div class="hero-slider">
+      <div class="slider-container">
+          <div class="slide">
+              <div class="slide-viewport">
+                  <div class="slide-image" style="background-image: url(&quot;img/blueberryfalls.png&quot;); animation: 8s ease-in-out 0s 1 normal forwards running panDown;" data-alt="Blueberry Falls Website"></div>
+                  <div class="mobile-device">
+                      <div class="mobile-screen" style="background-image: url('img/blueberryfalls-mobile.png')"></div>
+                  </div>
+              </div>
+          </div>
+          <div class="slide">
+              <div class="slide-viewport">
+                  <div class="slide-image" style="background-image: url(&quot;img/communityfirstconstruction.png&quot;); animation: 8s ease-in-out 0s 1 normal forwards running panDown;" data-alt="Community First Construction Website"></div>
+                  <div class="mobile-device">
+                      <div class="mobile-screen" style="background-image: url('img/communityfirstconstruction-mobile.png')"></div>
+                  </div>
+              </div>
+          </div>
+          <div class="slide active">
+              <div class="slide-viewport">
+                  <div class="slide-image" style="background-image: url(&quot;img/saratogaparks.png&quot;); animation: 8s ease-in-out 0s 1 normal forwards running panDown;" data-alt="Saratoga Parks Website"></div>
+                  <div class="mobile-device">
+                      <div class="mobile-screen" style="background-image: url('img/saratogaparks-mobile.png')"></div>
+                  </div>
+              </div>
+          </div>
+          <div class="slide">
+              <div class="slide-viewport">
+                  <div class="slide-image" style="background-image: url(&quot;img/westfargoevents.png&quot;); animation: 8s ease-in-out 0s 1 normal forwards running panDown;" data-alt="West Fargo Events Website"></div>
+                  <div class="mobile-device">
+                      <div class="mobile-screen" style="background-image: url('img/westfargoevents-mobile.png')"></div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="slider-controls">
+          <button class="slider-btn prev" onclick="changeSlide(-1)">‹</button>
+          <div class="slider-dots">
+              <span class="dot" onclick="goToSlide(0)"></span>
+              <span class="dot" onclick="goToSlide(1)"></span>
+              <span class="dot active" onclick="goToSlide(2)"></span>
+              <span class="dot" onclick="goToSlide(3)"></span>
+          </div>
+          <button class="slider-btn next" onclick="changeSlide(1)">›</button>
+      </div>
+
+      
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">16+</div>
+          <div class="stat-label">Years of web<br>development</div>
+        </div>
+        <div>
+          <div class="stat-num">$100</div>
+          <div class="stat-label">Flat rate,<br>all included</div>
+        </div>
+        <div>
+          <div class="stat-num">1</div>
+          <div class="stat-label">Business day<br>to deliver</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="price-badge">
+      <span class="price-currency">$</span>
+      <span class="price-amt">100</span>
+    </div>
+    <div class="price-note">One-time flat rate. No monthly fees, no hidden costs.<br>Delivered in one business day.</div>
+
+    <div class="includes-title">What's included</div>
+    <ul class="includes-list">
+      <li>One-page responsive website</li>
+      <li>WordPress <em>or</em> custom HTML/CSS</li>
+      <li>Mobile-friendly design</li>
+      <li>Contact form or CTA setup</li>
+      <li>Basic on-page SEO</li>
+      <li>Up to 2 revision rounds</li>
+      <li>Source files handed over</li>
+    </ul>
+
+    <div class="card-divider"></div>
+
+    <a href="/one-day-build/form/" class="btn-primary" style="width:100%; justify-content:center; font-size:.9rem; padding-inline:0;">
+      Fill out the brief — it takes 2 min →
+    </a>
+
+    <div class="built-by">
+      <div class="avatar">JC</div>
+      <div>
+        <div class="built-name">John Cris Lasta</div>
+        <div class="built-sub">WordPress dev · 16 yrs exp · Davao, PH<br>
+          <a href="https://jcyl.work" target="_blank">jcyl.work ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee-inner">
+    <!-- duplicated for seamless loop -->
+    <span><strong>WordPress</strong> <span class="sep">·</span> Custom HTML/CSS <span class="sep">·</span> <strong>Elementor</strong> <span class="sep">·</span> Divi <span class="sep">·</span> <strong>PHP</strong> <span class="sep">·</span> Webflow <span class="sep">·</span> <strong>WooCommerce</strong> <span class="sep">·</span> Laravel <span class="sep">·</span> <strong>Beaver Builder</strong> <span class="sep">·</span> Cornerstone <span class="sep">·</span> <strong>Responsive Design</strong> <span class="sep">·</span> SEO-ready <span class="sep">·</span> <strong>Custom Plugins</strong> <span class="sep">·</span></span>
+    <span><strong>WordPress</strong> <span class="sep">·</span> Custom HTML/CSS <span class="sep">·</span> <strong>Elementor</strong> <span class="sep">·</span> Divi <span class="sep">·</span> <strong>PHP</strong> <span class="sep">·</span> Webflow <span class="sep">·</span> <strong>WooCommerce</strong> <span class="sep">·</span> Laravel <span class="sep">·</span> <strong>Beaver Builder</strong> <span class="sep">·</span> Cornerstone <span class="sep">·</span> <strong>Responsive Design</strong> <span class="sep">·</span> SEO-ready <span class="sep">·</span> <strong>Custom Plugins</strong> <span class="sep">·</span></span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-wrap" id="how">
+  <section>
+    <div class="section-label reveal">The process</div>
+    <h2 class="reveal">Simple as <em>four steps.</em></h2>
+
+    <div class="how-grid">
+      <div class="how-step reveal">
+        <div class="how-num">01</div>
+        <div class="how-title">Fill the brief</div>
+        <div class="how-desc">Answer a short questionnaire about your business, goals, and what you want on the page. Takes about 2 minutes.</div>
+        <span class="how-tag">~2 min</span>
+      </div>
+      <div class="how-step reveal">
+        <div class="how-num">02</div>
+        <div class="how-title">We align</div>
+        <div class="how-desc">I review your brief and follow up — usually within a few hours — to confirm details and collect your content.</div>
+        <span class="how-tag">Same day</span>
+      </div>
+      <div class="how-step reveal">
+        <div class="how-num">03</div>
+        <div class="how-title">I build it</div>
+        <div class="how-desc">Once aligned, I get to work. WordPress or custom HTML/CSS — whichever fits best. No guessing, no bloat.</div>
+        <span class="how-tag">1 business day</span>
+      </div>
+      <div class="how-step reveal">
+        <div class="how-num">04</div>
+        <div class="how-title">You review & go live</div>
+        <div class="how-desc">You get a preview link. Up to 2 rounds of revisions, then your site goes live. Files are yours to keep.</div>
+        <span class="how-tag">Done ✓</span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- WHAT'S INCLUDED -->
+<section id="included">
+  <div class="section-label reveal">What you get</div>
+  <h2 class="reveal">Everything a one-pager <em>needs.</em></h2>
+
+  <div class="included-grid">
+    <div class="included-items">
+      <div class="inc-item reveal">
+        <div class="inc-icon">📐</div>
+        <div>
+          <div class="inc-title">Responsive design</div>
+          <div class="inc-desc">Looks sharp on phones, tablets, and desktops — built mobile-first from the start.</div>
+        </div>
+      </div>
+      <div class="inc-item reveal">
+        <div class="inc-icon">⚡</div>
+        <div>
+          <div class="inc-title">Fast & clean code</div>
+          <div class="inc-desc">No unnecessary plugins or bloat. Pages load quickly and score well on Google PageSpeed.</div>
+        </div>
+      </div>
+      <div class="inc-item reveal">
+        <div class="inc-icon">📬</div>
+        <div>
+          <div class="inc-title">Contact form or CTA</div>
+          <div class="inc-desc">Working contact form, WhatsApp button, or booking link — whatever drives action for you.</div>
+        </div>
+      </div>
+      <div class="inc-item reveal">
+        <div class="inc-icon">🔍</div>
+        <div>
+          <div class="inc-title">Basic SEO setup</div>
+          <div class="inc-desc">Page title, meta description, heading structure, and Open Graph tags — the fundamentals.</div>
+        </div>
+      </div>
+      <div class="inc-item reveal">
+        <div class="inc-icon">🔄</div>
+        <div>
+          <div class="inc-title">2 revision rounds</div>
+          <div class="inc-desc">After the first preview, you have two chances to request changes before final delivery.</div>
+        </div>
+      </div>
+      <div class="inc-item reveal">
+        <div class="inc-icon">📦</div>
+        <div>
+          <div class="inc-title">Source files, yours forever</div>
+          <div class="inc-desc">You own everything. The files are handed over and you're free to host wherever you like.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="included-aside">
+      <div class="aside-card reveal">
+        <h3>Built with whatever works <em>best</em> for you.</h3>
+        <p style="font-size:.83rem; color:var(--muted); line-height:1.65; margin-bottom:20px;">
+          WordPress if you need a CMS to edit content later. Custom HTML/CSS if you want something lean and fast with no admin overhead.
+        </p>
+        <div class="includes-title">Tech I work with</div>
+        <div class="tech-chips">
+          <span class="chip highlight">WordPress</span>
+          <span class="chip highlight">HTML / CSS</span>
+          <span class="chip">PHP</span>
+          <span class="chip">JavaScript</span>
+          <span class="chip">Elementor</span>
+          <span class="chip">Divi</span>
+          <span class="chip">Beaver Builder</span>
+          <span class="chip">WPBakery</span>
+          <span class="chip">Cornerstone</span>
+          <span class="chip">Webflow</span>
+          <span class="chip">WooCommerce</span>
+        </div>
+      </div>
+
+      <div class="note-card reveal">
+        <strong>Heads up on hosting & domain</strong>
+        Hosting and a domain name are not included — you'll need your own (I can recommend affordable options). If you already have them, I'll deploy directly.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<div class="who-wrap">
+  <div class="who-inner">
+    <div class="section-label reveal">Who this is for</div>
+    <h2 class="reveal">A great fit if you're a…</h2>
+
+    <div class="who-grid">
+      <div class="who-card reveal">
+        <div class="who-emoji">🧑‍💼</div>
+        <div class="who-title">Freelancer or solo pro</div>
+        <div class="who-desc">You need a clean, credible online home that shows what you do and gets you contacted — without months of back-and-forth.</div>
+      </div>
+      <div class="who-card reveal">
+        <div class="who-emoji">🏪</div>
+        <div class="who-title">Local business owner</div>
+        <div class="who-desc">Salon, café, clinic, studio — you need customers to find you, see what you offer, and reach out. That's exactly what this is.</div>
+      </div>
+      <div class="who-card reveal">
+        <div class="who-emoji">🚀</div>
+        <div class="who-title">Startup or new launch</div>
+        <div class="who-desc">You're validating an idea or launching a product and need something live fast — before you invest in a full site.</div>
+      </div>
+      <div class="who-card reveal">
+        <div class="who-emoji">🎨</div>
+        <div class="who-title">Creative professional</div>
+        <div class="who-desc">Photographer, designer, writer — you want a portfolio or personal brand page that actually looks the part.</div>
+      </div>
+      <div class="who-card reveal">
+        <div class="who-emoji">🎉</div>
+        <div class="who-title">Event or campaign</div>
+        <div class="who-desc">Wedding, fundraiser, pop-up — a focused one-pager is all you need to get RSVPs, sell tickets, or spread the word.</div>
+      </div>
+      <div class="who-card reveal">
+        <div class="who-emoji">💡</div>
+        <div class="who-title">Anyone starting out</div>
+        <div class="who-desc">You've been putting off having a website. $100 and one day is a low-risk way to finally get it done and move forward.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label reveal">Who's building it</div>
+
+  <div class="about-grid">
+    <div class="about-text">
+      <h2 class="reveal">Hi, I'm John. I've been doing this since <em>2010.</em></h2>
+      <p class="reveal">
+        I'm a full-stack web developer based in Davao City, Philippines. WordPress is my primary specialty — I've built custom themes, plugins, and complex integrations for clients ranging from small local businesses to Australian e-commerce platforms.
+      </p>
+      <p class="reveal">
+        The One Day Website Build came from a simple observation: <strong>most people just need a solid one-pager to get started.</strong> Not a months-long project, not a bloated template. Something clean, fast, and built by someone who actually knows what they're doing.
+      </p>
+      <p class="reveal">
+        At $100 flat, it's priced to be a no-brainer. You get a professional result, and I get to do focused, satisfying work. Win-win.
+      </p>
+      <p class="reveal">
+        You can see more of my work at <a href="https://jcyl.work" target="_blank" style="color:var(--accent); text-decoration:none;">jcyl.work ↗</a>
+      </p>
+    </div>
+
+    <div class="exp-list reveal">
+      <div class="exp-item">
+        <div class="exp-year">2025 – Now</div>
+        <div>
+          <div class="exp-role">Full Stack Developer</div>
+          <div class="exp-co">Work Hero · Multiple Clients</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-year">2024 – 2025</div>
+        <div>
+          <div class="exp-role">Full Stack Developer</div>
+          <div class="exp-co">WebUX Pty Ltd (Laravel, PayPal, Stripe)</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-year">2022 – 2023</div>
+        <div>
+          <div class="exp-role">Full Stack Developer</div>
+          <div class="exp-co">ThemeCo / Elite — Custom WP plugins</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-year">2020 – 2021</div>
+        <div>
+          <div class="exp-role">WordPress Developer</div>
+          <div class="exp-co">WRS Health</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-year">2018 – 2020</div>
+        <div>
+          <div class="exp-role">Web Developer & Backstop</div>
+          <div class="exp-co">Top Shelf Design — 50+ client sites</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-year">2012 – 2016</div>
+        <div>
+          <div class="exp-role">Web Developer</div>
+          <div class="exp-co">Staff.com, Annelka, All Australian Architecture</div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-year">2010 – 2012</div>
+        <div>
+          <div class="exp-role">Web Developer</div>
+          <div class="exp-co">Turning Winds — first job in the industry</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<div class="faq-wrap" id="faq">
+  <div class="faq-inner">
+    <div>
+      <div class="section-label reveal">Questions</div>
+      <h2 class="reveal" style="font-size:clamp(1.8rem,3.5vw,2.6rem);">Common things people ask.</h2>
+    </div>
+
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What exactly is a "one-page" website?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a">A single scrollable page that covers everything a visitor needs: who you are, what you offer, and how to reach you. No multiple pages or navigation menus — just one focused, well-structured page that works hard for you.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Will I be able to edit it myself after?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a">If we go with WordPress, yes — you'll have a CMS where you can update text, images, and content without touching code. If we go custom HTML/CSS, basic edits are possible but require some comfort with code. We'll pick the right approach for your situation.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What if I don't have my content ready?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a">That's fine — the questionnaire asks about your content readiness. If you have rough notes or a general direction, I can work with that and write copy for you. We'll sort it out in the follow-up conversation before I start building.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What does "one business day" mean exactly?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a">Once we've aligned on details and you've sent over your content, I deliver a working preview within one business day (Mon–Fri, Philippine time). Delays only happen if content is missing — so the faster you send things over, the faster you get it back.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is hosting included?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a">No — hosting and a domain are separate costs you'll manage directly (typically $10–$20/year for a domain and $5–$15/month for hosting). I can point you toward reliable, affordable options and will deploy the site to your host once it's ready.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What if I need more than a one-pager?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a">Mention it in the brief and we'll talk. This offer is specifically for single-page builds, but if your project is bigger, I'm happy to scope it out separately — just reach out via the questionnaire or directly through jcyl.work.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How do I pay?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a">Payment details will be shared after we've aligned on your project in the follow-up. I typically take 50% upfront and 50% on delivery — but we'll confirm this during our conversation.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-inner">
+    <div class="section-label reveal" style="justify-content:center;">Ready when you are</div>
+    <h2 class="reveal">Let's get your<br>site <em>live.</em></h2>
+    <p class="reveal">Fill out the short brief and I'll follow up within a few hours. No commitment until we've talked — just tell me what you need.</p>
+    <a href="/one-day-build/form/" class="cta-btn reveal">
+      Start the brief — it takes 2 minutes
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <span class="cta-sub reveal">$100 flat · One business day · Davao, PH · <a href="https://jcyl.work" target="_blank" style="color:inherit;">jcyl.work ↗</a></span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">One Day Build</span>
+  <span>by <a href="https://jcyl.work" target="_blank">John Cris Lasta</a> · Davao City, Philippines</span>
+  <span>© 2025 · <a href="https://jcyl.work" target="_blank">jcyl.work</a></span>
+</footer>
+
+<script>
+
+  // Hero Slider
+  
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const totalSlides = slides.length;
+
+    function showSlide(index) {
+        // Remove active class from all slides and dots
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+        
+        // Add active class to current slide and dot
+        slides[index].classList.add('active');
+        dots[index].classList.add('active');
+        
+        // Reset animation for current slide
+        const currentImage = slides[index].querySelector('.slide-image');
+        currentImage.style.animation = 'none';
+        // Force reflow
+        currentImage.offsetHeight;
+        setTimeout(() => {
+            currentImage.style.animation = 'panDown 8s ease-in-out forwards';
+        }, 10);
+    }
+
+    function changeSlide(direction) {
+        currentSlide += direction;
+        
+        if (currentSlide >= totalSlides) {
+            currentSlide = 0;
+        } else if (currentSlide < 0) {
+            currentSlide = totalSlides - 1;
+        }
+        
+        showSlide(currentSlide);
+    }
+
+    function goToSlide(index) {
+        currentSlide = index;
+        showSlide(currentSlide);
+    }
+
+    // Auto-advance slides
+    setInterval(() => {
+        changeSlide(1);
+    }, 8000);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            changeSlide(-1);
+        } else if (e.key === 'ArrowRight') {
+            changeSlide(1);
+        }
+    });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        // small stagger based on sibling index
+        const siblings = [...e.target.parentElement.querySelectorAll('.reveal')];
+        const idx = siblings.indexOf(e.target);
+        setTimeout(() => e.target.classList.add('visible'), idx * 60);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // FAQ accordion
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // Smooth nav link scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>

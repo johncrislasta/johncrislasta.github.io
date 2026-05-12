@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Day Website — Let's Build Yours</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0B0C;
+    --card: #151517;
+    --card2: #1B1B1E;
+    --text: #FFFFFF;
+    --muted: #A1A1AA;
+    --accent: #7C3AED;
+    --accent-hover: #8B5CF6;
+    --border: #27272A;
+    --success: #22C55E;
+  }
+
+  [data-theme="light"] {
+    --bg: #FFFFFF;
+    --card: #F8FAFC;
+    --card2: #F1F5F9;
+    --text: #0F172A;
+    --muted: #64748B;
+    --accent: #7C3AED;
+    --accent-hover: #8B5CF6;
+    --border: #E2E8F0;
+    --success: #22C55E;
+  }
+
+  .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+
+  .theme-toggle:hover {
+    background: var(--card2);
+    border-color: var(--accent);
+    transform: scale(1.05);
+  }
+
+  .theme-icon {
+    font-size: 20px;
+    color: var(--text);
+    margin-top: -3px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 64px 24px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    line-height: 1.1;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero p {
+    font-size: 1.1rem;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 600px;
+    margin-bottom: 24px;
+  }
+  .price-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: .9rem;
+    font-weight: 500;
+    background: var(--card);
+  }
+  .price-pill .dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
+
+  /* ── Form Shell ── */
+  .form-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ── Steps ── */
+  .step {
+    display: none;
+    animation: stepIn .35s ease both;
+  }
+  .step.active { display: block; }
+
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Step header ── */
+  .step-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+    color: var(--muted);
+    font-size: .82rem;
+  }
+  .step-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.5rem;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .step-sub { font-size: .88rem; color: var(--muted); margin-bottom: 28px; }
+
+  /* ── Progress bar ── */
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 10px;
+    margin-bottom: 40px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 10px;
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ── Option cards ── */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .options-grid.single-col { grid-template-columns: 1fr; }
+
+  .option-card {
+    position: relative;
+    cursor: pointer;
+  }
+  .option-card input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .option-card label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 20px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    cursor: pointer;
+    transition: border-color .18s, background .18s, transform .12s;
+    user-select: none;
+  }
+  .option-card label:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    background: var(--card2);
+  }
+  .option-card input:checked + label {
+    border-color: var(--accent);
+    background: var(--card2);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+  }
+  .option-icon { font-size: 1.5rem; margin-bottom: 2px; }
+  .option-title { font-weight: 500; font-size: .92rem; }
+  .option-desc { font-size: .78rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── Text inputs ── */
+  .field { margin-bottom: 20px; }
+  .field label {
+    display: block;
+    font-size: .84rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .field input,
+  .field textarea,
+  .field select {
+    width: 100%;
+    padding: 13px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--card2);
+    font-family: 'Inter', sans-serif;
+    font-size: .92rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color .18s, background .18s;
+    resize: vertical;
+  }
+  .field input:focus,
+  .field textarea:focus,
+  .field select:focus { 
+    border-color: var(--accent);
+    background: var(--card);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+  }
+  .field .hint { font-size: .76rem; color: var(--muted); margin-top: 6px; }
+
+  /* ── Toggle chips (multi-select) ── */
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
+  .chip { position: relative; }
+  .chip input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .chip label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 2px solid var(--border);
+    border-radius: 100px;
+    background: var(--card);
+    font-size: .85rem;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .chip label:hover { 
+    border-color: var(--accent);
+    background: var(--card2);
+  }
+  .chip input:checked + label {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+  }
+
+  /* ── Buttons ── */
+  .btn-row { display: flex; gap: 12px; align-items: center; margin-top: 8px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: .92rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all .18s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { 
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(124,58,237,0.3);
+  }
+  .btn-back {
+    background: transparent;
+    color: var(--muted);
+    border: 2px solid var(--border);
+  }
+  .btn-back:hover { 
+    color: var(--text);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .btn-accent { 
+    background: var(--success);
+    color: #fff;
+  }
+  .btn-accent:hover { 
+    background: #16a34a;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(34,197,94,0.3);
+  }
+
+  /* ── Summary / Thank you ── */
+  .summary-box {
+    background: var(--card2);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+    font-size: .88rem;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-row .key { color: var(--muted); min-width: 140px; }
+  .summary-row .val { font-weight: 500; text-align: right; color: var(--text); }
+
+  .thankyou { text-align: center; padding: 48px 0; }
+  .thankyou .big-tick {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: block;
+  }
+  .thankyou h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .thankyou p { color: var(--muted); line-height: 1.7; max-width: 380px; margin: 0 auto 28px; }
+
+  /* ── Divider ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: .78rem;
+    margin: 28px 0;
+  }
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* responsive */
+  @media (max-width: 480px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  <span class="theme-icon" id="themeIcon">🌙</span>
+</button>
+
+<div class="hero">
+  <span class="hero-eyebrow">One Day Website Build</span>
+  <h1>Let's build your site — <em>fast.</em></h1>
+  <p>Answer a few quick questions so I know exactly what you need. Takes about 2 minutes, no tech knowledge required.</p>
+  <div class="price-pill">
+    <span class="dot"></span>
+    Flat rate · $100 USD · Delivered in one day
+  </div>
+</div>
+
+<div class="form-wrap">
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <!-- ── STEP 1: What kind of business ── -->
+  <div class="step active" id="step-1">
+    <div class="step-meta"><div class="step-num">1</div> of 6</div>
+    <div class="step-label">What best describes your business or project?</div>
+    <div class="step-sub">Pick the one that feels closest — don't overthink it.</div>
+    <div class="options-grid">
+      <div class="option-card">
+        <input type="radio" name="biz_type" id="bt1" value="Freelancer / Solo Pro">
+        <label for="bt1"><span class="option-icon">🧑‍💼</span><span class="option-title">Freelancer / Solo Pro</span><span class="option-desc">Designer, writer, consultant, photographer…</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="biz_type" id="bt2" value="Local Business">
+        <label for="bt2"><span class="option-icon">🏪</span><span class="option-title">Local Business</span><span class="option-desc">Salon, café, clinic, shop, restaurant…</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="biz_type" id="bt3" value="Startup / Product">
+        <label for="bt3"><span class="option-icon">🚀</span><span class="option-title">Startup / Product</span><span class="option-desc">App, SaaS, new service launch…</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="biz_type" id="bt4" value="Event or Campaign">
+        <label for="bt4"><span class="option-icon">🎉</span><span class="option-title">Event / Campaign</span><span class="option-desc">Wedding, conference, fundraiser…</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="biz_type" id="bt5" value="Personal Portfolio">
+        <label for="bt5"><span class="option-icon">🎨</span><span class="option-title">Personal Portfolio</span><span class="option-desc">Showcase your work or resume…</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="biz_type" id="bt6" value="Other">
+        <label for="bt6"><span class="option-icon">💡</span><span class="option-title">Something else</span><span class="option-desc">Tell me more in the next steps.</span></label>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goNext(1)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: Goal ── -->
+  <div class="step" id="step-2">
+    <div class="step-meta"><div class="step-num">2</div> of 6</div>
+    <div class="step-label">What's the main goal of the site?</div>
+    <div class="step-sub">What should a visitor do or feel when they land on it?</div>
+    <div class="options-grid single-col">
+      <div class="option-card">
+        <input type="radio" name="goal" id="g1" value="Get people to contact / book me">
+        <label for="g1"><span class="option-title">📩 Get people to contact or book me</span><span class="option-desc">Lead form, WhatsApp button, booking link</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="goal" id="g2" value="Showcase my work or portfolio">
+        <label for="g2"><span class="option-title">🖼 Showcase my work or portfolio</span><span class="option-desc">Gallery, case studies, samples</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="goal" id="g3" value="Explain what I offer (brochure-style)">
+        <label for="g3"><span class="option-title">📋 Explain what I offer (brochure-style)</span><span class="option-desc">Services, pricing, FAQs</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="goal" id="g4" value="Collect sign-ups or leads">
+        <label for="g4"><span class="option-title">📬 Collect sign-ups or leads</span><span class="option-desc">Email list, waitlist, early access</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="goal" id="g5" value="Sell something directly">
+        <label for="g5"><span class="option-title">🛒 Sell something directly</span><span class="option-desc">Single product, digital download, service package</span></label>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="goBack(2)">← Back</button>
+      <button class="btn btn-primary" onclick="goNext(2)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: Sections & features ── -->
+  <div class="step" id="step-3">
+    <div class="step-meta"><div class="step-num">3</div> of 6</div>
+    <div class="step-label">What should be on the page?</div>
+    <div class="step-sub">Select all that apply — more = more info for me to work with.</div>
+    <div class="chips">
+      <div class="chip"><input type="checkbox" id="s1" name="sections" value="Hero / banner"><label for="s1">Hero / Banner</label></div>
+      <div class="chip"><input type="checkbox" id="s2" name="sections" value="About / Story"><label for="s2">About / Story</label></div>
+      <div class="chip"><input type="checkbox" id="s3" name="sections" value="Services / Offerings"><label for="s3">Services</label></div>
+      <div class="chip"><input type="checkbox" id="s4" name="sections" value="Pricing"><label for="s4">Pricing</label></div>
+      <div class="chip"><input type="checkbox" id="s5" name="sections" value="Portfolio / Gallery"><label for="s5">Portfolio / Gallery</label></div>
+      <div class="chip"><input type="checkbox" id="s6" name="sections" value="Testimonials"><label for="s6">Testimonials</label></div>
+      <div class="chip"><input type="checkbox" id="s7" name="sections" value="FAQ"><label for="s7">FAQ</label></div>
+      <div class="chip"><input type="checkbox" id="s8" name="sections" value="Contact form"><label for="s8">Contact Form</label></div>
+      <div class="chip"><input type="checkbox" id="s9" name="sections" value="Booking / calendar link"><label for="s9">Booking</label></div>
+      <div class="chip"><input type="checkbox" id="s10" name="sections" value="Social media links"><label for="s10">Social Links</label></div>
+      <div class="chip"><input type="checkbox" id="s11" name="sections" value="Newsletter sign-up"><label for="s11">Newsletter</label></div>
+      <div class="chip"><input type="checkbox" id="s12" name="sections" value="Map / Location"><label for="s12">Map / Location</label></div>
+    </div>
+    <div class="field">
+      <label>Anything else you'd want on the page? (optional)</label>
+      <textarea id="extra_sections" rows="2" placeholder="e.g. countdown timer, video embed, WhatsApp button…"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="goBack(3)">← Back</button>
+      <button class="btn btn-primary" onclick="goNext(3)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: Brand & content ── -->
+  <div class="step" id="step-4">
+    <div class="step-meta"><div class="step-num">4</div> of 6</div>
+    <div class="step-label">Tell me about your brand</div>
+    <div class="step-sub">No logo or colors yet? No problem — just leave those blank.</div>
+    <div class="field">
+      <label>Business / Project name *</label>
+      <input type="text" id="biz_name" placeholder="e.g. Bloom Studio">
+    </div>
+    <div class="field">
+      <label>What do you do — in one or two sentences</label>
+      <textarea id="biz_desc" rows="3" placeholder="e.g. I help small businesses create professional brand identities on a tight budget."></textarea>
+    </div>
+    <div class="field">
+      <label>Do you have a logo?</label>
+      <select id="has_logo">
+        <option value="">— Select —</option>
+        <option value="Yes, I'll send it">Yes, I'll send it</option>
+        <option value="I have something rough">I have something rough</option>
+        <option value="No, I need one">No, I need one</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Brand colors (if any)</label>
+      <input type="text" id="colors" placeholder="e.g. Navy blue + gold, or 'I love earthy tones'">
+      <div class="hint">Hex codes, color names, or vibes — all fine.</div>
+    </div>
+    <div class="field">
+      <label>Any website you love the look of? (optional)</label>
+      <input type="text" id="inspo" placeholder="e.g. https://stripe.com">
+      <div class="hint">This gives me a feel for your taste — doesn't have to be in your industry.</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="goBack(4)">← Back</button>
+      <button class="btn btn-primary" onclick="goNext(4)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: Content readiness & timeline ── -->
+  <div class="step" id="step-5">
+    <div class="step-meta"><div class="step-num">5</div> of 6</div>
+    <div class="step-label">Content & timing</div>
+    <div class="step-sub">Almost done — just a couple of practical questions.</div>
+
+    <div class="step-label" style="font-size:1rem; font-weight:500; margin-bottom:8px;">Do you have content ready? (text, images)</div>
+    <div class="step-sub" style="margin-bottom:16px;">I can work with drafts, notes, or rough copy — it doesn't have to be polished.</div>
+    <div class="options-grid">
+      <div class="option-card">
+        <input type="radio" name="content" id="c1" value="Yes, I have everything ready">
+        <label for="c1"><span class="option-title">✅ Yes, mostly ready</span><span class="option-desc">Text + images in hand</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="content" id="c2" value="I have some, but need help filling gaps">
+        <label for="c2"><span class="option-title">🔧 Have some, need help</span><span class="option-desc">Rough notes, basic photos</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="content" id="c3" value="Starting from scratch">
+        <label for="c3"><span class="option-title">⚪ Starting from scratch</span><span class="option-desc">Can provide direction only</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="content" id="c4" value="I need the whole thing written for me">
+        <label for="c4"><span class="option-title">✍️ Write it all for me</span><span class="option-desc">I'll describe, you write</span></label>
+      </div>
+    </div>
+
+    <div class="divider">When do you need it?</div>
+
+    <div class="options-grid">
+      <div class="option-card">
+        <input type="radio" name="deadline" id="d1" value="As soon as possible">
+        <label for="d1"><span class="option-title">⚡ ASAP</span><span class="option-desc">I need it now</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="deadline" id="d2" value="Within the week">
+        <label for="d2"><span class="option-title">📅 This week</span><span class="option-desc">Within the next few days</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="deadline" id="d3" value="Within the month">
+        <label for="d3"><span class="option-title">🗓 This month</span><span class="option-desc">No huge rush</span></label>
+      </div>
+      <div class="option-card">
+        <input type="radio" name="deadline" id="d4" value="Just exploring">
+        <label for="d4"><span class="option-title">🤔 Just exploring</span><span class="option-desc">Getting a feel for options</span></label>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="goBack(5)">← Back</button>
+      <button class="btn btn-primary" onclick="goNext(5)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 6: Contact ── -->
+  <div class="step" id="step-6">
+    <div class="step-meta"><div class="step-num">6</div> of 6</div>
+    <div class="step-label">Last step — how do I reach you?</div>
+    <div class="step-sub">I'll follow up personally within a few hours.</div>
+    <div class="field">
+      <label>Your name *</label>
+      <input type="text" id="contact_name" placeholder="First name is fine">
+    </div>
+    <div class="field">
+      <label>Email address *</label>
+      <input type="email" id="contact_email" placeholder="you@example.com">
+    </div>
+    <div class="field">
+      <label>WhatsApp / phone (optional)</label>
+      <input type="text" id="contact_phone" placeholder="+63 9xx xxx xxxx">
+      <div class="hint">Often the fastest way to align on details.</div>
+    </div>
+    <div class="field">
+      <label>Anything else I should know? (optional)</label>
+      <textarea id="extra_notes" rows="3" placeholder="Special requests, questions, context…"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="goBack(6)">← Back</button>
+      <button class="btn btn-accent" onclick="submitForm()">Submit & Let's Go 🚀</button>
+    </div>
+  </div>
+
+  <!-- ── Summary / Thank you ── -->
+  <div class="step" id="step-done">
+    <div class="thankyou">
+      <span class="big-tick">🎉</span>
+      <h2>You're all set!</h2>
+      <p>I've received your brief. I'll review it and reach out to confirm details — usually within a few hours.</p>
+    </div>
+    <div class="summary-box" id="summaryBox"></div>
+    <p style="text-align:center; font-size:.8rem; color:var(--muted)">Want to change something? <a href="#" onclick="restart()" style="color:var(--ink)">Start over</a></p>
+  </div>
+
+</div><!-- /form-wrap -->
+
+<script>
+  const TOTAL_STEPS = 6;
+  let current = 1;
+
+  function setProgress(step) {
+    const pct = step <= TOTAL_STEPS ? Math.round(((step - 1) / TOTAL_STEPS) * 100) : 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  function showStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + n).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setProgress(n);
+  }
+
+  function goNext(from) {
+    // Basic validation
+    if (from === 1 && !document.querySelector('input[name="biz_type"]:checked')) {
+      return shake(from);
+    }
+    if (from === 2 && !document.querySelector('input[name="goal"]:checked')) {
+      return shake(from);
+    }
+    if (from === 4 && !document.getElementById('biz_name').value.trim()) {
+      document.getElementById('biz_name').focus();
+      return shake(from);
+    }
+    if (from === 5) {
+      if (!document.querySelector('input[name="content"]:checked')) return shake(from);
+      if (!document.querySelector('input[name="deadline"]:checked')) return shake(from);
+    }
+    if (from === 6) {
+      if (!document.getElementById('contact_name').value.trim() ||
+          !document.getElementById('contact_email').value.trim()) {
+        return shake(from);
+      }
+    }
+    current = from + 1;
+    showStep(current);
+  }
+
+  function goBack(from) {
+    current = from - 1;
+    showStep(current);
+  }
+
+  function shake(step) {
+    const el = document.getElementById('step-' + step);
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.animate([
+      { transform: 'translateX(0)' },
+      { transform: 'translateX(-8px)' },
+      { transform: 'translateX(8px)' },
+      { transform: 'translateX(-6px)' },
+      { transform: 'translateX(0)' }
+    ], { duration: 320, easing: 'ease' });
+  }
+
+  function getChecked(name) {
+    const el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : '—';
+  }
+
+  function getCheckboxes(name) {
+    const checked = [...document.querySelectorAll('input[name="' + name + '"]:checked')];
+    return checked.length ? checked.map(e => e.value).join(', ') : '—';
+  }
+
+  // async function submitForm() {
+  //   goNext(6);
+  //   if (current !== 7) return; // didn't pass validation
+
+  //   // Show loading state
+  //   const submitBtn = event.target;
+  //   const originalText = submitBtn.innerHTML;
+  //   submitBtn.innerHTML = 'Submitting...';
+  //   submitBtn.disabled = true;
+
+  //   const data = {
+  //     businessType: getChecked('biz_type'),
+  //     mainGoal: getChecked('goal'),
+  //     sectionsWanted: getCheckboxes('sections'),
+  //     extraSections: document.getElementById('extra_sections').value || '',
+  //     businessName: document.getElementById('biz_name').value || '',
+  //     description: document.getElementById('biz_desc').value || '',
+  //     logo: document.getElementById('has_logo').value || '',
+  //     brandColors: document.getElementById('colors').value || '',
+  //     inspirationSite: document.getElementById('inspo').value || '',
+  //     contentReadiness: getChecked('content'),
+  //     deadline: getChecked('deadline'),
+  //     name: document.getElementById('contact_name').value,
+  //     email: document.getElementById('contact_email').value,
+  //     phone: document.getElementById('contact_phone').value || '',
+  //     notes: document.getElementById('extra_notes').value || '',
+  //   };
+
+  //   try {
+  //     // Replace with your actual Google Apps Script URL
+  //     const response = await fetch('YOUR_GOOGLE_APPS_SCRIPT_URL_HERE', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'User-Agent': 'OneDayBuild-Form/1.0'
+  //       },
+  //       body: JSON.stringify(data)
+  //     });
+
+  //     const result = await response.json();
+
+  //     if (result.status === 'success') {
+  //       // Show success
+  //       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  //       document.getElementById('step-done').classList.add('active');
+  //       document.getElementById('progressFill').style.width = '100%';
+  //       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  //       // Update summary box with submitted data
+  //       const box = document.getElementById('summaryBox');
+  //       box.innerHTML = Object.entries({
+  //         'Business Type': data.businessType,
+  //         'Main Goal': data.mainGoal,
+  //         'Sections Wanted': data.sectionsWanted,
+  //         'Extra Sections': data.extraSections || 'None',
+  //         'Business Name': data.businessName,
+  //         'Description': data.description,
+  //         'Logo': data.logo,
+  //         'Brand Colors': data.brandColors,
+  //         'Inspiration Site': data.inspirationSite,
+  //         'Content Readiness': data.contentReadiness,
+  //         'Deadline': data.deadline,
+  //         'Name': data.name,
+  //         'Email': data.email,
+  //         'Phone': data.phone,
+  //         'Notes': data.notes
+  //       }).map(([k, v]) =>
+  //         `<div class="summary-row"><span class="key">${k}</span><span class="val">${v}</span></div>`
+  //       ).join('');
+  //     } else {
+  //       // Show error
+  //       alert('Error: ' + result.message);
+  //       submitBtn.innerHTML = originalText;
+  //       submitBtn.disabled = false;
+  //     }
+  //   } catch (error) {
+  //     alert('Submission error: ' + error.message);
+  //     submitBtn.innerHTML = originalText;
+  //     submitBtn.disabled = false;
+  //   }
+  // }
+
+  async function submitForm() {
+    // Validate required fields
+    if (!document.getElementById('contact_name').value.trim() ||
+        !document.getElementById('contact_email').value.trim()) {
+      shake(6);
+      return;
+    }
+
+    // Show loading state
+    const submitBtn = event.target;
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = 'Submitting...';
+    submitBtn.disabled = true;
+    
+    const data = {
+      businessType: getChecked('biz_type'),
+      mainGoal: getChecked('goal'),
+      sectionsWanted: getCheckboxes('sections'),
+      extraSections: document.getElementById('extra_sections').value || '',
+      businessName: document.getElementById('biz_name').value || '',
+      description: document.getElementById('biz_desc').value || '',
+      logo: document.getElementById('has_logo').value || '',
+      brandColors: document.getElementById('colors').value || '',
+      inspirationSite: document.getElementById('inspo').value || '',
+      contentReadiness: getChecked('content'),
+      deadline: getChecked('deadline'),
+      name: document.getElementById('contact_name').value,
+      email: document.getElementById('contact_email').value,
+      phone: document.getElementById('contact_phone').value || '',
+      notes: document.getElementById('extra_notes').value || ''
+    };
+    
+    try {
+      const response = await fetch('https://script.google.com/macros/s/AKfycby-KE22v7MBxIZKbpKo6yRr_L4CLl6euxq4yDd3xuhW8knB5ONWtc8oQzGFM8lhbh_gVg/exec', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'OneDayBuild-Form/1.0'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      
+      if (result.status === 'success') {
+        // Show success
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step-done').classList.add('active');
+        document.getElementById('progressFill').style.width = '100%';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Update summary box with submitted data
+        const box = document.getElementById('summaryBox');
+        box.innerHTML = Object.entries({
+          'Business Type': data.businessType,
+          'Main Goal': data.mainGoal,
+          'Sections Wanted': data.sectionsWanted,
+          'Extra Sections': data.extraSections || 'None',
+          'Business Name': data.businessName,
+          'Description': data.description,
+          'Logo': data.logo,
+          'Brand Colors': data.brandColors,
+          'Inspiration Site': data.inspirationSite,
+          'Content Readiness': data.contentReadiness,
+          'Deadline': data.deadline,
+          'Name': data.name,
+          'Email': data.email,
+          'Phone': data.phone,
+          'Notes': data.notes
+        }).map(([k, v]) =>
+          `<div class="summary-row"><span class="key">${k}</span><span class="val">${v}</span></div>`
+        ).join('');
+        
+      } else {
+        // Show error
+        alert('Error: ' + result.message);
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    } catch (error) {
+      alert('Submission error: ' + error.message);
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+    }
+  }
+
+  function restart() {
+    current = 1;
+    document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(i => i.checked = false);
+    document.querySelectorAll('input[type=text], input[type=email], textarea, select').forEach(i => i.value = '');
+    showStep(1);
+  }
+
+  // Auto-advance single-choice steps on click
+  document.querySelectorAll('input[name="biz_type"], input[name="goal"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      setTimeout(() => goNext(current), 300);
+    });
+  });
+
+  setProgress(1);
+
+  // Theme switching functionality
+  function toggleTheme() {
+    const html = document.documentElement;
+    const themeIcon = document.getElementById('themeIcon');
+    const currentTheme = html.getAttribute('data-theme');
+    
+    if (currentTheme === 'light') {
+      html.removeAttribute('data-theme');
+      themeIcon.textContent = '🌙';
+      localStorage.setItem('theme', 'dark');
+    } else {
+      html.setAttribute('data-theme', 'light');
+      themeIcon.textContent = '☀️';
+      localStorage.setItem('theme', 'light');
+    }
+  }
+
+  // Load saved theme preference
+  document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    if (savedTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      themeIcon.textContent = '☀️';
+    } else {
+      themeIcon.textContent = '🌙';
+    }
+  });
+</script>
+</body>
+</html>
