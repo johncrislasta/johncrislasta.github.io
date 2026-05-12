@@ -818,14 +818,17 @@
     formData.append('phone', document.getElementById('contact_phone').value || '');
     formData.append('notes', document.getElementById('extra_notes').value || '');
     
+    // Convert FormData to URL-encoded string for Google Apps Script
+    const urlEncodedData = new URLSearchParams(formData).toString();
+    
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbyNqtHWEsJbcJIIYfyrg61a2TwTmDUOIFQHhnTCiG5899N4OodrtGRruoPH-xXSnRkkNg/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbw3FZFbuOCWVB6PYBE1g5GQEbruvNsQto3-cZxJOgJtNRMwq_FAjDztm9EX9AozxgwvnA/exec', {
         method: 'POST',
         headers: {
-          'User-Agent': 'OneDayBuild-Form/1.0',
-          'Access-Control-Allow-Origin': '*'
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': 'OneDayBuild-Form/1.0'
         },
-        body: formData
+        body: urlEncodedData
       });
       
       const result = await response.json();
