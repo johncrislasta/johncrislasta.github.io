@@ -652,6 +652,7 @@
 <script>
   const TOTAL_STEPS = 6;
   let current = 1;
+  let formStartTime = Date.now(); // Track when form loads
 
   function setProgress(step) {
     const pct = step <= TOTAL_STEPS ? Math.round(((step - 1) / TOTAL_STEPS) * 100) : 100;
@@ -719,87 +720,6 @@
     return checked.length ? checked.map(e => e.value).join(', ') : '—';
   }
 
-  // async function submitForm() {
-  //   goNext(6);
-  //   if (current !== 7) return; // didn't pass validation
-
-  //   // Show loading state
-  //   const submitBtn = event.target;
-  //   const originalText = submitBtn.innerHTML;
-  //   submitBtn.innerHTML = 'Submitting...';
-  //   submitBtn.disabled = true;
-
-  //   const data = {
-  //     businessType: getChecked('biz_type'),
-  //     mainGoal: getChecked('goal'),
-  //     sectionsWanted: getCheckboxes('sections'),
-  //     extraSections: document.getElementById('extra_sections').value || '',
-  //     businessName: document.getElementById('biz_name').value || '',
-  //     description: document.getElementById('biz_desc').value || '',
-  //     logo: document.getElementById('has_logo').value || '',
-  //     brandColors: document.getElementById('colors').value || '',
-  //     inspirationSite: document.getElementById('inspo').value || '',
-  //     contentReadiness: getChecked('content'),
-  //     deadline: getChecked('deadline'),
-  //     name: document.getElementById('contact_name').value,
-  //     email: document.getElementById('contact_email').value,
-  //     phone: document.getElementById('contact_phone').value || '',
-  //     notes: document.getElementById('extra_notes').value || '',
-  //   };
-
-  //   try {
-  //     // Replace with your actual Google Apps Script URL
-  //     const response = await fetch('YOUR_GOOGLE_APPS_SCRIPT_URL_HERE', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'User-Agent': 'OneDayBuild-Form/1.0'
-  //       },
-  //       body: JSON.stringify(data)
-  //     });
-
-  //     const result = await response.json();
-
-  //     if (result.status === 'success') {
-  //       // Show success
-  //       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-  //       document.getElementById('step-done').classList.add('active');
-  //       document.getElementById('progressFill').style.width = '100%';
-  //       window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  //       // Update summary box with submitted data
-  //       const box = document.getElementById('summaryBox');
-  //       box.innerHTML = Object.entries({
-  //         'Business Type': data.businessType,
-  //         'Main Goal': data.mainGoal,
-  //         'Sections Wanted': data.sectionsWanted,
-  //         'Extra Sections': data.extraSections || 'None',
-  //         'Business Name': data.businessName,
-  //         'Description': data.description,
-  //         'Logo': data.logo,
-  //         'Brand Colors': data.brandColors,
-  //         'Inspiration Site': data.inspirationSite,
-  //         'Content Readiness': data.contentReadiness,
-  //         'Deadline': data.deadline,
-  //         'Name': data.name,
-  //         'Email': data.email,
-  //         'Phone': data.phone,
-  //         'Notes': data.notes
-  //       }).map(([k, v]) =>
-  //         `<div class="summary-row"><span class="key">${k}</span><span class="val">${v}</span></div>`
-  //       ).join('');
-  //     } else {
-  //       // Show error
-  //       alert('Error: ' + result.message);
-  //       submitBtn.innerHTML = originalText;
-  //       submitBtn.disabled = false;
-  //     }
-  //   } catch (error) {
-  //     alert('Submission error: ' + error.message);
-  //     submitBtn.innerHTML = originalText;
-  //     submitBtn.disabled = false;
-  //   }
-  // }
 
   async function submitForm() {
     // Validate required fields
@@ -832,8 +752,15 @@
     formData.append('phone', document.getElementById('contact_phone').value || '');
     formData.append('notes', document.getElementById('extra_notes').value || '');
     
+    // Calculate time spent on form (bot protection)
+    const timeSpent = Date.now() - formStartTime;
+    formData.append('timeSpent', timeSpent.toString());
+    formData.append('submissionAuthenticator', JSON.stringify({ timeTaken: { total: timeSpent } }));
+    
+
+    
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbxHRmFNrmvnlG6_FaKMSgPMy3INpdpZMmzlsi3-gD7EM5yF20oGm1YZacs1tIH_yF1QFg/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbxAgbKIjPHPVpgiJSCVCVqhLCLZ063UcJKi5fOcbTODRWnwS6XmE20dWnKW2KCI_VYhPw/exec', {
         method: 'POST',
         body: formData
       });
