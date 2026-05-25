@@ -109,27 +109,6 @@ const ball = {
   lastY: 0
 };
 
-
-const cones = [];
-
-
-for (let i = 0; i < 4; i++) {
-  cones.push({
-    x: 760 + i * 100,
-    y: canvas.height - 145,
-    width: 52,
-    height: 90,
-    rotation: 0,
-    vx: 0,
-    vy: 0,
-    dragVx: 0, // Velocity tracker for dragging
-    dragVy: 0,
-    dragging: false,
-    falling: false
-  });
-}
-
-
 function drawSky() {
   const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
   gradient.addColorStop(0, '#7dd3fc');
@@ -244,7 +223,6 @@ function drawGrass() {
 
 function drawBall() {
 
-
   ctx.save();
 
 
@@ -310,36 +288,6 @@ function loadSoccerBall() {
         console.error("Error loading soccerball.svg. Falling back to basic drawing.");
         // Optional: Fallback logic if SVG fails (e.g., keep the old drawBall() method)
     };
-}
-
-
-function drawCone(cone) {
-
-
-  ctx.save();
-
-
-  // Note: We use the cone's stored rotation, even if it's currently in a fall state
-  ctx.translate(cone.x, cone.y); 
-  ctx.rotate(cone.rotation);
-
-
-  ctx.beginPath();
-  ctx.moveTo(0, -cone.height);
-  ctx.lineTo(cone.width / 2, 0);
-  ctx.lineTo(-cone.width / 2, 0);
-  ctx.closePath();
-
-
-  ctx.fillStyle = '#fb923c';
-  ctx.fill();
-
-
-  ctx.fillStyle = '#ea580c';
-  ctx.fillRect(-cone.width / 1.4, -4, cone.width * 1.4, 10);
-
-
-  ctx.restore();
 }
 
 
@@ -424,99 +372,9 @@ function updateBallPhysics() {
   }
 }
 
-
-function updateCones() {
-
-  const floorY = canvas.height - 140; // Defined the physical floor level
-
-  cones.forEach((cone) => {
-
-
-    if (cone.dragging) {
-      cone.rotation = 0;
-      return;
-    }
-
-
-    if (cone.falling) {
-        // Gravity pull on falling cones
-      cone.vy += gravity * 0.3;
-
-        // Update position
-      cone.y += cone.vy;
-
-        // Rotational physics: Spin decays over time, but also influenced by horizontal speed
-      cone.rotation *= angularDamping; // Damp existing rotation (prevents infinite spin)
-      cone.rotation += cone.vx * 0.015; // Small spin based on velocity component
-
-
-      if (cone.y > floorY + 10) { // Use a margin to prevent jittering above the floor
-        cone.y = floorY;
-        // If it hits the ground, stop falling and keep current rotation/velocity for rolling effect
-        cone.vy = 0;
-        cone.falling = false; // No longer actively "falling"
-      }
-    } else if (!cone.dragging) {
-      // If not falling and not dragging, ensure it stays upright (optional reset/rest state)
-      cone.rotation *= angularDamping;
-  }
-  });
-}
-
-
-
-/** Detects collision between ball (circle) and cone (bounding box). */
-function detectConeCollision() {
-
-  const BALL_RADIUS = ball.radius;
-
-  cones.forEach((cone) => {
-
-    // 1. Calculate Overlap Check Variables (Keep these, they are correct)
-    const dx = ball.x - cone.x;
-    // The vertical overlap check uses the center line of interaction
-    const dy = (ball.y - BALL_RADIUS * 0.5) - ((cone.y + cone.height / 2));
-
-    // ... (The distance calculation and collision check remains the same)
-    const CONE_HALF_WIDTH = cone.width / 2;
-    if (Math.abs(dx) > CONE_HALF_WIDTH + ball.radius || Math.abs(dy) > 100) { // Simple bounding box quick exit
-
-      // Detailed collision check logic... (rest of your previous code block here)
-      let closestX = Math.max(cone.x - CONE_HALF_WIDTH, Math.min(ball.x, cone.x + CONE_HALF_WIDTH));
-      let closestY = Math.max(cone.y - 4, Math.min(ball.y - ball.radius * 0.5, canvas.height - 180)); // Simplified Y check
-
-      const distX = ball.x - closestX;
-      const distY = ball.y - closestY;
-      const distanceSquared = (distX * distX + distY * distY);
-
-
-      if (distanceSquared < (ball.radius * ball.radius)) {
-
-        // Collision confirmed!
-        cone.falling = true;
-
-        // --- FIXED LINE HERE ---
-        // Instead of using Math.sign(Math.cos(angle)), we use the sign of the horizontal difference (dx)
-        const directionalKickSign = Math.sign(dx);
-
-        // Apply impulse: transfer horizontal velocity plus a directional kick based on where it hit.
-        cone.vx = ball.vx * 0.7 + directionalKickSign * 5; // Using dx sign for direction
-        cone.vy = -8;
-
-        // Apply initial spin: Use the side of impact (positive or negative) to set the spin rate
-        cone.rotation += Math.sign(dx) * 2;
-      }
-    }
-  });
-}
-
-
-
 function render() {
 
-
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
 
   drawSky();
   drawMountains();
@@ -534,11 +392,7 @@ function render() {
 
 
   updateBallPhysics();
-  updateCones(); // Physics updates must run before rendering
-  detectConeCollision();
 
-
-  cones.forEach(drawCone);
   drawBall();
 
 
@@ -576,29 +430,6 @@ canvas.addEventListener('mousedown', (e) => {
     return;
   }
 
-
-  cones.forEach((cone) => {
-
-
-    // Check for collision zone using simplified bounding box checks
-    if (
-      mouse.x > cone.x - 40 &&
-      mouse.x < cone.x + 40 &&
-      mouse.y > cone.y - cone.height &&
-      mouse.y < cone.y + 10
-    ) {
-
-      cone.dragging = true;
-      // Reset falling state and set initial drag velocity tracker
-      cone.falling = false; 
-      cone.rotation = 0;
-      cone.dragVx = 0;
-      cone.dragVy = 0;
-
-    }
-
-
-  });
 });
 
 
@@ -623,26 +454,6 @@ canvas.addEventListener('mousemove', (e) => {
     ball.lastY = ball.y;
   }
 
-
-  cones.forEach((cone) => {
-
-
-    if (cone.dragging) {
-      // Update cone position directly to the mouse cursor
-      cone.x = mouse.x;
-      cone.y = mouse.y;
-
-      // Track velocity while dragging
-      const dragDx = mouse.x - (cone.dragVx === undefined ? cone.x : cone.x); // Approximation using current state or last recorded position
-      const dragDy = mouse.y - (cone.dragVy === undefined ? cone.y : cone.y);
-
-      // Smoothly update the stored velocity tracker
-      cone.dragVx = (1 - 0.1) * cone.dragVx + 0.1 * dragDx; // Exponential smoothing for smoother tracking
-      cone.dragVy = (1 - 0.1) * cone.dragVy + 0.1 * dragDy;
-    }
-
-
-  });
 });
 
 
@@ -661,38 +472,6 @@ canvas.addEventListener('mouseup', () => {
     ball.rotationSpeed = ball.vx * 0.05;
   }
 
-
-  cones.forEach((cone) => {
-
-
-    if (cone.dragging) {
-
-
-      cone.dragging = false;
-
-      // === START OF FIX: Apply physics on release ===
-      const floor = canvas.height - 140;
-      
-      // Set initial velocities based on drag velocity tracker
-      cone.vx = cone.dragVx * 2; // Scale up the stored speed for a satisfying "throw"
-      cone.vy = cone.dragVy * 2; 
-      
-      // Ensure falling state is active immediately
-      cone.falling = true;
-      
-      // Reset drag trackers
-      cone.dragVx = 0;
-      cone.dragVy = 0;
-
-      // Optional: Add a small initial spin based on direction of throw
-      const spinDirection = cone.vx > 5 ? 1 : (cone.vx < -5 ? -1 : 0);
-      cone.rotation += spinDirection * 0.5;
-
-
-    }
-
-
-  });
 });
 
 
