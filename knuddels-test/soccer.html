@@ -41,457 +41,465 @@
 
 <script>
 
-const canvas = document.getElementById('scene');
-const ctx = canvas.getContext('2d');
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d');
 
 
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
 
 
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
 
-const gravity = 0.45;
-const friction = 0.992;
-const bounce = 0.65;
+  const gravity = 0.25;
+  const friction = 0.992;
+  const bounce = 0.75;
 
-// Increased damping slightly to prevent jittering/spinning too much when resting
-const angularDamping = 0.98;
+  const floorHeight = 140;
 
-
-const mouse = {
-  x: 0,
-  y: 0,
-  down: false
-};
+  // Increased damping slightly to prevent jittering/spinning too much when resting
+  const angularDamping = 0.98;
 
 
-const clouds = [
-  { x: 100, y: 100, speed: 0.12, scale: 1 },
-  { x: 500, y: 160, speed: 0.08, scale: 1.4 },
-  { x: 1000, y: 90, speed: 0.15, scale: 0.9 }
-];
+  const mouse = {
+    x: 0,
+    y: 0,
+    down: false
+  };
 
 
-const birds = [];
-
-
-function spawnBird() {
-  birds.push({
-    x: -50,
-    y: 80 + Math.random() * 120,
-    speed: 2 + Math.random() * 2,
-    wing: 0
-  });
-}
-
-
-setInterval(spawnBird, 4000);
-spawnBird();
-
-
-const ball = {
-  x: 260,
-  y: canvas.height - 160,
-  radius: 42,
-  vx: 0,
-  vy: 0,
-  rotation: 0,
-  rotationSpeed: 0,
-  dragging: false,
-  dragOffsetX: 0,
-  dragOffsetY: 0,
-  lastX: 0,
-  lastY: 0
-};
-
-function drawSky() {
-  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  gradient.addColorStop(0, '#7dd3fc');
-  gradient.addColorStop(0.5, '#bae6fd');
-  gradient.addColorStop(1, '#86efac');
-
-
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-
-function drawMountains() {
-
-
-  const mountains = [
-    { x: -100, width: 500, height: 360, color: '#4b7f52' },
-    { x: 250, width: 550, height: 340, color: '#3f6d47' },
-    { x: 850, width: 600, height: 380, color: '#537f5b' }
+  const clouds = [
+    { x: 100, y: 100, speed: 0.12, scale: 1 },
+    { x: 500, y: 160, speed: 0.08, scale: 1.4 },
+    { x: 1000, y: 90, speed: 0.15, scale: 0.9 }
   ];
 
 
-  mountains.forEach((m) => {
+  const birds = [];
+
+
+  function spawnBird() {
+    birds.push({
+      x: -50,
+      y: 80 + Math.random() * 120,
+      speed: 2 + Math.random() * 2,
+      wing: 0
+    });
+  }
+
+
+  setInterval(spawnBird, 4000);
+  spawnBird();
+
+
+  const ball = {
+    x: 260,
+    y: canvas.height - 160,
+    radius: 42,
+    vx: 0,
+    vy: 0,
+    rotation: 0,
+    rotationSpeed: 0,
+    dragging: false,
+    dragOffsetX: 0,
+    dragOffsetY: 0,
+    lastX: 0,
+    lastY: 0
+  };
+
+  function drawSky() {
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#7dd3fc');
+    gradient.addColorStop(0.5, '#bae6fd');
+    gradient.addColorStop(1, '#86efac');
+
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+
+  function drawMountains() {
+
+
+    const mountains = [
+      { x: -100, width: 500, height: 360, color: '#4b7f52' },
+      { x: 250, width: 550, height: 340, color: '#3f6d47' },
+      { x: 850, width: 600, height: 380, color: '#537f5b' }
+    ];
+
+
+    mountains.forEach((m) => {
+
+
+      ctx.beginPath();
+      ctx.moveTo(m.x, canvas.height - floorHeight);
+      ctx.lineTo(m.x + m.width / 2, canvas.height - m.height - floorHeight);
+      ctx.lineTo(m.x + m.width, canvas.height - floorHeight);
+      ctx.closePath();
+
+
+      ctx.fillStyle = m.color;
+      ctx.fill();
+
+
+      ctx.beginPath();
+      ctx.moveTo(m.x + m.width / 2 - 40, canvas.height - m.height - 90);
+      ctx.lineTo(m.x + m.width / 2, canvas.height - m.height - 150);
+      ctx.lineTo(m.x + m.width / 2 + 40, canvas.height - m.height - 90);
+
+
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fill();
+
+
+    });
+  }
+
+
+  function drawCloud(cloud) {
+
+
+    ctx.save();
+    ctx.translate(cloud.x, cloud.y);
+    ctx.scale(cloud.scale, cloud.scale);
+
+
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
 
 
     ctx.beginPath();
-    ctx.moveTo(m.x, canvas.height - 140);
-    ctx.lineTo(m.x + m.width / 2, canvas.height - m.height - 140);
-    ctx.lineTo(m.x + m.width, canvas.height - 140);
-    ctx.closePath();
-
-
-    ctx.fillStyle = m.color;
+    ctx.arc(0, 0, 30, 0, Math.PI * 2);
+    ctx.arc(30, -10, 35, 0, Math.PI * 2);
+    ctx.arc(65, 0, 28, 0, Math.PI * 2);
     ctx.fill();
+
+
+    ctx.restore();
+  }
+
+
+  function drawBird(bird) {
+
+
+    ctx.save();
+    ctx.translate(bird.x, bird.y);
+
+
+    bird.wing += 0.2;
+
+
+    const flap = Math.sin(bird.wing) * 5;
+
+
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 2;
 
 
     ctx.beginPath();
-    ctx.moveTo(m.x + m.width / 2 - 40, canvas.height - m.height - 90);
-    ctx.lineTo(m.x + m.width / 2, canvas.height - m.height - 150);
-    ctx.lineTo(m.x + m.width / 2 + 40, canvas.height - m.height - 90);
+    ctx.moveTo(-10, 0);
+    ctx.quadraticCurveTo(-2, -flap, 0, 0);
+    ctx.quadraticCurveTo(8, -flap, 16, 0);
+    ctx.stroke();
 
 
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.fill();
+    ctx.restore();
+  }
 
 
-  });
-}
+  function drawGrass() {
 
 
-function drawCloud(cloud) {
+    const gradient = ctx.createLinearGradient(0, canvas.height - 180, 0, canvas.height);
+    gradient.addColorStop(0, '#4ade80');
+    gradient.addColorStop(1, '#15803d');
 
 
-  ctx.save();
-  ctx.translate(cloud.x, cloud.y);
-  ctx.scale(cloud.scale, cloud.scale);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, canvas.height - 180, canvas.width, 180);
+  }
+
+  function drawBall() {
+
+    ctx.save();
 
 
-  ctx.fillStyle = 'rgba(255,255,255,0.9)';
-
-
-  ctx.beginPath();
-  ctx.arc(0, 0, 30, 0, Math.PI * 2);
-  ctx.arc(30, -10, 35, 0, Math.PI * 2);
-  ctx.arc(65, 0, 28, 0, Math.PI * 2);
-  ctx.fill();
-
-
-  ctx.restore();
-}
-
-
-function drawBird(bird) {
-
-
-  ctx.save();
-  ctx.translate(bird.x, bird.y);
-
-
-  bird.wing += 0.2;
-
-
-  const flap = Math.sin(bird.wing) * 5;
-
-
-  ctx.strokeStyle = '#1e293b';
-  ctx.lineWidth = 2;
-
-
-  ctx.beginPath();
-  ctx.moveTo(-10, 0);
-  ctx.quadraticCurveTo(-2, -flap, 0, 0);
-  ctx.quadraticCurveTo(8, -flap, 16, 0);
-  ctx.stroke();
-
-
-  ctx.restore();
-}
-
-
-function drawGrass() {
-
-
-  const gradient = ctx.createLinearGradient(0, canvas.height - 180, 0, canvas.height);
-  gradient.addColorStop(0, '#4ade80');
-  gradient.addColorStop(1, '#15803d');
-
-
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, canvas.height - 180, canvas.width, 180);
-}
-
-function drawBall() {
-
-  ctx.save();
-
-
-  // We still need translation and rotation for positioning
-  ctx.translate(ball.x, ball.y);
-  ctx.rotate(ball.rotation);
+    // We still need translation and rotation for positioning
+    ctx.translate(ball.x, ball.y);
+    ctx.rotate(ball.rotation);
 
     // --- MODIFIED DRAWING LOGIC HERE ---
     if (ballImage.complete) {
-        // Draw the loaded SVG image at the center (0, 0) of the translated context
-        // We use the original radius as a rough size indicator for drawing.
+      // Draw the loaded SVG image at the center (0, 0) of the translated context
+      // We use the original radius as a rough size indicator for drawing.
       ctx.drawImage(ballImage, -ball.radius, -ball.radius, ball.radius * 2, ball.radius * 2);
 
     } else {
-        // Fallback/Loading State (Keep the original manual drawing if SVG isn't loaded yet)
-        const gradient = ctx.createRadialGradient(-12, -12, 5, 0, 0, ball.radius);
-        gradient.addColorStop(0, '#ffffff');
-        gradient.addColorStop(1, '#dddddd');
+      // Fallback/Loading State (Keep the original manual drawing if SVG isn't loaded yet)
+      const gradient = ctx.createRadialGradient(-12, -12, 5, 0, 0, ball.radius);
+      gradient.addColorStop(0, '#ffffff');
+      gradient.addColorStop(1, '#dddddd');
 
-        ctx.fillStyle = gradient;
+      ctx.fillStyle = gradient;
 
+      ctx.beginPath();
+      ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ... (Keep the code for drawing hexagonal studs/panels)
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI * 2 / 6) * i;
         ctx.beginPath();
-        ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // ... (Keep the code for drawing hexagonal studs/panels)
-        for (let i = 0; i < 6; i++) {
-            const angle = (Math.PI * 2 / 6) * i;
-            ctx.beginPath();
-            ctx.arc(
+        ctx.arc(
                 Math.cos(angle) * 18,
                 Math.sin(angle) * 18,
                 10,
                 0,
                 Math.PI * 2
-            );
-            ctx.fillStyle = '#111827';
-            ctx.fill();
-        }
+        );
+        ctx.fillStyle = '#111827';
+        ctx.fill();
+      }
     }
 
 
-  ctx.restore();
-}
+    ctx.restore();
+  }
 
 
+  // NEW: Image placeholder for the soccerball graphic
+  let ballImage = new Image();
 
-// NEW: Image placeholder for the soccerball graphic
-let ballImage = new Image(); 
-
-
-/** Function to handle loading the SVG image */
-function loadSoccerBall() {
+  /** Function to handle loading the SVG image */
+  function loadSoccerBall() {
     console.log("Loading soccerball SVG...");
     ballImage.src = 'soccerball.svg'; // <-- Make sure this path is correct!
 
     // Use a Promise or an Event Listener to ensure subsequent code waits for the image
     ballImage.onload = () => {
-        console.log("Soccerball image loaded successfully.");
+      console.log("Soccerball image loaded successfully.");
     };
 
     ballImage.onerror = () => {
-        console.error("Error loading soccerball.svg. Falling back to basic drawing.");
-        // Optional: Fallback logic if SVG fails (e.g., keep the old drawBall() method)
+      console.error("Error loading soccerball.svg. Falling back to basic drawing.");
+      // Optional: Fallback logic if SVG fails (e.g., keep the old drawBall() method)
     };
-}
+  }
 
 
-function updateClouds() {
+  function updateClouds() {
+
+    clouds.forEach((cloud) => {
+
+      cloud.x += cloud.speed;
+
+      if (cloud.x > canvas.width + 120) {
+        cloud.x = -120;
+      }
+    });
+  }
 
 
-  clouds.forEach((cloud) => {
+  function updateBirds() {
 
+    for (let i = birds.length - 1; i >= 0; i--) {
 
-    cloud.x += cloud.speed;
+      birds[i].x += birds[i].speed;
 
+      if (birds[i].x > canvas.width + 100) {
+        birds.splice(i, 1);
+      }
+    }
+  }
 
-    if (cloud.x > canvas.width + 120) {
-      cloud.x = -120;
+  function updateBallPhysics() {
+    if (ball.dragging) return;
+
+    ball.vy += gravity;
+
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+
+    const floor = canvas.height - floorHeight - ball.radius;
+    const restThreshold = 0.12;
+
+    // Apply friction FIRST (stabilizes values early)
+    ball.vx *= friction;
+    ball.vy *= 0.999; // subtle vertical damping
+    ball.rotationSpeed *= angularDamping;
+
+    // FLOOR COLLISION
+    if (ball.y > floor) {
+      ball.y = floor;
+      ball.vy *= -bounce;
+
+      // kill micro-bounce noise
+      if (Math.abs(ball.vy) < restThreshold) {
+        ball.vy = 0;
+      }
     }
 
+    // WALL COLLISIONS
+    if (ball.x < ball.radius) {
+      ball.x = ball.radius;
+      ball.vx *= -bounce;
+    }
+
+    if (ball.x > canvas.width - ball.radius) {
+      ball.x = canvas.width - ball.radius;
+      ball.vx *= -bounce;
+    }
+
+    // --- TRUE MOTION CHECK (CRITICAL FIX) ---
+    const isMoving =
+            Math.abs(ball.vx) > restThreshold ||
+            Math.abs(ball.vy) > restThreshold;
+
+    if (!isMoving) {
+      // HARD STOP everything
+      ball.vx = 0;
+      ball.vy = 0;
+      ball.rotationSpeed = 0;
+    } else {
+      // Only rotate when actually moving
+      ball.rotation += ball.rotationSpeed;
+
+      // Only apply rolling when on ground
+      const onGround = Math.abs(ball.y - floor) < 0.5;
+
+      if (onGround) {
+        const rollSpeed = ball.vx / ball.radius;
+
+        // Instead of ADDING every frame (BAD),
+        // we gently ADJUST toward correct rolling speed (GOOD)
+
+        const targetRotationSpeed = rollSpeed;
+
+        // smooth interpolation prevents runaway acceleration
+        ball.rotationSpeed += (targetRotationSpeed - ball.rotationSpeed) * 0.15;
+      }
+
+      // Apply rotation AFTER coupling
+      ball.rotation += ball.rotationSpeed;
+    }
+  }
+
+  function render() {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawSky();
+    drawMountains();
+
+
+    updateClouds();
+    clouds.forEach(drawCloud);
+
+
+    updateBirds();
+    birds.forEach(drawBird);
+
+    drawGrass();
+
+    updateBallPhysics();
+
+    drawBall();
+
+    requestAnimationFrame(render);
+  }
+
+
+  loadSoccerBall();
+  render();
+
+
+  canvas.addEventListener('mousedown', (e) => {
+
+
+    mouse.down = true;
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+
+
+    const dist = Math.hypot(mouse.x - ball.x, mouse.y - ball.y);
+
+
+    if (dist < ball.radius) {
+
+
+      ball.dragging = true;
+      ball.dragOffsetX = mouse.x - ball.x;
+      ball.dragOffsetY = mouse.y - ball.y;
+
+      // When starting drag, reset physics state
+      ball.lastX = ball.x;
+      ball.lastY = ball.y;
+
+
+      return;
+    }
 
   });
-}
 
 
-function updateBirds() {
+  canvas.addEventListener('mousemove', (e) => {
 
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
 
-  for (let i = birds.length - 1; i >= 0; i--) {
+    if (ball.dragging) {
 
+      // Ball movement logic remains the same
+      ball.x = mouse.x - ball.dragOffsetX;
+      ball.y = mouse.y - ball.dragOffsetY;
 
-    birds[i].x += birds[i].speed;
+      ball.vx = ball.x - ball.lastX;
+      ball.vy = ball.y - ball.lastY;
 
-
-    if (birds[i].x > canvas.width + 100) {
-      birds.splice(i, 1);
+      ball.lastX = ball.x;
+      ball.lastY = ball.y;
     }
-  }
-}
+
+  });
 
 
-function updateBallPhysics() {
-  if (ball.dragging) return;
+  canvas.addEventListener('mouseup', () => {
 
-  ball.vy += gravity;
+    mouse.down = false;
 
-  ball.x += ball.vx;
-  ball.y += ball.vy;
+    if (ball.dragging) {
 
 
-  ball.rotationSpeed *= angularDamping; // Apply damping to ball spin
+      ball.dragging = false;
 
-
-  ball.rotation += ball.rotationSpeed;
-
-
-  ball.vx *= friction;
-  ball.rotationSpeed *= friction;
-
-
-  const floor = canvas.height - 140 - ball.radius;
-
-
-  if (ball.y > floor) {
-
-
-    ball.y = floor;
-    ball.vy *= -bounce;
-
-
-    if (Math.abs(ball.vy) < 0.5) {
-      ball.vy = 0;
+      // Apply force based on velocity when releasing the ball
+      ball.rotationSpeed = ball.vx * 0.05;
     }
-  }
 
+  });
 
-  if (ball.x < ball.radius) {
-    ball.x = ball.radius;
-    ball.vx *= -bounce;
-  }
 
+  canvas.addEventListener('click', (e) => {
 
-  if (ball.x > canvas.width - ball.radius) {
-    ball.x = canvas.width - ball.radius;
-    ball.vx *= -bounce;
-  }
-}
 
-function render() {
+    const dist = Math.hypot(e.clientX - ball.x, e.clientY - ball.y);
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  drawSky();
-  drawMountains();
+    if (dist < ball.radius && !ball.dragging) {
 
 
-  updateClouds();
-  clouds.forEach(drawCloud);
+      const direction = Math.random() > 0.5 ? 1 : -1;
 
 
-  updateBirds();
-  birds.forEach(drawBird);
-
-
-  drawGrass();
-
-
-  updateBallPhysics();
-
-  drawBall();
-
-
-  requestAnimationFrame(render);
-}
-
-
-loadSoccerBall(); 
-render();
-
-
-canvas.addEventListener('mousedown', (e) => {
-
-
-  mouse.down = true;
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
-
-
-  const dist = Math.hypot(mouse.x - ball.x, mouse.y - ball.y);
-
-
-  if (dist < ball.radius) {
-
-
-    ball.dragging = true;
-    ball.dragOffsetX = mouse.x - ball.x;
-    ball.dragOffsetY = mouse.y - ball.y;
-
-    // When starting drag, reset physics state
-    ball.lastX = ball.x;
-    ball.lastY = ball.y;
-
-
-    return;
-  }
-
-});
-
-
-canvas.addEventListener('mousemove', (e) => {
-
-
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
-
-
-  if (ball.dragging) {
-
-
-    // Ball movement logic remains the same
-    ball.x = mouse.x - ball.dragOffsetX;
-    ball.y = mouse.y - ball.dragOffsetY;
-
-    ball.vx = ball.x - ball.lastX;
-    ball.vy = ball.y - ball.lastY;
-
-    ball.lastX = ball.x;
-    ball.lastY = ball.y;
-  }
-
-});
-
-
-canvas.addEventListener('mouseup', () => {
-
-
-  mouse.down = false;
-
-
-  if (ball.dragging) {
-
-
-    ball.dragging = false;
-
-    // Apply force based on velocity when releasing the ball
-    ball.rotationSpeed = ball.vx * 0.05;
-  }
-
-});
-
-
-canvas.addEventListener('click', (e) => {
-
-
-  const dist = Math.hypot(e.clientX - ball.x, e.clientY - ball.y);
-
-
-  if (dist < ball.radius && !ball.dragging) {
-
-
-    const direction = Math.random() > 0.5 ? 1 : -1;
-
-
-    ball.vx += 10 * direction;
-    ball.vy = -10;
-    ball.rotationSpeed += 0.18 * direction;
-  }
-});
+      ball.vx += 10 * direction;
+      ball.vy = -10;
+      ball.rotationSpeed += 0.18 * direction;
+    }
+  });
 
 
 </script>
