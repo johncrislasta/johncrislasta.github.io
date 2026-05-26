@@ -483,25 +483,6 @@
   });
 
 
-  canvas.addEventListener('click', (e) => {
-
-
-    const dist = Math.hypot(e.clientX - ball.x, e.clientY - ball.y);
-
-
-    if (dist < ball.radius && !ball.dragging) {
-
-
-      const direction = Math.random() > 0.5 ? 1 : -1;
-
-
-      ball.vx += 10 * direction;
-      ball.vy = -10;
-      ball.rotationSpeed += 0.18 * direction;
-    }
-  });
-
-
 </script>
 
 
