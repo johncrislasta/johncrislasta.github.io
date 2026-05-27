@@ -8,32 +8,15 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #87ceeb;
-      font-family: Arial, sans-serif;
-    }
-
-    canvas {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-      cursor: grab;
-    }
-
-    canvas:active {
-      cursor: grabbing;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #87ceeb; font-family: Arial, sans-serif; }
+    canvas { display: block; width: 100vw; height: 100vh; cursor: grab; }
+    canvas:active { cursor: grabbing; }
   </style>
+
+
+  <link rel="icon" type="image/svg+xml" href="assets/img/soccerball.svg">
+
 </head>
 <body>
 
@@ -42,29 +25,25 @@
 <script>
 
   const canvas = document.getElementById('scene');
-  const ctx = canvas.getContext('2d');
+  const ctx    = canvas.getContext('2d');
 
   const hitCageAudio = new Audio('assets/audio/hit-cage.mp3');
-  const bounceAudio1 = new Audio(`assets/audio/ball-bounce-1.mp3`);
-  const bounceAudio2 = new Audio(`assets/audio/ball-bounce-2.mp3`);
-  const bounceAudio3 = new Audio(`assets/audio/ball-bounce-3.mp3`);
-  const bounceAudio4 = new Audio(`assets/audio/ball-bounce-4.mp3`);
-  const bounceAudio5 = new Audio(`assets/audio/ball-bounce-5.mp3`);
-
+  const bounceAudios = [1,2,3,4,5].map(n => new Audio(`assets/audio/ball-bounce-${n}.mp3`));
 
   function resizeCanvas() {
-    canvas.width = window.innerWidth;
+    canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
   }
 
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-
-  const gravity = 0.25;
-  const friction = 0.992;
-  const bounce = 0.75;
-  const floorHeight = 140;
+  const gravity       = 0.25;
+  const friction      = 0.992;
+  const bounce        = 0.75;
+  const floorHeight   = 140;
+  const grassHeight   = 180;
+  const fenceAngle    = 45 * Math.PI / 180;
   const angularDamping = 0.98;
 
   const mouse = { x: 0, y: 0, down: false };
@@ -233,45 +212,114 @@
   }
 
   function drawGrass() {
-    const gradient = ctx.createLinearGradient(0, canvas.height - 180, 0, canvas.height);
+    const gradient = ctx.createLinearGradient(0, canvas.height - grassHeight, 0, canvas.height);
     gradient.addColorStop(0, '#4ade80');
     gradient.addColorStop(1, '#15803d');
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, canvas.height - 180, canvas.width, 180);
+    ctx.fillRect(0, canvas.height - grassHeight, canvas.width, grassHeight);
   }
 
-  // Draw Walls on the left and right with a rectangle that spans from top to bottom
+  // ── FENCES ───────────────────────────────────────────────────────────────────
+  // Left fence:  horizontal grid lines slope at +45° (down-right = perspective toward right)
+  // Right fence: horizontal grid lines slope at -45° (up-right   = perspective toward left)
+  // Inner vertical edge of each fence is drawn as a thick pole.
   function drawWalls() {
-    if (fenceImage.complete && fenceImage.naturalWidth > 0) {
-      ctx.save();
+    const fenceWidth = Math.max(canvas.width * 0.10, 150); // at least 10% of canvas
+    const spacing    = 40;    // px between grid lines
+    const thinLine   = 1.5;
+    const poleWidth  = 5;
+    const color      = '#111';
+    const slope      = -1 * Math.tan(fenceAngle); // = 1 for 45°
+    const hypoteneus = Math.sqrt(fenceWidth * fenceWidth + grassHeight * grassHeight);
 
-      drawSkewedImage(fenceImage, 0, 0, 300, canvas.height, 0, -0.5);
-      drawSkewedImage(fenceImage, canvas.width - 300, -1 * canvas.height + floorHeight, 300, canvas.height, 0,0.5);
-    } else {
-      ctx.fillStyle = '#FFFFFF77';
-      ctx.fillRect(0, 0, 20, canvas.height);
-      ctx.fillRect(canvas.width - 20, 0, 20, canvas.height);
+    ctx.strokeStyle = color;
+    ctx.lineCap     = 'butt';
+
+    // ── LEFT FENCE ─────────────────────────────────────────────────────────────
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, fenceWidth, canvas.height);
+    ctx.clip();
+
+    ctx.lineWidth = thinLine;
+
+    let numLines = Math.ceil(fenceWidth / spacing);
+
+    // Vertical lines with perspective
+    for (let x = 0; x < fenceWidth; x += spacing) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      const c = hypoteneus / (fenceWidth / spacing) * numLines;
+      const a = spacing * numLines;
+      const b = Math.sqrt(c * c - a * a);
+
+      ctx.lineTo(x, canvas.height - grassHeight + b);
+      ctx.stroke();
+      numLines--;
     }
-  }
 
-  function drawSkewedImage(img, x, y, width, height, xSkew, ySkew){
+    // Angled horizontal lines at +45°.
+    // A line anchored at y on the LEFT edge exits at y + fenceWidth*slope on the RIGHT edge.
+    // Range starts at -fenceWidth so lines entering from above are drawn correctly.
+    for (let y = canvas.height; y >= 0; y -= spacing) {
+      ctx.beginPath();
+      ctx.moveTo(0,          y);
+      ctx.lineTo(fenceWidth, y + fenceWidth * slope);
+      ctx.stroke();
+    }
 
-    // apply a skew
-    // transform(xScale, ySkew, xSkew, yScale, xTranslation, yTranslation)
-    ctx.transform(1,ySkew,xSkew,1,0,0);
+    // Inner pole — rightmost edge of left fence
+    ctx.lineWidth = poleWidth;
+    ctx.beginPath();
+    ctx.moveTo(fenceWidth, 0);
+    ctx.lineTo(fenceWidth, canvas.height - grassHeight);
+    ctx.stroke();
 
-    // draw the reflected image
-    ctx.drawImage(img, x, y, width, height);
-    // clean up by setting all transforms to default
-    ctx.setTransform(1,0,0,1,0,0);
-  }
+    ctx.restore();
 
-  let fenceImage = new Image();
+    // ── RIGHT FENCE ────────────────────────────────────────────────────────────
+    const rx = canvas.width - fenceWidth; // left x of the right fence panel
 
-  function loadFenceImage() {
-    fenceImage.src = 'assets/img/fence.svg';
-    fenceImage.onload  = () => console.log('Fence image loaded.');
-    fenceImage.onerror = () => console.error('Error loading fence image – using fallback.');
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(rx, 0, fenceWidth, canvas.height);
+    ctx.clip();
+
+    ctx.lineWidth = thinLine;
+    
+    numLines = 0;
+
+    // Vertical lines (no perspective — straight up/down)
+    for (let x = rx; x < canvas.width; x += spacing) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      const c = hypoteneus / (fenceWidth / spacing) * numLines;
+      const a = spacing * numLines;
+      const b = Math.sqrt(c * c - a * a);
+
+      ctx.lineTo(x, canvas.height - grassHeight + b);
+      ctx.stroke();
+      numLines++;
+    }
+
+
+    // Angled horizontal lines at -45° (mirror of left fence).
+    // A line anchored at y on the RIGHT edge exits at y + fenceWidth*slope on the LEFT edge.
+    for (let y = canvas.height; y >= 0; y -= spacing) {
+      ctx.beginPath();
+      ctx.moveTo(canvas.width, y);
+      ctx.lineTo(rx,           y + fenceWidth * slope);
+      ctx.stroke();
+    }
+
+    // Inner pole — leftmost edge of right fence
+    ctx.lineWidth = poleWidth;
+    ctx.beginPath();
+    ctx.moveTo(rx, 0);
+    ctx.lineTo(rx, canvas.height - grassHeight);
+    ctx.stroke();
+
+    ctx.restore();
   }
 
   function drawBall() {
@@ -341,10 +389,9 @@
       // ball is effectively resting on the ground.
       const minAudibleImpact = restThreshold * 3;
       if (impactSpeed > minAudibleImpact) {
-        const randomBounce = Math.floor(Math.random() * 5) + 1;
-        const bounceAudio = [bounceAudio1, bounceAudio2, bounceAudio3, bounceAudio4, bounceAudio5][randomBounce - 1];
-        bounceAudio.currentTime = 0;
-        bounceAudio.play();
+        const audio = bounceAudios[Math.floor(Math.random() * 5)];
+        audio.currentTime = 0;
+        audio.play();
       }
     }
 
@@ -419,7 +466,6 @@
   }
 
   loadSoccerBall();
-  loadFenceImage();
   render();
 
 
