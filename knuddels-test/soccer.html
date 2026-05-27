@@ -48,8 +48,8 @@
   const bounce         = 0.75;
   const floorHeight    = canvas.height * 0.17;
   const groundHeight   = canvas.height * 0.22;
-  const fenceWidth = Math.max(canvas.width * 0.10, 150); // at least 10% of canvas
-  const fenceAngle = Math.atan2(groundHeight, fenceWidth);
+  const fenceWidth     = Math.max(canvas.width * 0.10, 150);
+  const fenceAngle     = Math.atan2(groundHeight, fenceWidth);
   const angularDamping = 0.98;
 
   const mouse = { x: 0, y: 0, down: false };
@@ -137,7 +137,7 @@
   const soccerball = {
     x: 260,
     y: canvas.height - floorHeight,
-    radius: 42,
+    radius: 42, mass: 1,
     vx: 0,
     vy: 0,
     rotation: 0,
@@ -152,7 +152,7 @@
   const basketball = {
     x: canvas.width - fenceWidth - 20,
     y: canvas.height - floorHeight,
-    radius: 45,
+    radius: 45, mass: 1.2,
     vx: 0,
     vy: 0,
     rotation: 0,
@@ -164,8 +164,53 @@
     lastY: 0
   };
 
-  // ─── DRAW HELPERS ──────────────────────────────────────────────────────────
+  const allBalls = [soccerball, basketball];
 
+  // ── BALL–BALL COLLISION ──────────────────────────────────────────────────────
+  // Circle–circle impulse resolution with mass-weighted separation and restitution.
+  function resolveBallBallCollision(a, b) {
+    const dx   = b.x - a.x;
+    const dy   = b.y - a.y;
+    const dist = Math.hypot(dx, dy);
+    const minDist = a.radius + b.radius;
+
+    if (dist >= minDist || dist === 0) return;
+
+    // Collision normal
+    const nx = dx / dist;
+    const ny = dy / dist;
+
+    // Push apart so they no longer overlap, weighted by mass
+    const overlap     = minDist - dist;
+    const totalMass   = a.mass + b.mass;
+    a.x -= nx * overlap * (b.mass / totalMass);
+    a.y -= ny * overlap * (b.mass / totalMass);
+    b.x += nx * overlap * (a.mass / totalMass);
+    b.y += ny * overlap * (a.mass / totalMass);
+
+    // Relative velocity along the normal
+    const dvx = a.vx - b.vx;
+    const dvy = a.vy - b.vy;
+    const dvn = dvx * nx + dvy * ny;
+
+    // Don't resolve if already separating
+    if (dvn >= 0) return;
+
+    const restitution = 0.72;   // slightly less than wall bounce — feels natural
+    const j = -(1 + restitution) * dvn / (1 / a.mass + 1 / b.mass);
+
+    a.vx += (j / a.mass) * nx;
+    a.vy += (j / a.mass) * ny;
+    b.vx -= (j / b.mass) * nx;
+    b.vy -= (j / b.mass) * ny;
+
+    // Transfer a little spin on impact
+    const tangentialSpeed = dvx * ny - dvy * nx;
+    a.rotationSpeed -= tangentialSpeed * 0.012;
+    b.rotationSpeed += tangentialSpeed * 0.012;
+  }
+
+  // ── DRAW HELPERS ─────────────────────────────────────────────────────────────
   function drawCloud(cloud) {
     ctx.save();
     ctx.translate(cloud.x, cloud.y);
@@ -242,10 +287,6 @@
       ctx.stroke();
       numLines--;
     }
-
-    // Angled horizontal lines at +45°.
-    // A line anchored at y on the LEFT edge exits at y + fenceWidth*slope on the RIGHT edge.
-    // Range starts at -fenceWidth so lines entering from above are drawn correctly.
     for (let y = canvas.height; y >= 0; y -= spacing) {
       ctx.beginPath();
       ctx.moveTo(0,          y);
@@ -335,25 +376,24 @@
     ctx.restore();
   }
 
+  // ── IMAGE LOADING ────────────────────────────────────────────────────────────
   let soccerballImage = new Image();
 
   function loadSoccerBall() {
-    soccerballImage.src = 'assets/img/soccerball.svg';
-    soccerballImage.onload  = () => console.log('Soccerball image loaded.');
-    soccerballImage.onerror = () => console.error('Error loading soccerball.svg – using fallback.');
+    soccerballImage.src     = 'assets/img/soccerball.svg';
+    soccerballImage.onload  = () => console.log('Soccerball loaded.');
+    soccerballImage.onerror = () => console.error('Soccerball load failed – using fallback.');
   }
 
   let basketballImage = new Image();
 
   function loadBasketball() {
-    basketballImage.src = 'assets/img/basketball.svg';
-    basketballImage.onload  = () => console.log('Basketball image loaded.');
-    basketballImage.onerror = () => console.error('Error loading basketball.svg – using fallback.');
+    basketballImage.src     = 'assets/img/basketball.svg';
+    basketballImage.onload  = () => console.log('Basketball loaded.');
+    basketballImage.onerror = () => console.error('Basketball load failed – using fallback.');
   }
 
-
-  // ─── PHYSICS ───────────────────────────────────────────────────────────────
-
+  // ── BALL PHYSICS ─────────────────────────────────────────────────────────────
   function updateBallPhysics(ball) {
     if (ball.dragging) return;
 
@@ -363,7 +403,6 @@
 
     const floor = canvas.height - floorHeight - ball.radius;
     const restThreshold = 0.19;
-    let prevY = ball.y;
 
     ball.vx *= friction;
     ball.vy *= 0.999;
@@ -394,17 +433,21 @@
     // velocity = sqrt(vx^2 + vy^2)
     // where vx and vy are the components of the velocity vector.
     const velocity = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
-    hitCageAudio.volume = Math.min(velocity / 20, 1);
     
+    if(velocity > 0) {
+      hitCageAudio.volume = Math.min(velocity / 20, 1);
+    }
+
+    const wallOffset = (fenceWidth - (groundHeight - floorHeight));
     // Wall collisions
-    if (ball.x < ball.radius + 150) {
-      ball.x   = ball.radius + 150;
+    if (ball.x < ball.radius + wallOffset) {
+      ball.x   = ball.radius + wallOffset;
       ball.vx *= -bounce;
       hitCageAudio.currentTime = 0;
       hitCageAudio.play();
     }
-    if (ball.x > canvas.width - ball.radius - 150) {
-      ball.x   = canvas.width - ball.radius - 150;
+    if (ball.x > canvas.width - ball.radius - wallOffset) {
+      ball.x   = canvas.width - ball.radius - wallOffset;
       ball.vx *= -bounce;
       hitCageAudio.currentTime = 0;
       hitCageAudio.play();
@@ -449,9 +492,11 @@
     drawGround();
     drawWalls();
 
+    // Step physics for both balls, then resolve their mutual collision
     updateBallPhysics(soccerball);
     updateBallPhysics(basketball);
-    
+    resolveBallBallCollision(soccerball, basketball);
+
     drawBall(soccerball, soccerballImage);
     drawBall(basketball, basketballImage);
 
@@ -462,50 +507,53 @@
   loadBasketball();
   render();
 
+  // ── INPUT ────────────────────────────────────────────────────────────────────
+  // Single set of listeners — iterate allBalls inside each handler so there's
+  // no duplicate-listener problem from registering per-ball.
 
-  // ─── INPUT ─────────────────────────────────────────────────────────────────
+  canvas.addEventListener('mousedown', (e) => {
+    mouse.down = true;
+    mouse.x    = e.clientX;
+    mouse.y    = e.clientY;
 
-  const balls = [soccerball, basketball];
-
-  balls.forEach(ball => {
-    canvas.addEventListener('mousedown', (e) => {
-      mouse.down = true;
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-
+    for (const ball of allBalls) {
+      // Skip balls already being dragged (shouldn't happen, but guard anyway)
+      if (ball.dragging) continue;
       const dist = Math.hypot(mouse.x - ball.x, mouse.y - ball.y);
       if (dist < ball.radius) {
         ball.dragging    = true;
         ball.dragOffsetX = mouse.x - ball.x;
         ball.dragOffsetY = mouse.y - ball.y;
-        ball.lastX = ball.x;
-        ball.lastY = ball.y;
+        ball.lastX       = ball.x;
+        ball.lastY       = ball.y;
+        break; // only pick one ball per click
       }
-    });
-
-    canvas.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-
-      if (ball.dragging) {
-        ball.x  = mouse.x - ball.dragOffsetX;
-        ball.y  = mouse.y - ball.dragOffsetY;
-        ball.vx = ball.x - ball.lastX;
-        ball.vy = ball.y - ball.lastY;
-        ball.lastX = ball.x;
-        ball.lastY = ball.y;
-      }
-    });
-
-    canvas.addEventListener('mouseup', () => {
-      mouse.down = false;
-      if (ball.dragging) {
-        ball.dragging      = false;
-        ball.rotationSpeed = ball.vx * 0.05;
-      }
-    });
+    }
   });
 
+  canvas.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+
+    for (const ball of allBalls) {
+      if (!ball.dragging) continue;
+      ball.x  = mouse.x - ball.dragOffsetX;
+      ball.y  = mouse.y - ball.dragOffsetY;
+      ball.vx = ball.x - ball.lastX;
+      ball.vy = ball.y - ball.lastY;
+      ball.lastX = ball.x;
+      ball.lastY = ball.y;
+    }
+  });
+
+  canvas.addEventListener('mouseup', () => {
+    mouse.down = false;
+    for (const ball of allBalls) {
+      if (!ball.dragging) continue;
+      ball.dragging      = false;
+      ball.rotationSpeed = ball.vx * 0.05;
+    }
+  });
 </script>
 </body>
 </html>
