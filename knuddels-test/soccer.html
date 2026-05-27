@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GSAP Canvas Soccer Playground</title>
+  <title>Canvas Soccer Playground</title>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 
@@ -44,12 +44,18 @@
   const canvas = document.getElementById('scene');
   const ctx = canvas.getContext('2d');
 
+  const hitCageAudio = new Audio('assets/audio/hit-cage.mp3');
+  const bounceAudio1 = new Audio(`assets/audio/ball-bounce-1.mp3`);
+  const bounceAudio2 = new Audio(`assets/audio/ball-bounce-2.mp3`);
+  const bounceAudio3 = new Audio(`assets/audio/ball-bounce-3.mp3`);
+  const bounceAudio4 = new Audio(`assets/audio/ball-bounce-4.mp3`);
+  const bounceAudio5 = new Audio(`assets/audio/ball-bounce-5.mp3`);
+
 
   function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   }
-
 
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
@@ -58,43 +64,90 @@
   const gravity = 0.25;
   const friction = 0.992;
   const bounce = 0.75;
-
   const floorHeight = 140;
-
-  // Increased damping slightly to prevent jittering/spinning too much when resting
   const angularDamping = 0.98;
 
+  const mouse = { x: 0, y: 0, down: false };
 
-  const mouse = {
-    x: 0,
-    y: 0,
-    down: false
-  };
-
+  // ─── CLOUDS ────────────────────────────────────────────────────────────────
+  // Each cloud only needs x, y, scale – GSAP owns the x motion.
 
   const clouds = [
-    { x: 100, y: 100, speed: 0.12, scale: 1 },
-    { x: 500, y: 160, speed: 0.08, scale: 1.4 },
-    { x: 1000, y: 90, speed: 0.15, scale: 0.9 }
+    { x: 100,  y: 100, scale: 1   },
+    { x: 500,  y: 160, scale: 1.4 },
+    { x: 1000, y: 90,  scale: 0.9 }
   ];
 
+  /**
+   * Animate a single cloud from its current x to off-screen right,
+   * then instantly snap it back to the left edge and repeat.
+   * Duration is derived from a pixels-per-second speed so the feel
+   * matches what the old manual loop produced.
+   */
+  function animateCloud(cloud, speedPx = 0.72) {
+    // pixels remaining until the cloud disappears off the right
+    const distanceLeft = canvas.width + 120 - cloud.x;
+    const duration = distanceLeft / (speedPx * 60); // 60 fps equivalent
 
-  const birds = [];
-
-
-  function spawnBird() {
-    birds.push({
-      x: -50,
-      y: 80 + Math.random() * 120,
-      speed: 2 + Math.random() * 2,
-      wing: 0
+    gsap.to(cloud, {
+      x: canvas.width + 120,
+      duration,
+      ease: 'none',
+      onComplete() {
+        cloud.x = -120;                         // snap back to left
+        // Full traversal for future loops
+        const fullDuration = (canvas.width + 240) / (speedPx * 60);
+        gsap.to(cloud, {
+          x: canvas.width + 120,
+          duration: fullDuration,
+          ease: 'none',
+          repeat: -1,                           // loop forever
+          onRepeat() { cloud.x = -120; }
+        });
+      }
     });
   }
 
+  // Kick off a different base speed per cloud (mirrors the original speed values)
+  animateCloud(clouds[0], 0.72);   // was speed 0.12 * 6
+  animateCloud(clouds[1], 0.48);   // was speed 0.08 * 6
+  animateCloud(clouds[2], 0.90);   // was speed 0.15 * 6
+
+
+  // ─── BIRDS ─────────────────────────────────────────────────────────────────
+
+  const birds = [];
+
+  function spawnBird() {
+    const bird = {
+      x: -50,
+      y: 80 + Math.random() * 120,
+      wing: 0   // wing phase – updated in drawBird each frame
+    };
+
+    birds.push(bird);
+
+    // Random speed between 2–4 px/frame → convert to px/s for GSAP
+    const speedPxPerFrame = 2 + Math.random() * 2;
+    const totalDistance = canvas.width + 150;          // -50 → canvas.width+100
+    const duration = totalDistance / (speedPxPerFrame * 60);
+
+    gsap.to(bird, {
+      x: canvas.width + 100,
+      duration,
+      ease: 'none',
+      onComplete() {
+        const i = birds.indexOf(bird);
+        if (i !== -1) birds.splice(i, 1);
+      }
+    });
+  }
 
   setInterval(spawnBird, 4000);
   spawnBird();
 
+
+  // ─── BALL ──────────────────────────────────────────────────────────────────
 
   const ball = {
     x: 260,
@@ -111,380 +164,295 @@
     lastY: 0
   };
 
+
+  // ─── DRAW HELPERS ──────────────────────────────────────────────────────────
+
   function drawSky() {
     const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
     gradient.addColorStop(0, '#7dd3fc');
     gradient.addColorStop(0.5, '#bae6fd');
     gradient.addColorStop(1, '#86efac');
-
-
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-
   function drawMountains() {
-
-
     const mountains = [
       { x: -100, width: 500, height: 360, color: '#4b7f52' },
-      { x: 250, width: 550, height: 340, color: '#3f6d47' },
-      { x: 850, width: 600, height: 380, color: '#537f5b' }
+      { x: 250,  width: 550, height: 340, color: '#3f6d47' },
+      { x: 850,  width: 600, height: 380, color: '#537f5b' }
     ];
 
-
     mountains.forEach((m) => {
-
-
       ctx.beginPath();
       ctx.moveTo(m.x, canvas.height - floorHeight);
       ctx.lineTo(m.x + m.width / 2, canvas.height - m.height - floorHeight);
       ctx.lineTo(m.x + m.width, canvas.height - floorHeight);
       ctx.closePath();
-
-
       ctx.fillStyle = m.color;
       ctx.fill();
 
-
       ctx.beginPath();
       ctx.moveTo(m.x + m.width / 2 - 40, canvas.height - m.height - 90);
-      ctx.lineTo(m.x + m.width / 2, canvas.height - m.height - 150);
+      ctx.lineTo(m.x + m.width / 2,      canvas.height - m.height - 150);
       ctx.lineTo(m.x + m.width / 2 + 40, canvas.height - m.height - 90);
-
-
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.fill();
-
-
     });
   }
 
-
   function drawCloud(cloud) {
-
-
     ctx.save();
     ctx.translate(cloud.x, cloud.y);
     ctx.scale(cloud.scale, cloud.scale);
-
-
     ctx.fillStyle = 'rgba(255,255,255,0.9)';
-
-
     ctx.beginPath();
-    ctx.arc(0, 0, 30, 0, Math.PI * 2);
+    ctx.arc(0,  0,   30, 0, Math.PI * 2);
     ctx.arc(30, -10, 35, 0, Math.PI * 2);
-    ctx.arc(65, 0, 28, 0, Math.PI * 2);
+    ctx.arc(65, 0,   28, 0, Math.PI * 2);
     ctx.fill();
-
-
     ctx.restore();
   }
 
-
   function drawBird(bird) {
-
-
     ctx.save();
     ctx.translate(bird.x, bird.y);
 
-
+    // Wing phase still advances each draw call – purely visual, not positional
     bird.wing += 0.2;
-
-
     const flap = Math.sin(bird.wing) * 5;
-
 
     ctx.strokeStyle = '#1e293b';
     ctx.lineWidth = 2;
-
-
     ctx.beginPath();
     ctx.moveTo(-10, 0);
-    ctx.quadraticCurveTo(-2, -flap, 0, 0);
-    ctx.quadraticCurveTo(8, -flap, 16, 0);
+    ctx.quadraticCurveTo(-2,  -flap, 0, 0);
+    ctx.quadraticCurveTo( 8,  -flap, 16, 0);
     ctx.stroke();
-
-
     ctx.restore();
   }
 
-
   function drawGrass() {
-
-
     const gradient = ctx.createLinearGradient(0, canvas.height - 180, 0, canvas.height);
     gradient.addColorStop(0, '#4ade80');
     gradient.addColorStop(1, '#15803d');
-
-
     ctx.fillStyle = gradient;
     ctx.fillRect(0, canvas.height - 180, canvas.width, 180);
   }
 
+  // Draw Walls on the left and right with a rectangle that spans from top to bottom
+  function drawWalls() {
+    if (fenceImage.complete && fenceImage.naturalWidth > 0) {
+      ctx.save();
+
+      drawSkewedImage(fenceImage, 0, 0, 300, canvas.height, 0, -0.5);
+      drawSkewedImage(fenceImage, canvas.width - 300, -1 * canvas.height + floorHeight, 300, canvas.height, 0,0.5);
+    } else {
+      ctx.fillStyle = '#FFFFFF77';
+      ctx.fillRect(0, 0, 20, canvas.height);
+      ctx.fillRect(canvas.width - 20, 0, 20, canvas.height);
+    }
+  }
+
+  function drawSkewedImage(img, x, y, width, height, xSkew, ySkew){
+
+    // apply a skew
+    // transform(xScale, ySkew, xSkew, yScale, xTranslation, yTranslation)
+    ctx.transform(1,ySkew,xSkew,1,0,0);
+
+    // draw the reflected image
+    ctx.drawImage(img, x, y, width, height);
+    // clean up by setting all transforms to default
+    ctx.setTransform(1,0,0,1,0,0);
+  }
+
+  let fenceImage = new Image();
+
+  function loadFenceImage() {
+    fenceImage.src = 'assets/img/fence.svg';
+    fenceImage.onload  = () => console.log('Fence image loaded.');
+    fenceImage.onerror = () => console.error('Error loading fence image – using fallback.');
+  }
+
   function drawBall() {
-
     ctx.save();
-
-
-    // We still need translation and rotation for positioning
     ctx.translate(ball.x, ball.y);
     ctx.rotate(ball.rotation);
 
-    // --- MODIFIED DRAWING LOGIC HERE ---
-    if (ballImage.complete) {
-      // Draw the loaded SVG image at the center (0, 0) of the translated context
-      // We use the original radius as a rough size indicator for drawing.
+    if (ballImage.complete && ballImage.naturalWidth > 0) {
       ctx.drawImage(ballImage, -ball.radius, -ball.radius, ball.radius * 2, ball.radius * 2);
-
     } else {
-      // Fallback/Loading State (Keep the original manual drawing if SVG isn't loaded yet)
       const gradient = ctx.createRadialGradient(-12, -12, 5, 0, 0, ball.radius);
       gradient.addColorStop(0, '#ffffff');
       gradient.addColorStop(1, '#dddddd');
-
       ctx.fillStyle = gradient;
-
       ctx.beginPath();
       ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
       ctx.fill();
 
-      // ... (Keep the code for drawing hexagonal studs/panels)
       for (let i = 0; i < 6; i++) {
         const angle = (Math.PI * 2 / 6) * i;
         ctx.beginPath();
-        ctx.arc(
-                Math.cos(angle) * 18,
-                Math.sin(angle) * 18,
-                10,
-                0,
-                Math.PI * 2
-        );
+        ctx.arc(Math.cos(angle) * 18, Math.sin(angle) * 18, 10, 0, Math.PI * 2);
         ctx.fillStyle = '#111827';
         ctx.fill();
       }
     }
 
-
     ctx.restore();
   }
 
-
-  // NEW: Image placeholder for the soccerball graphic
   let ballImage = new Image();
 
-  /** Function to handle loading the SVG image */
   function loadSoccerBall() {
-    console.log("Loading soccerball SVG...");
-    ballImage.src = 'soccerball.svg'; // <-- Make sure this path is correct!
-
-    // Use a Promise or an Event Listener to ensure subsequent code waits for the image
-    ballImage.onload = () => {
-      console.log("Soccerball image loaded successfully.");
-    };
-
-    ballImage.onerror = () => {
-      console.error("Error loading soccerball.svg. Falling back to basic drawing.");
-      // Optional: Fallback logic if SVG fails (e.g., keep the old drawBall() method)
-    };
+    ballImage.src = 'assets/img/soccerball.svg';
+    ballImage.onload  = () => console.log('Soccerball image loaded.');
+    ballImage.onerror = () => console.error('Error loading soccerball.svg – using fallback.');
   }
 
 
-  function updateClouds() {
-
-    clouds.forEach((cloud) => {
-
-      cloud.x += cloud.speed;
-
-      if (cloud.x > canvas.width + 120) {
-        cloud.x = -120;
-      }
-    });
-  }
-
-
-  function updateBirds() {
-
-    for (let i = birds.length - 1; i >= 0; i--) {
-
-      birds[i].x += birds[i].speed;
-
-      if (birds[i].x > canvas.width + 100) {
-        birds.splice(i, 1);
-      }
-    }
-  }
+  // ─── PHYSICS ───────────────────────────────────────────────────────────────
 
   function updateBallPhysics() {
     if (ball.dragging) return;
 
     ball.vy += gravity;
-
-    ball.x += ball.vx;
-    ball.y += ball.vy;
+    ball.x  += ball.vx;
+    ball.y  += ball.vy;
 
     const floor = canvas.height - floorHeight - ball.radius;
-    const restThreshold = 0.12;
+    const restThreshold = 0.19;
+    let prevY = ball.y;
 
-    // Apply friction FIRST (stabilizes values early)
     ball.vx *= friction;
-    ball.vy *= 0.999; // subtle vertical damping
+    ball.vy *= 0.999;
     ball.rotationSpeed *= angularDamping;
 
-    // FLOOR COLLISION
+    // Floor collision
     if (ball.y > floor) {
-      ball.y = floor;
-      ball.vy *= -bounce;
+      const impactSpeed = Math.abs(ball.vy); // capture BEFORE the bounce flip
 
-      // kill micro-bounce noise
-      if (Math.abs(ball.vy) < restThreshold) {
-        ball.vy = 0;
+      ball.y   = floor;
+      ball.vy *= -bounce;
+      if (Math.abs(ball.vy) < restThreshold) ball.vy = 0;
+
+      // Only play sound when the impact was forceful enough to be audible.
+      // This prevents the sound triggering on micro-settle frames where the
+      // ball is effectively resting on the ground.
+      const minAudibleImpact = restThreshold * 3;
+      if (impactSpeed > minAudibleImpact) {
+        const randomBounce = Math.floor(Math.random() * 5) + 1;
+        const bounceAudio = [bounceAudio1, bounceAudio2, bounceAudio3, bounceAudio4, bounceAudio5][randomBounce - 1];
+        bounceAudio.currentTime = 0;
+        bounceAudio.play();
       }
     }
 
-    // WALL COLLISIONS
-    if (ball.x < ball.radius) {
-      ball.x = ball.radius;
+    // Wall collisions
+    if (ball.x < ball.radius + 150) {
+      ball.x   = ball.radius + 150;
       ball.vx *= -bounce;
+      hitCageAudio.currentTime = 0;
+      hitCageAudio.play();
+    }
+    if (ball.x > canvas.width - ball.radius - 150) {
+      ball.x   = canvas.width - ball.radius - 150;
+      ball.vx *= -bounce;
+      hitCageAudio.currentTime = 0;
+      hitCageAudio.play();
     }
 
-    if (ball.x > canvas.width - ball.radius) {
-      ball.x = canvas.width - ball.radius;
-      ball.vx *= -bounce;
-    }
-
-    // --- TRUE MOTION CHECK (CRITICAL FIX) ---
-    const isMoving =
-            Math.abs(ball.vx) > restThreshold ||
-            Math.abs(ball.vy) > restThreshold;
+    const isMoving = Math.abs(ball.vx) > restThreshold || Math.abs(ball.vy) > restThreshold;
 
     if (!isMoving) {
-      // HARD STOP everything
       ball.vx = 0;
       ball.vy = 0;
       ball.rotationSpeed = 0;
     } else {
-      // Only rotate when actually moving
       ball.rotation += ball.rotationSpeed;
 
-      // Only apply rolling when on ground
       const onGround = Math.abs(ball.y - floor) < 0.5;
-
       if (onGround) {
-        const rollSpeed = ball.vx / ball.radius;
-
-        // Instead of ADDING every frame (BAD),
-        // we gently ADJUST toward correct rolling speed (GOOD)
-
-        const targetRotationSpeed = rollSpeed;
-
-        // smooth interpolation prevents runaway acceleration
+        const targetRotationSpeed = ball.vx / ball.radius;
         ball.rotationSpeed += (targetRotationSpeed - ball.rotationSpeed) * 0.15;
       }
 
-      // Apply rotation AFTER coupling
       ball.rotation += ball.rotationSpeed;
     }
+
+    prevY = ball.y;
   }
 
-  function render() {
 
+  // ─── RENDER LOOP ───────────────────────────────────────────────────────────
+  // Cloud and bird *positions* are driven by GSAP tweens above.
+  // This loop is now a pure draw loop for those elements.
+
+  function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawSky();
     drawMountains();
 
-
-    updateClouds();
+    // Clouds: GSAP owns cloud.x — just draw them
     clouds.forEach(drawCloud);
 
-
-    updateBirds();
+    // Birds: GSAP owns bird.x — drawBird handles wing flap visually
     birds.forEach(drawBird);
 
     drawGrass();
+    drawWalls();
 
     updateBallPhysics();
-
     drawBall();
 
     requestAnimationFrame(render);
   }
 
-
   loadSoccerBall();
+  loadFenceImage();
   render();
 
 
+  // ─── INPUT ─────────────────────────────────────────────────────────────────
+
   canvas.addEventListener('mousedown', (e) => {
-
-
     mouse.down = true;
     mouse.x = e.clientX;
     mouse.y = e.clientY;
 
-
     const dist = Math.hypot(mouse.x - ball.x, mouse.y - ball.y);
-
-
     if (dist < ball.radius) {
-
-
-      ball.dragging = true;
+      ball.dragging    = true;
       ball.dragOffsetX = mouse.x - ball.x;
       ball.dragOffsetY = mouse.y - ball.y;
-
-      // When starting drag, reset physics state
       ball.lastX = ball.x;
       ball.lastY = ball.y;
-
-
-      return;
     }
-
   });
 
-
   canvas.addEventListener('mousemove', (e) => {
-
     mouse.x = e.clientX;
     mouse.y = e.clientY;
 
     if (ball.dragging) {
-
-      // Ball movement logic remains the same
-      ball.x = mouse.x - ball.dragOffsetX;
-      ball.y = mouse.y - ball.dragOffsetY;
-
+      ball.x  = mouse.x - ball.dragOffsetX;
+      ball.y  = mouse.y - ball.dragOffsetY;
       ball.vx = ball.x - ball.lastX;
       ball.vy = ball.y - ball.lastY;
-
       ball.lastX = ball.x;
       ball.lastY = ball.y;
     }
-
   });
-
 
   canvas.addEventListener('mouseup', () => {
-
     mouse.down = false;
-
     if (ball.dragging) {
-
-
-      ball.dragging = false;
-
-      // Apply force based on velocity when releasing the ball
+      ball.dragging      = false;
       ball.rotationSpeed = ball.vx * 0.05;
     }
-
   });
 
-
 </script>
-
-
 </body>
 </html>
