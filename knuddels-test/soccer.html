@@ -348,6 +348,14 @@
       }
     }
 
+
+    // Adjust volume based on velocity
+    // Formula for calculating the velocity of an object in 2D space is:
+    // velocity = sqrt(vx^2 + vy^2)
+    // where vx and vy are the components of the velocity vector.
+    const velocity = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
+    hitCageAudio.volume = Math.min(velocity / 20, 1);
+    
     // Wall collisions
     if (ball.x < ball.radius + 150) {
       ball.x   = ball.radius + 150;
@@ -361,6 +369,7 @@
       hitCageAudio.currentTime = 0;
       hitCageAudio.play();
     }
+
 
     const isMoving = Math.abs(ball.vx) > restThreshold || Math.abs(ball.vy) > restThreshold;
 
