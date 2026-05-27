@@ -43,12 +43,13 @@
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  const gravity       = 0.25;
-  const friction      = 0.992;
-  const bounce        = 0.75;
-  const floorHeight   = canvas.height * 0.17;
+  const gravity        = 0.25;
+  const friction       = 0.992;
+  const bounce         = 0.75;
+  const floorHeight    = canvas.height * 0.17;
   const groundHeight   = canvas.height * 0.22;
-  const fenceAngle    = 45 * Math.PI / 180;
+  const fenceWidth = Math.max(canvas.width * 0.10, 150); // at least 10% of canvas
+  const fenceAngle = Math.atan2(groundHeight, fenceWidth);
   const angularDamping = 0.98;
 
   const mouse = { x: 0, y: 0, down: false };
@@ -133,9 +134,9 @@
 
   // ─── BALL ──────────────────────────────────────────────────────────────────
 
-  const ball = {
+  const soccerball = {
     x: 260,
-    y: canvas.height - 160,
+    y: canvas.height - floorHeight,
     radius: 42,
     vx: 0,
     vy: 0,
@@ -148,6 +149,20 @@
     lastY: 0
   };
 
+  const basketball = {
+    x: canvas.width - fenceWidth - 20,
+    y: canvas.height - floorHeight,
+    radius: 45,
+    vx: 0,
+    vy: 0,
+    rotation: 0,
+    rotationSpeed: 0,
+    dragging: false,
+    dragOffsetX: 0,
+    dragOffsetY: 0,
+    lastX: 0,
+    lastY: 0
+  };
 
   // ─── DRAW HELPERS ──────────────────────────────────────────────────────────
 
@@ -195,7 +210,6 @@
   // Right fence: horizontal grid lines slope at -45° (up-right   = perspective toward left)
   // Inner vertical edge of each fence is drawn as a thick pole.
   function drawWalls() {
-    const fenceWidth = Math.max(canvas.width * 0.10, 150); // at least 10% of canvas
     const spacing    = 40;    // px between grid lines
     const thinLine   = 1.5;
     const poleWidth  = 5;
@@ -293,7 +307,7 @@
     ctx.restore();
   }
 
-  function drawBall() {
+  function drawBall(ball, ballImage) {
     ctx.save();
     ctx.translate(ball.x, ball.y);
     ctx.rotate(ball.rotation);
@@ -321,18 +335,26 @@
     ctx.restore();
   }
 
-  let ballImage = new Image();
+  let soccerballImage = new Image();
 
   function loadSoccerBall() {
-    ballImage.src = 'assets/img/soccerball.svg';
-    ballImage.onload  = () => console.log('Soccerball image loaded.');
-    ballImage.onerror = () => console.error('Error loading soccerball.svg – using fallback.');
+    soccerballImage.src = 'assets/img/soccerball.svg';
+    soccerballImage.onload  = () => console.log('Soccerball image loaded.');
+    soccerballImage.onerror = () => console.error('Error loading soccerball.svg – using fallback.');
+  }
+
+  let basketballImage = new Image();
+
+  function loadBasketball() {
+    basketballImage.src = 'assets/img/basketball.svg';
+    basketballImage.onload  = () => console.log('Basketball image loaded.');
+    basketballImage.onerror = () => console.error('Error loading basketball.svg – using fallback.');
   }
 
 
   // ─── PHYSICS ───────────────────────────────────────────────────────────────
 
-  function updateBallPhysics() {
+  function updateBallPhysics(ball) {
     if (ball.dragging) return;
 
     ball.vy += gravity;
@@ -427,53 +449,61 @@
     drawGround();
     drawWalls();
 
-    updateBallPhysics();
-    drawBall();
+    updateBallPhysics(soccerball);
+    updateBallPhysics(basketball);
+    
+    drawBall(soccerball, soccerballImage);
+    drawBall(basketball, basketballImage);
 
     requestAnimationFrame(render);
   }
 
   loadSoccerBall();
+  loadBasketball();
   render();
 
 
   // ─── INPUT ─────────────────────────────────────────────────────────────────
 
-  canvas.addEventListener('mousedown', (e) => {
-    mouse.down = true;
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
+  const balls = [soccerball, basketball];
 
-    const dist = Math.hypot(mouse.x - ball.x, mouse.y - ball.y);
-    if (dist < ball.radius) {
-      ball.dragging    = true;
-      ball.dragOffsetX = mouse.x - ball.x;
-      ball.dragOffsetY = mouse.y - ball.y;
-      ball.lastX = ball.x;
-      ball.lastY = ball.y;
-    }
-  });
+  balls.forEach(ball => {
+    canvas.addEventListener('mousedown', (e) => {
+      mouse.down = true;
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
 
-  canvas.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
+      const dist = Math.hypot(mouse.x - ball.x, mouse.y - ball.y);
+      if (dist < ball.radius) {
+        ball.dragging    = true;
+        ball.dragOffsetX = mouse.x - ball.x;
+        ball.dragOffsetY = mouse.y - ball.y;
+        ball.lastX = ball.x;
+        ball.lastY = ball.y;
+      }
+    });
 
-    if (ball.dragging) {
-      ball.x  = mouse.x - ball.dragOffsetX;
-      ball.y  = mouse.y - ball.dragOffsetY;
-      ball.vx = ball.x - ball.lastX;
-      ball.vy = ball.y - ball.lastY;
-      ball.lastX = ball.x;
-      ball.lastY = ball.y;
-    }
-  });
+    canvas.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
 
-  canvas.addEventListener('mouseup', () => {
-    mouse.down = false;
-    if (ball.dragging) {
-      ball.dragging      = false;
-      ball.rotationSpeed = ball.vx * 0.05;
-    }
+      if (ball.dragging) {
+        ball.x  = mouse.x - ball.dragOffsetX;
+        ball.y  = mouse.y - ball.dragOffsetY;
+        ball.vx = ball.x - ball.lastX;
+        ball.vy = ball.y - ball.lastY;
+        ball.lastX = ball.x;
+        ball.lastY = ball.y;
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      mouse.down = false;
+      if (ball.dragging) {
+        ball.dragging      = false;
+        ball.rotationSpeed = ball.vx * 0.05;
+      }
+    });
   });
 
 </script>
