@@ -9,7 +9,12 @@
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #87ceeb; font-family: Arial, sans-serif; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: Arial, sans-serif; }
+    body {
+      background: 
+      url('assets/img/brickwall.svg') center 77%  repeat-x,
+      linear-gradient(to bottom, #7dd3fc 0%, #bae6fd 50%, #86efac 100%);
+    }
     canvas { display: block; width: 100vw; height: 100vh; cursor: grab; }
     canvas:active { cursor: grabbing; }
   </style>
@@ -41,8 +46,8 @@
   const gravity       = 0.25;
   const friction      = 0.992;
   const bounce        = 0.75;
-  const floorHeight   = 140;
-  const grassHeight   = 180;
+  const floorHeight   = canvas.height * 0.17;
+  const groundHeight   = canvas.height * 0.22;
   const fenceAngle    = 45 * Math.PI / 180;
   const angularDamping = 0.98;
 
@@ -146,40 +151,6 @@
 
   // ─── DRAW HELPERS ──────────────────────────────────────────────────────────
 
-  function drawSky() {
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, '#7dd3fc');
-    gradient.addColorStop(0.5, '#bae6fd');
-    gradient.addColorStop(1, '#86efac');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }
-
-  function drawMountains() {
-    const mountains = [
-      { x: -100, width: 500, height: 360, color: '#4b7f52' },
-      { x: 250,  width: 550, height: 340, color: '#3f6d47' },
-      { x: 850,  width: 600, height: 380, color: '#537f5b' }
-    ];
-
-    mountains.forEach((m) => {
-      ctx.beginPath();
-      ctx.moveTo(m.x, canvas.height - floorHeight);
-      ctx.lineTo(m.x + m.width / 2, canvas.height - m.height - floorHeight);
-      ctx.lineTo(m.x + m.width, canvas.height - floorHeight);
-      ctx.closePath();
-      ctx.fillStyle = m.color;
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(m.x + m.width / 2 - 40, canvas.height - m.height - 90);
-      ctx.lineTo(m.x + m.width / 2,      canvas.height - m.height - 150);
-      ctx.lineTo(m.x + m.width / 2 + 40, canvas.height - m.height - 90);
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.fill();
-    });
-  }
-
   function drawCloud(cloud) {
     ctx.save();
     ctx.translate(cloud.x, cloud.y);
@@ -211,12 +182,12 @@
     ctx.restore();
   }
 
-  function drawGrass() {
-    const gradient = ctx.createLinearGradient(0, canvas.height - grassHeight, 0, canvas.height);
-    gradient.addColorStop(0, '#4ade80');
-    gradient.addColorStop(1, '#15803d');
+  function drawGround() {
+    const gradient = ctx.createLinearGradient(0, canvas.height - groundHeight, 0, canvas.height);
+    gradient.addColorStop(0, '#949494');
+    gradient.addColorStop(1, '#4a4a4a');
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, canvas.height - grassHeight, canvas.width, grassHeight);
+    ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
   }
 
   // ── FENCES ───────────────────────────────────────────────────────────────────
@@ -230,7 +201,7 @@
     const poleWidth  = 5;
     const color      = '#111';
     const slope      = -1 * Math.tan(fenceAngle); // = 1 for 45°
-    const hypoteneus = Math.sqrt(fenceWidth * fenceWidth + grassHeight * grassHeight);
+    const hypoteneus = Math.sqrt(fenceWidth * fenceWidth + groundHeight * groundHeight);
 
     ctx.strokeStyle = color;
     ctx.lineCap     = 'butt';
@@ -253,7 +224,7 @@
       const a = spacing * numLines;
       const b = Math.sqrt(c * c - a * a);
 
-      ctx.lineTo(x, canvas.height - grassHeight + b);
+      ctx.lineTo(x, canvas.height - groundHeight + b);
       ctx.stroke();
       numLines--;
     }
@@ -272,7 +243,7 @@
     ctx.lineWidth = poleWidth;
     ctx.beginPath();
     ctx.moveTo(fenceWidth, 0);
-    ctx.lineTo(fenceWidth, canvas.height - grassHeight);
+    ctx.lineTo(fenceWidth, canvas.height - groundHeight);
     ctx.stroke();
 
     ctx.restore();
@@ -297,7 +268,7 @@
       const a = spacing * numLines;
       const b = Math.sqrt(c * c - a * a);
 
-      ctx.lineTo(x, canvas.height - grassHeight + b);
+      ctx.lineTo(x, canvas.height - groundHeight + b);
       ctx.stroke();
       numLines++;
     }
@@ -316,7 +287,7 @@
     ctx.lineWidth = poleWidth;
     ctx.beginPath();
     ctx.moveTo(rx, 0);
-    ctx.lineTo(rx, canvas.height - grassHeight);
+    ctx.lineTo(rx, canvas.height - groundHeight);
     ctx.stroke();
 
     ctx.restore();
@@ -447,16 +418,13 @@
   function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    drawSky();
-    drawMountains();
-
     // Clouds: GSAP owns cloud.x — just draw them
     clouds.forEach(drawCloud);
 
     // Birds: GSAP owns bird.x — drawBird handles wing flap visually
     birds.forEach(drawBird);
 
-    drawGrass();
+    drawGround();
     drawWalls();
 
     updateBallPhysics();
