@@ -189,8 +189,8 @@
     b.y += ny * overlap * (a.mass / totalMass);
 
     // Relative velocity along the normal
-    const dvx = a.vx - b.vx;
-    const dvy = a.vy - b.vy;
+    const dvx = b.vx - a.vx;
+    const dvy = b.vy - a.vy;
     const dvn = dvx * nx + dvy * ny;
 
     // Don't resolve if already separating
@@ -199,10 +199,10 @@
     const restitution = 0.72;   // slightly less than wall bounce — feels natural
     const j = -(1 + restitution) * dvn / (1 / a.mass + 1 / b.mass);
 
-    a.vx += (j / a.mass) * nx;
-    a.vy += (j / a.mass) * ny;
-    b.vx -= (j / b.mass) * nx;
-    b.vy -= (j / b.mass) * ny;
+    a.vx -= (j / a.mass) * nx;
+    a.vy -= (j / a.mass) * ny;
+    b.vx += (j / b.mass) * nx;
+    b.vy += (j / b.mass) * ny;
 
     // Transfer a little spin on impact
     const tangentialSpeed = dvx * ny - dvy * nx;
