@@ -166,6 +166,8 @@
 
   const allBalls = [soccerball, basketball];
 
+  const ballBounceSound = new Audio('assets/audio/ball-collide.mp3');
+
   // ── BALL–BALL COLLISION ──────────────────────────────────────────────────────
   // Circle–circle impulse resolution with mass-weighted separation and restitution.
   function resolveBallBallCollision(a, b) {
@@ -203,6 +205,9 @@
     a.vy -= (j / a.mass) * ny;
     b.vx += (j / b.mass) * nx;
     b.vy += (j / b.mass) * ny;
+
+    // Play ball bounce sound
+    ballBounceSound.play();
 
     // Transfer a little spin on impact
     const tangentialSpeed = dvx * ny - dvy * nx;
