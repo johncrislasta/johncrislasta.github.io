@@ -30,6 +30,7 @@ export class Playground {
 
     this.birds = [];
     this.balls = [];
+    this.resizeFrame = null;
 
     this._buildScene();
     this._spawnBirds();
@@ -38,9 +39,7 @@ export class Playground {
 
     this.app.ticker.add(() => this._tick());
 
-    window.addEventListener('resize', () => {
-      this._rebuildStaticLayers();
-    });
+    window.addEventListener('resize', () => this._queueResizeRender());
   }
 
   // -- Layout helpers -----------------------------------------------------------
@@ -62,6 +61,34 @@ export class Playground {
   _rebuildStaticLayers() {
     this._buildGround();
     this._buildFences();
+  }
+
+  _queueResizeRender() {
+    if (this.resizeFrame) cancelAnimationFrame(this.resizeFrame);
+    this.resizeFrame = requestAnimationFrame(() => {
+      this.resizeFrame = null;
+      this._renderResize();
+    });
+  }
+
+  _renderResize() {
+    this.app.renderer.resize(window.innerWidth, window.innerHeight);
+    this._rebuildStaticLayers();
+    this._keepBallsInBounds();
+  }
+
+  _keepBallsInBounds() {
+    const floor = this.H - this.floorH;
+    const wallOffset = this.fenceW - (this.groundH - this.floorH);
+    const left = wallOffset;
+    const right = this.W - wallOffset;
+
+    for (const ball of this.balls) {
+      ball.x = Math.min(Math.max(ball.x, left + ball.radius), right - ball.radius);
+      ball.y = Math.min(ball.y, floor - ball.radius);
+      ball.container.x = ball.x;
+      ball.container.y = ball.y;
+    }
   }
 
   _buildGround() {
