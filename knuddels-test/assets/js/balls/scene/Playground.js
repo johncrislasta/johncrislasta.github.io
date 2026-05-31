@@ -212,6 +212,7 @@ export class Playground {
 
   _bindInput() {
     const view = this.app.view;
+    let activeTouchId = null;
 
     const onDown = (mx, my) => {
       for (const ball of this.balls) {
@@ -233,10 +234,43 @@ export class Playground {
     view.addEventListener('mouseup',   () => onUp());
 
     // Touch
-    const t = e => ({ x: e.touches[0].clientX, y: e.touches[0].clientY });
-    view.addEventListener('touchstart', e => { e.preventDefault(); const p = t(e); onDown(p.x, p.y); }, { passive: false });
-    view.addEventListener('touchmove',  e => { e.preventDefault(); const p = t(e); onMove(p.x, p.y); }, { passive: false });
-    view.addEventListener('touchend',   () => onUp());
+    const findTouch = touches => {
+      for (let i = 0; i < touches.length; i++) {
+        const touch = touches[i];
+        if (touch.identifier === activeTouchId) return touch;
+      }
+      return null;
+    };
+
+    view.addEventListener('touchstart', e => {
+      if (activeTouchId !== null) return;
+      const touch = e.changedTouches[0];
+      if (!touch) return;
+
+      e.preventDefault();
+      activeTouchId = touch.identifier;
+      onDown(touch.clientX, touch.clientY);
+    }, { passive: false });
+
+    view.addEventListener('touchmove', e => {
+      const touch = findTouch(e.changedTouches);
+      if (!touch) return;
+
+      e.preventDefault();
+      onMove(touch.clientX, touch.clientY);
+    }, { passive: false });
+
+    const onTouchUp = e => {
+      const touch = findTouch(e.changedTouches);
+      if (!touch) return;
+
+      e.preventDefault();
+      activeTouchId = null;
+      onUp();
+    };
+
+    view.addEventListener('touchend', onTouchUp, { passive: false });
+    view.addEventListener('touchcancel', onTouchUp, { passive: false });
   }
 }
 
