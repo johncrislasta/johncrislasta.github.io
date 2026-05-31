@@ -49,7 +49,7 @@ export class Playground {
   get H()       { return this.app.screen.height; }
   get floorH()  { return this.H * 0.17; }
   get groundH() { return this.H * 0.22; }
-  get fenceW()  { return Math.max(this.W * 0.10, 150); }
+  get fenceW()  { return this.W * 0.10 }
 
   // -- Scene build --------------------------------------------------------------
 
@@ -100,7 +100,7 @@ export class Playground {
     const c2d  = cvs.getContext('2d');
     const slope = -Math.tan(Math.atan2(gh, fw));
     const hyp   = Math.sqrt(fw * fw + gh * gh);
-    const step  = 40;
+    const step  = this.W * 0.02;
     const total = Math.ceil(fw / step);
 
     c2d.strokeStyle = '#111';
