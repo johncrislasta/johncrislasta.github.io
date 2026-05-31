@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ball Playground in PixiJS</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    body {
+      cursor: grab;
+      background: 
+        url('assets/img/brickwall.svg') center 77%  repeat-x,
+        linear-gradient(to bottom, #7dd3fc 0%, #bae6fd 50%, #86efac 100%);
+    }
+    body:active { cursor: grabbing; }
+    canvas { display: block; }
+  </style>
+
+  <link rel="icon" type="image/svg+xml" href="assets/img/soccerball.svg" />
+</head>
+<body>
+<script type="module" src="assets/js/balls/main.js"></script>
+</body>
+</html>
+
+
